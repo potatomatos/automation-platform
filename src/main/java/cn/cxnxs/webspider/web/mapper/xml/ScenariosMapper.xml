@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.cxnxs.webspider.web.mapper.ScenariosMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.cxnxs.webspider.web.entity.Scenarios">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="user_id" property="userId" />
+        <result column="description" property="description" />
+        <result column="is_public" property="isPublic" />
+        <result column="tag_bg_color" property="tagBgColor" />
+        <result column="tag_fg_color" property="tagFgColor" />
+        <result column="icon" property="icon" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, user_id, description, is_public, tag_bg_color, tag_fg_color, icon, created_at, updated_at
+    </sql>
+
+</mapper>

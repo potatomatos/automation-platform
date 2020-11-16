@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.cxnxs.webspider.web.mapper.UsersMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.cxnxs.webspider.web.entity.Users">
+        <id column="id" property="id" />
+        <result column="email" property="email" />
+        <result column="encrypted_password" property="encryptedPassword" />
+        <result column="reset_password_token" property="resetPasswordToken" />
+        <result column="reset_password_sent_time" property="resetPasswordSentTime" />
+        <result column="login_count" property="loginCount" />
+        <result column="current_login_time" property="currentLoginTime" />
+        <result column="last_login_time" property="lastLoginTime" />
+        <result column="current_login_ip" property="currentLoginIp" />
+        <result column="last_login_ip" property="lastLoginIp" />
+        <result column="admin" property="admin" />
+        <result column="failed_attempts" property="failedAttempts" />
+        <result column="unlock_token" property="unlockToken" />
+        <result column="locked_time" property="lockedTime" />
+        <result column="username" property="username" />
+        <result column="service_count" property="serviceCount" />
+        <result column="confirmation_token" property="confirmationToken" />
+        <result column="confirmed_time" property="confirmedTime" />
+        <result column="confirmation_sent_time" property="confirmationSentTime" />
+        <result column="unconfirmed_email" property="unconfirmedEmail" />
+        <result column="state" property="state" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, email, encrypted_password, reset_password_token, reset_password_sent_time, login_count, current_login_time, last_login_time, current_login_ip, last_login_ip, admin, failed_attempts, unlock_token, locked_time, username, service_count, confirmation_token, confirmed_time, confirmation_sent_time, unconfirmed_email, state, created_at, updated_at
+    </sql>
+
+</mapper>

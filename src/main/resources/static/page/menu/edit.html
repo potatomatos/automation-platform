@@ -1,0 +1,247 @@
+<div class="layuimini-main">
+
+	<form class="layui-form layuimini-form" lay-filter="menuForm">
+		<input type="hidden" name="id">
+		<div class="layui-form-item">
+			<label class="layui-form-label">菜单名称</label>
+			<div class="layui-input-block">
+				<label>
+					<input
+							type="text"
+							name="title"
+							lay-verify="required"
+							lay-reqtext="用户名不能为空"
+							placeholder="请输入菜单名称"
+							value=""
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">上级菜单</label>
+			<div class="layui-input-block">
+				<div class="layui-form-select downpanel">
+					<div class="layui-select-title">
+						<input
+								id="pidText"
+								name="pidText"
+								type="text"
+								placeholder="请选择上级菜单"
+								value=""
+								class="layui-input">
+						<input type="hidden" name="pId" id="pid">
+						<i class="layui-edge"></i>
+					</div>
+					<dl class="layui-anim layui-anim-upbit">
+						<dd>
+							<div id="menuTreeMore"></div>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">菜单路径</label>
+			<div class="layui-input-block">
+				<label>
+					<input
+							type="text"
+							name="href"
+							lay-verify="required"
+							lay-reqtext="菜单路径不能为空"
+							placeholder="请输入菜单路径"
+							value=""
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label for="iconPicker" class="layui-form-label">菜单图标</label>
+			<div class="layui-input-inline" style="font-size: 26px;text-align: center;line-height: 40px">
+				<div id="iconView"></div>
+			</div>
+			<div class="layui-input-inline">
+				<input
+						name="icon"
+						type="text"
+						id="iconPicker"
+						lay-filter="iconPicker"
+						class="hide"
+						lay-verify="required"
+						lay-reqtext="菜单图标不能为空"
+						value="fa-adjust">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">菜单序号</label>
+			<div class="layui-input-block">
+				<label>
+					<input
+							type="text"
+							name="sort"
+							value=""
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">新页面打开</label>
+			<div class="layui-input-block">
+				<input type="radio" name="target" value="_blank" title="是">
+				<input type="radio" name="target" value="_self" title="否">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">启用</label>
+			<div class="layui-input-block">
+				<input type="radio" name="state" value="0" title="是">
+				<input type="radio" name="state" value="1" title="否">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script>
+    layui.use(['form', 'table', 'iconPickerFa', 'tree'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$,
+            iconPickerFa = layui.iconPickerFa,
+            tree = layui.tree,
+            miniAdmin = layui.miniAdmin;
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //获取表单数据
+        $.getJSON('/sysMenu/' + sessionStorage.getItem("menuEditId"), function (res) {
+            if (res.code === 0) {
+                //表单初始赋值
+                form.val('menuForm', {
+                    "id": res.data.id,
+                    "pId": res.data.pid,
+                    "href": res.data.href,
+                    "icon": res.data.icon,
+                    "sort": res.data.sort,
+                    "state": res.data.state,
+                    "title": res.data.title,
+                    "target": res.data.target
+                })
+                $("#iconView").attr("class", res.data.icon);
+                $.getJSON('/sysMenu/' + res.data.pid, function (res) {
+                    $("#pidText").val(res.data.title);
+                })
+            } else {
+                layer.msg(res.msg, {icon: 5});
+            }
+        }).fail(function () {
+            layer.msg('后台发生错误', {icon: 5});
+        });
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax({
+                url: '/sysMenu/update/' + sessionStorage.getItem("menuEditId"),
+                type: 'post',
+                // contentType: "json",
+                data: data.field,
+                success: function (res) {
+                    if (res.code === 0) {
+                        //重新渲染菜单
+                        var options = {
+                            iniUrl: "sysMenu/menu",    // 初始化接口
+                            clearUrl: "api/clear.json", // 缓存清理接口
+                            renderPageVersion: true,    // 初始化页面是否加版本号
+                            bgColorDefault: false,      // 主题默认配置
+                            multiModule: true,          // 是否开启多模块
+                            menuChildOpen: false,       // 是否默认展开菜单
+                            loadingTime: 0,             // 初始化加载时间
+                            pageAnim: true,             // 切换菜单动画
+                        };
+                        miniAdmin.render(options);
+                        var index = layer.alert('保存成功', {icon: 6}, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                        });
+                    } else {
+                        miniAdmin.error(res.msg)
+                    }
+                },
+                error: function () {
+                    miniAdmin.error('服务器发生错误');
+                }
+            })
+            return false;
+        });
+
+        /**
+         * 图标选择器
+         */
+        iconPickerFa.render({
+            // 选择器，推荐使用input
+            elem: '#iconPicker',
+            // fa 图标接口
+            url: "/static/lib/font-awesome-4.7.0/less/variables.less",
+            // 是否开启搜索：true/false，默认true
+            search: true,
+            // 是否开启分页：true/false，默认true
+            page: true,
+            // 每页显示数量，默认12
+            limit: 12,
+            // 点击回调
+            click: function (data) {
+                console.log(data);
+                $("#iconView").attr("class", "fa " + data.icon);
+                $("#iconPicker").val("fa " + data.icon);
+            },
+            // 渲染成功后的回调
+            success: function (d) {
+
+            }
+        });
+
+        /**
+         * 菜单选择器
+         */
+        $.ajax({
+            url: '/sysMenu/menuTree',
+            type: 'get',
+            contentType: "json",
+            success: function (res) {
+                if (res.code === 0) {
+                    tree.render({
+                        elem: '#menuTreeMore',
+                        data: res.data,
+                        click: function (obj) {
+                            console.log(obj.data); //得到当前点击的节点数据
+                            $("#pidText").val(obj.data.title);
+                            $("#pid").val(obj.data.id);
+                        }
+                    });
+                    //下拉交互显示
+                    $(".downpanel").on("click", ".layui-select-title", function (e) {
+                        $(".downpanel").not($(this).parents(".downpanel")).removeClass("layui-form-selected");
+                        $(this).parents(".downpanel").toggleClass("layui-form-selected");
+                        layui.stope(e);
+                    }).on("click", "dl i", function (e) {
+                        layui.stope(e);
+                    });
+                    $(document).on("click", function (e) {
+                        $(".downpanel").removeClass("layui-form-selected");
+                    });
+                }
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+    });
+</script>

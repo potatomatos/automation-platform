@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.cxnxs.webspider.web.mapper.AgentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.cxnxs.webspider.web.entity.Agent">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="options" property="options" />
+        <result column="type" property="type" />
+        <result column="name" property="name" />
+        <result column="schedule" property="schedule" />
+        <result column="data_count" property="dataCount" />
+        <result column="last_check_at" property="lastCheckAt" />
+        <result column="last_receive_at" property="lastReceiveAt" />
+        <result column="last_checked_data_id" property="lastCheckedDataId" />
+        <result column="last_web_request_at" property="lastWebRequestAt" />
+        <result column="keep_data_time" property="keepDataTime" />
+        <result column="last_data_ime" property="lastDataIme" />
+        <result column="last_error_log_time" property="lastErrorLogTime" />
+        <result column="propagate_immediately" property="propagateImmediately" />
+        <result column="disabled" property="disabled" />
+        <result column="scenario_id" property="scenarioId" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, options, type, name, schedule, data_count, last_check_at, last_receive_at, last_checked_data_id, last_web_request_at, keep_data_time, last_data_ime, last_error_log_time, propagate_immediately, disabled, scenario_id, created_at, updated_at
+    </sql>
+
+</mapper>
