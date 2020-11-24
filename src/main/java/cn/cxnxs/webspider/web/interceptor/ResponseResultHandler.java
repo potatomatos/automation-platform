@@ -1,6 +1,6 @@
 package cn.cxnxs.webspider.web.interceptor;
 
-import cn.cxnxs.webspider.web.ResponseResult;
+import cn.cxnxs.webspider.web.vo.ResponseResult;
 import cn.cxnxs.webspider.web.vo.ErrorResult;
 import cn.cxnxs.webspider.web.vo.Result;
 import lombok.extern.slf4j.Slf4j;

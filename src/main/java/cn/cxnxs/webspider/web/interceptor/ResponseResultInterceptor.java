@@ -1,6 +1,6 @@
 package cn.cxnxs.webspider.web.interceptor;
 
-import cn.cxnxs.webspider.web.ResponseResult;
+import cn.cxnxs.webspider.web.vo.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;

@@ -1,4 +1,4 @@
-package cn.cxnxs.webspider.web;
+package cn.cxnxs.webspider.web.vo;
 
 
 import java.lang.annotation.ElementType;
