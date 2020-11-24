@@ -106,11 +106,6 @@ public class Agent extends Model<Agent> {
     private Boolean disabled;
 
     /**
-     * 所属场景
-     */
-    private Integer scenarioId;
-
-    /**
      * 创建时间
      */
     private LocalDateTime createdAt;
