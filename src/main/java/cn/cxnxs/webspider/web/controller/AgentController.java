@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.stereotype.Controller;
 
+import java.util.Map;
+
 /**
  * <p>
  * 爬虫任务配置信息 前端控制器
@@ -14,8 +16,13 @@ import org.springframework.stereotype.Controller;
  * @since 2020-11-10
  */
 @Controller
-@RequestMapping("/agent")
+@RequestMapping("/agents")
 public class AgentController {
 
+
+    public Map<String,Object> getAgentConfig(){
+
+        return null;
+    }
 }
 
