@@ -1,0 +1,166 @@
+<style>
+	.jsoneditor-menu {
+		background-color: #6c928c;
+		border-bottom: #6c928c
+	}
+
+	.jsoneditor {
+		border: thin solid #6c928c;
+	}
+
+	.layui-form-text {
+		padding: 9px 15px;
+	}
+</style>
+<div class="layuimini-main">
+	<div class="layui-form layuimini-form" lay-filter="agentTypeForm">
+		<input type="hidden" name="id" class="id">
+		<div class="layui-form-item">
+			<label class="layui-form-label">类型名称</label>
+			<div class="layui-input-block">
+				<p class="agentTypeName layui-form-text"></p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">定时执行</label>
+			<div class="layui-input-block">
+				<p class="canBeScheduled layui-form-text"></p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">生成事件</label>
+			<div class="layui-input-block">
+				<p class="canCreateEvents layui-form-text"></p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">空运行</label>
+			<div class="layui-input-block">
+				<p class="canDryRun layui-form-text"></p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">接收事件</label>
+			<div class="layui-input-block">
+				<p class="canReceiveEvents layui-form-text"></p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">默认定时周期</label>
+			<div class="layui-input-block">
+				<p
+						class="layui-form-text defaultSchedule">
+				</p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">表单地址</label>
+			<div class="layui-input-block">
+				<p class="formUrl layui-form-text"></p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">简介</label>
+			<div class="layui-input-block">
+				<div class="introduction" style="height: auto"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">使用方法</label>
+			<div class="layui-input-block">
+				<div class="description" style="height: auto"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">配置模板</label>
+			<div class="layui-input-block">
+				<div id="optionsTemplateEditor" style="height: 800px"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">配置规则</label>
+			<div class="layui-input-block">
+				<div id="optionsSchemaEditor" style="height: 800px"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-normal edit-btn">编辑</button>
+				<button class="layui-btn layui-btn-warm back-btn">返回</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    layui.use(['form', 'jsoneditor'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$,
+            miniPage = layui.miniPage,
+            jsoneditor = layui.jsoneditor;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        /**
+         * 获取表单数据
+         * */
+        $.getJSON('/agentType/detail/' + layui.data('agent_type_id').id, function (res) {
+            if (res.code === 0) {
+                //表单初始赋值
+                form.val('agentTypeForm', {
+                    "id": res.data.id
+                })
+                $(".canBeScheduled").html(res.data.canBeScheduled ? '是' : '否')
+                $(".canCreateEvents").html(res.data.canCreateEvents ? '是' : '否')
+                $(".canDryRun").html(res.data.canDryRun ? '是' : '否')
+                $(".canReceiveEvents").html(res.data.canReceiveEvents ? '是' : '否')
+                $(".agentTypeName").html(res.data.agentTypeName)
+                $(".formUrl").html(res.data.formUrl)
+                $(".introduction").html(res.data.introduction)
+                $(".description").html(res.data.descriptionHtml)
+
+                for (var i = 0; i < res.data.schedules.length; i++) {
+                    var obj = res.data.schedules[i];
+                    if (obj.code === res.data.defaultSchedule) {
+                        $(".defaultSchedule").html(obj.desc)
+                        break;
+                    }
+                }
+
+                var options = {
+                    mode: 'code',
+                    modes: ['text', 'code'],
+                    onEditable: function (node) {
+                        if (!node.path) {
+                            return false;
+                        }
+                    }
+                }
+                var optionsTemplate = jsoneditor.render('#optionsTemplateEditor', options);
+                optionsTemplate.set(res.data.optionsTemplate);
+                var optionsSchema = jsoneditor.render('#optionsSchemaEditor', options);
+                optionsSchema.set(res.data.optionsSchema);
+            } else {
+                layer.msg(res.msg, {icon: 5});
+            }
+        }).fail(function () {
+            layer.msg('后台发生错误', {icon: 5});
+        });
+        /**
+         * 编辑按钮事件
+         * */
+        $(".edit-btn").click(function () {
+            layui.data('agent_type_id', {id: $(".id").val()});
+            miniPage.hashChange('static/page/agent/edit_agent_type.html')
+        });
+        /**
+         * 返回按钮事件
+         */
+        $(".back-btn").click(function () {
+            window.history.go(-1);
+        });
+    });
+</script>

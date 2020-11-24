@@ -1,0 +1,256 @@
+<style>
+	.jsoneditor-menu{
+		background-color: #6c928c;
+		border-bottom:#6c928c
+	}
+	.jsoneditor{
+		border: thin solid #6c928c;
+	}
+	#descriptionEditor .w-e-text-container{
+		height: 778px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/
+	}
+	.layui-form-select dl{
+		z-index: 99999;
+	}
+</style>
+<div class="layuimini-main">
+	<div class="layui-form layuimini-form">
+		<div class="layui-form-item">
+			<label class="layui-form-label">类型名称</label>
+			<div class="layui-input-block">
+				<label>
+					<input
+							type="text"
+							name="agentTypeName"
+							lay-verify="required"
+							lay-reqtext="类型名称不能为空"
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">定时执行</label>
+			<div class="layui-input-block">
+				<input type="radio" name="canBeScheduled" value="1" title="是" checked="">
+				<input type="radio" name="canBeScheduled" value="0" title="否">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">生成事件</label>
+			<div class="layui-input-block">
+				<input type="radio" name="canCreateEvents" value="1" title="是" checked="">
+				<input type="radio" name="canCreateEvents" value="0" title="否">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">空运行</label>
+			<div class="layui-input-block">
+				<input type="radio" name="canDryRun" value="1" title="是" checked="">
+				<input type="radio" name="canDryRun" value="0" title="否">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">接收事件</label>
+			<div class="layui-input-block">
+				<input type="radio" name="canReceiveEvents" value="1" title="是" checked="">
+				<input type="radio" name="canReceiveEvents" value="0" title="否">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">默认定时周期</label>
+			<div class="layui-input-block">
+				<label>
+					<select
+							id="defaultSchedule"
+							name="defaultSchedule"
+							class="layui-select">
+						<option value="">请选择</option>
+					</select>
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">表单地址</label>
+			<div class="layui-input-block">
+				<label>
+					<input
+							type="text"
+							name="formUrl"
+							lay-verify="required"
+							lay-reqtext="表单地址不能为空"
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label" for="introduction">简介</label>
+			<div class="layui-input-block">
+				<div id="introductionEditor"></div>
+				<textarea style="display: none" id="introduction" name="introduction"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label" for="descriptionHtml">使用方法</label>
+			<div class="layui-input-block">
+				<div id="descriptionEditor"></div>
+				<textarea style="display: none" id="descriptionHtml" name="descriptionHtml"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label" for="optionsTemplate">配置模板</label>
+			<div class="layui-input-block">
+				<div id="optionsTemplateEditor" style="height: 800px"></div>
+				<textarea style="display: none" id="optionsTemplate" name="optionsTemplate"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label" for="optionsSchema">配置规则</label>
+			<div class="layui-input-block">
+				<div id="optionsSchemaEditor" style="height: 800px"></div>
+				<textarea style="display: none" id="optionsSchema" name="optionsSchema"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    layui.use(['form', 'wangEditor', 'jsoneditor'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$,
+            miniAdmin = layui.miniAdmin,
+            jsoneditor = layui.jsoneditor,
+            wangEditor = layui.wangEditor;
+
+        /**
+         * 获取下拉框
+         * */
+        $.getJSON('/agentType/schedules/', function (res) {
+            if (res.code === 0) {
+                $.each(res.data, function (index, item) {
+                    $('#defaultSchedule').append(new Option(item.desc, item.code));// 下拉菜单里添加元素
+                });
+                layui.form.render("select");
+            } else {
+                layer.msg(res.msg, {icon: 5});
+            }
+        }).fail(function () {
+            layer.msg('后台发生错误', {icon: 5});
+        });
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax({
+                url: '/agentType/save',
+                type: 'post',
+                data: data.field,
+                success: function (res) {
+                    if (res.code === 0) {
+                        var index = layer.alert('保存成功', {icon: 6}, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                            location.hash='/static/page/agent/agent_type.html';
+                        });
+                    } else {
+                        miniAdmin.error(res.msg)
+                    }
+                },
+                error: function () {
+                    miniAdmin.error('服务器发生错误');
+                }
+            })
+            return false;
+        });
+
+        //自定义菜单
+        var menus = [
+            'head',
+            'bold',
+            'fontSize',
+            'fontName',
+            'italic',
+            'underline',
+            'strikeThrough',
+            'indent',
+            'lineHeight',
+            'foreColor',
+            'backColor',
+            'link',
+            'list',
+            'justify',
+            'quote',
+            'emoticon',
+            'table',
+            'code',
+            'splitLine',
+            'undo',
+            'redo'
+        ];
+        /**
+         * 渲染富文本编辑器（使用方法）
+         */
+        var descriptionEditor = new wangEditor('#descriptionEditor');
+        descriptionEditor.customConfig.menus = menus;
+        descriptionEditor.customConfig.customAlert = function (info) {
+            layer.msg(info);
+        };
+        descriptionEditor.customConfig.onchange = function (html) {
+            // 监控变化，同步更新到 textarea
+            $("#descriptionHtml").val(html)
+        }
+        descriptionEditor.create();
+
+
+        /**
+         * 渲染富文本编辑器（简介）
+         */
+        var introductionEditor = new wangEditor('#introductionEditor');
+        introductionEditor.customConfig.menus = menus;
+        introductionEditor.customConfig.customAlert = function (info) {
+            layer.msg(info);
+        };
+        introductionEditor.customConfig.onchange = function (html) {
+            // 监控变化，同步更新到 textarea
+            $("#introduction").val(html)
+        }
+        introductionEditor.create();
+
+        /**
+         *
+         * @type {{mode: string, modes: string[], onError: onError, onModeChange: onModeChange}}
+         */
+        var options1 = {
+            mode: 'code',
+            modes: ['code','tree'],
+            onError: function (err) {
+                layer.msg(err.toString());
+            },
+            onChangeText:function(json){
+               $("#optionsTemplate").val(json);
+            }
+        }
+        var options2 = {
+            mode: 'code',
+            modes: ['code','tree'],
+            onError: function (err) {
+                layer.msg(err.toString());
+            },
+            onChangeText:function(json){
+                $("#optionsSchema").val(json);
+            }
+        }
+        jsoneditor.render('#optionsTemplateEditor', options1);
+        jsoneditor.render('#optionsSchemaEditor', options2);
+    });
+</script>
