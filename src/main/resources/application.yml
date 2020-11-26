@@ -14,7 +14,7 @@ spring:
     name: springboot-spiderAdmin
   mvc:
     view:
-      prefix: /static/
+      prefix: /static/page/
       suffix: .html
     static-path-pattern: static/**
   resources:
