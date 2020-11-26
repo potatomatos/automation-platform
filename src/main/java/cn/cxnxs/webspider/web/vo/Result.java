@@ -145,6 +145,7 @@ public class Result<T> implements Serializable {
         UNKNOWN_ERROR(-1, "未知错误", "failure"),
         ILLEGAL_TOKEN(50008, "token错误", "failure"),
         LOGIN_ERROR(50010, "登陆异常", "failure"),
+        LOGIN_VERIFY_ERROR(50011, "用户名或密码错误", "failure"),
         DUPLICATION_LOGIN(50012, "重复登录", "failure"),
         TOKEN_EXPIRED(50014, "token过期", "failure"),
         ERROR_404(40000, "404 Not Found", "failure"),
