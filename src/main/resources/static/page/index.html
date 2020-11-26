@@ -124,7 +124,7 @@
             miniAdmin = layui.miniAdmin;
 
         var options = {
-            iniUrl: "sysMenu/menu",    // 初始化接口
+            iniUrl: "/sysMenu/menu",    // 初始化接口
             clearUrl: "api/clear.json", // 缓存清理接口
             renderPageVersion: true,    // 初始化页面是否加版本号
             bgColorDefault: false,      // 主题默认配置
@@ -137,7 +137,7 @@
 
         $('.login-out').on("click", function () {
             layer.msg('退出登录成功', function () {
-                window.location = 'page/login-3.html';
+                window.location = '/static/page/login.html';
             });
         });
     });
