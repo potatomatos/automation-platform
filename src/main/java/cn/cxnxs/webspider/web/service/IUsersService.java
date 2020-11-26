@@ -1,7 +1,10 @@
 package cn.cxnxs.webspider.web.service;
 
 import cn.cxnxs.webspider.web.entity.Users;
+import cn.cxnxs.webspider.web.vo.UserVo;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUsersService extends IService<Users> {
 
+    UserVo login(String username, String password, String captcha) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
 }
