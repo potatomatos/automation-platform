@@ -8,12 +8,12 @@ import java.util.List;
 public class StringUtil {
 
 
-    public  static  boolean isEmpty(String str){
-        return str==null||str.length()==0;
+    public static boolean isEmpty(String str) {
+        return str == null || str.length() == 0;
     }
 
-    public  static  boolean isNotEmpty(String str){
-        return str!=null&&str.length()>0;
+    public static boolean isNotEmpty(String str) {
+        return str != null && str.length() > 0;
     }
 
     public static String sqlLike(String str) {
@@ -44,9 +44,10 @@ public class StringUtil {
      * @return
      */
     public static String decapitalize(String s) {
-        if (s == null || s.length() == 0)
+        if (s == null || s.length() == 0) {
             // 空处理
             return s;
+        }
         if (s.length() > 1 && Character.isUpperCase(s.charAt(1)) && Character.isUpperCase(s.charAt(0))) {
             // 长度大于1，并且前两个字符大写时，返回原字符串
             return s;
@@ -66,6 +67,7 @@ public class StringUtil {
 
     /**
      * 下划线转驼峰
+     *
      * @param para
      * @return
      */
@@ -94,14 +96,14 @@ public class StringUtil {
      *        驼峰命名的字符串
      */
 
-    public static String camel2Underline(String para){
-        StringBuilder sb=new StringBuilder(para);
-        int temp=0;//定位
+    public static String camel2Underline(String para) {
+        StringBuilder sb = new StringBuilder(para);
+        int temp = 0;//定位
         if (!para.contains("_")) {
-            for(int i=1;i<para.length();i++){
-                if(Character.isUpperCase(para.charAt(i))){
-                    sb.insert(i+temp, "_");
-                    temp+=1;
+            for (int i = 1; i < para.length(); i++) {
+                if (Character.isUpperCase(para.charAt(i))) {
+                    sb.insert(i + temp, "_");
+                    temp += 1;
                 }
             }
         }
@@ -110,40 +112,81 @@ public class StringUtil {
 
     /**
      * 列表查询排序条件拼接方法
+     *
      * @param field 排序字段名
-     * @param ids 条件列表
+     * @param ids   条件列表
      * @return
      */
-    public  static  String listToOrderByClause(String field,List<String> ids){
-        StringBuilder builder=new StringBuilder("FIELD");
+    public static String listToOrderByClause(String field, List<String> ids) {
+        StringBuilder builder = new StringBuilder("FIELD");
         builder.append("(");
         builder.append(field);
         builder.append(",");
-        for (int i=0;i<ids.size();i++){
+        for (int i = 0; i < ids.size(); i++) {
             builder.append(ids.get(i));
-            if (i<ids.size()-1){
+            if (i < ids.size() - 1) {
                 builder.append(",");
             }
         }
         builder.append(")");
-        return  builder.toString();
+        return builder.toString();
     }
 
     /**
      * 列表转换字符串
+     *
      * @param ids
      * @return
      */
-    public static String list2String(List<String> ids){
-        StringBuilder builder=new StringBuilder();
+    public static String list2String(List<String> ids) {
+        StringBuilder builder = new StringBuilder();
         builder.append("(");
-        for (int i=0;i<ids.size();i++){
+        for (int i = 0; i < ids.size(); i++) {
             builder.append(ids.get(i));
-            if (i<ids.size()-1){
+            if (i < ids.size() - 1) {
                 builder.append(",");
             }
         }
         builder.append(")");
-        return  builder.toString();
+        return builder.toString();
+    }
+
+    /**
+     * 获取随机字符串
+     *
+     * @param length 字符串长度
+     * @return 随机字符串
+     */
+    public static String randomString(int length) {
+        return randomString(length, -1);
+    }
+
+    public static String randomString(int len, int type) {
+        StringBuilder str = new StringBuilder();
+        String codestr;
+        switch (type) {
+            case 0:
+                codestr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                break;
+            case 1:
+                codestr = "0123456789";
+                break;
+            case 2:
+                codestr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                break;
+            case 3:
+                codestr = "abcdefghijklmnopqrstuvwxyz";
+                break;
+            default:
+                // 默认去掉了容易混淆的字符oOLl和数字01，要添加请使用addChars参数
+                codestr = "ABCDEFGHIJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+                break;
+        }
+        char[] codes = codestr.toCharArray();
+        for (int i = 0; i < len; i++) {
+            int r = (int) (Math.random() * codestr.length());
+            str.append(codes[r]);
+        }
+        return str.toString();
     }
 }
