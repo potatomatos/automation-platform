@@ -3,6 +3,7 @@ package cn.cxnxs.webspider.web.service.impl;
 import cn.cxnxs.webspider.exception.LoginException;
 import cn.cxnxs.webspider.utils.ObjectUtil;
 import cn.cxnxs.webspider.utils.PasswordUtil;
+import cn.cxnxs.webspider.utils.StringUtil;
 import cn.cxnxs.webspider.web.entity.Users;
 import cn.cxnxs.webspider.web.mapper.UsersMapper;
 import cn.cxnxs.webspider.web.service.IUsersService;
@@ -47,7 +48,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         }
         String salt = PasswordUtil.Salt;
         String secret = PasswordUtil.encrypt(username, password, salt);
-        String token= PasswordUtil.encrypt(System.currentTimeMillis()+"", password, salt);
+        String token= PasswordUtil.encrypt(StringUtil.randomString(16), password, salt);
         Users user=usersMapper.selectLoginUser(username, secret);
         if (user==null){
             throw new LoginException(Result.ResultEnum.LOGIN_VERIFY_ERROR);
@@ -57,8 +58,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         user.setLastLoginTime(user.getCurrentLoginTime());
         user.setCurrentLoginTime(LocalDateTime.now());
         user.setLoginCount(user.getLoginCount()+1);
-        String resetPasswordToken =PasswordUtil.encrypt("reset_password_token"+System.currentTimeMillis(),password,PasswordUtil.Salt);
-        String unlockToken =PasswordUtil.encrypt("unlock_token"+System.currentTimeMillis(),password,PasswordUtil.Salt);
+        String resetPasswordToken =PasswordUtil.encrypt(StringUtil.randomString(8),password,PasswordUtil.Salt);
+        String unlockToken =PasswordUtil.encrypt(StringUtil.randomString(8),password,PasswordUtil.Salt);
         user.setResetPasswordToken(resetPasswordToken);
         user.setUnlockToken(unlockToken);
         request.getSession().setAttribute("token",token);
