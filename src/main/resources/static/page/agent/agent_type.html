@@ -30,7 +30,6 @@
         var table = layui.table;
         var layer = layui.layer;
         var miniPage = layui.miniPage;
-        var miniAdmin = layui.miniAdmin;
         var timeago = layui.timeago;
         // 渲染表格
         layer.load(2);
@@ -43,6 +42,7 @@
             page: false,
             cols: [[
                 {field: 'agentTypeName', title: '名称', sort: true},
+                {field: 'handler', title: '处理器'},
                 {
                     field: 'canCreateEvents', title: '生成事件',
                     templet: function (d) {
@@ -130,11 +130,11 @@
                 });
             } else if (layEvent === 'edit') {
                 //编辑
-                layui.data('agent_type_id', {id: data.id});
+                sessionStorage.setItem('agent_type_id',data.id)
                 miniPage.hashChange('static/page/agent/edit_agent_type.html')
             } else if (layEvent === 'detail') {
                 //详情
-                layui.data('agent_type_id', {id: data.id});
+                sessionStorage.setItem('agent_type_id',data.id)
                 miniPage.hashChange('static/page/agent/agent_type_detail.html')
             }
         });

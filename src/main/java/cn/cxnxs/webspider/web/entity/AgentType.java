@@ -33,6 +33,11 @@ public class AgentType extends Model<AgentType> {
     private String agentTypeName;
 
     /**
+     * 处理器地址
+     */
+    private String handler;
+
+    /**
      * 是否定时执行
      */
     private Boolean canBeScheduled;

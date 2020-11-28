@@ -139,7 +139,7 @@
         /**
          * 获取表单数据
          * */
-        $.getJSON('/agentType/detail/' + layui.data('agent_type_id').id, function (res) {
+        $.getJSON('/agentType/detail/' + sessionStorage.getItem("agent_type_id"), function (res) {
             if (res.code === 0) {
                 /**
                  * 获取下拉框
@@ -187,10 +187,10 @@
                 }
                 var optionsTemplate = jsoneditor.render('#optionsTemplateEditor', options1);
                 optionsTemplate.set(res.data.optionsTemplate);
-                $("#optionsTemplate").val(res.data.optionsTemplate);
+                $("#optionsTemplate").val(JSON.stringify(res.data.optionsTemplate));
                 var optionsSchema = jsoneditor.render('#optionsSchemaEditor', options2);
                 optionsSchema.set(res.data.optionsSchema);
-                $("#optionsSchema").val(res.data.optionsSchema);
+                $("#optionsSchema").val(JSON.stringify(res.data.optionsSchema));
                 //json编辑器赋值 end
 
                 //富文本编辑器赋值 start
@@ -259,7 +259,7 @@
         var parentIndex = layer.index;
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            layer.confirm('确认修改', function (index) {
+            layer.confirm('确认修改', function () {
                 $.ajax({
                     url: '/agentType/modify',
                     type: 'post',

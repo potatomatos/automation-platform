@@ -21,6 +21,11 @@ public class AgentTypeVo {
     private String agentTypeName;
 
     /**
+     * 处理器路径
+     */
+    private String handler;
+
+    /**
      * 是否定时执行
      */
     private Boolean canBeScheduled;
@@ -331,6 +336,14 @@ public class AgentTypeVo {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getHandler() {
+        return handler;
+    }
+
+    public void setHandler(String handler) {
+        this.handler = handler;
     }
 
     @Override

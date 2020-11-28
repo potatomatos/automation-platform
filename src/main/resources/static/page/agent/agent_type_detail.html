@@ -107,7 +107,7 @@
         /**
          * 获取表单数据
          * */
-        $.getJSON('/agentType/detail/' + layui.data('agent_type_id').id, function (res) {
+        $.getJSON('/agentType/detail/' + sessionStorage.getItem("agent_type_id"), function (res) {
             if (res.code === 0) {
                 //表单初始赋值
                 form.val('agentTypeForm', {
@@ -153,7 +153,7 @@
          * 编辑按钮事件
          * */
         $(".edit-btn").click(function () {
-            layui.data('agent_type_id', {id: $(".id").val()});
+            sessionStorage.setItem('agent_type_id',$(".id").val())
             miniPage.hashChange('static/page/agent/edit_agent_type.html')
         });
         /**

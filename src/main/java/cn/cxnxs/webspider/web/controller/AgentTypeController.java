@@ -8,6 +8,7 @@ import cn.cxnxs.webspider.web.vo.AgentTypeVo;
 import cn.cxnxs.webspider.web.vo.ResponseResult;
 import cn.cxnxs.webspider.web.vo.Result;
 import com.alibaba.fastjson.JSONArray;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,12 +50,13 @@ public class AgentTypeController {
         return Result.success("保存成功");
     }
 
+    @SneakyThrows
     @ResponseResult
     @RequestMapping("detail/{id}")
-    public AgentTypeVo detail(@PathVariable("id") Integer id) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public AgentTypeVo detail(@PathVariable("id") Integer id) {
         AgentType agentType = agentTypeService.getById(id);
         AgentTypeVo agentTypeVo=new AgentTypeVo();
-        BeanUtils.copyProperties(agentType,agentTypeVo);
+        ObjectUtil.transValues(agentType,agentTypeVo);
         return agentTypeVo;
     }
 
