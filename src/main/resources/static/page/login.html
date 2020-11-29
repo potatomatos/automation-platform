@@ -200,6 +200,10 @@
                 layer.msg('验证码不能为空');
                 return false;
             }
+            layer.msg('登陆中', {
+                icon: 16
+                ,shade: 0.01
+            });
             $.ajax({
                 url: '/user/login',
                 type: 'post',
@@ -214,6 +218,7 @@
                         }
                         //将用户信息缓存起来
                         layui.sessionData("userInfo", res.data)
+	                    sessionStorage.setItem("token",res.data.token)
                         layer.msg('登录成功', function () {
                             window.location = '/';
                         });
