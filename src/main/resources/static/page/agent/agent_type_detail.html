@@ -92,11 +92,12 @@
 	</div>
 </div>
 <script>
-    layui.use(['form', 'jsoneditor'], function () {
+    layui.use(['form', 'jsoneditor','request'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
             miniPage = layui.miniPage,
+            request = layui.request,
             jsoneditor = layui.jsoneditor;
 
         /**
@@ -107,7 +108,7 @@
         /**
          * 获取表单数据
          * */
-        $.getJSON('/agentType/detail/' + sessionStorage.getItem("agent_type_id"), function (res) {
+        request.get('/agentType/detail/' + sessionStorage.getItem("agent_type_id"),{},function (res) {
             if (res.code === 0) {
                 //表单初始赋值
                 form.val('agentTypeForm', {
@@ -146,9 +147,9 @@
             } else {
                 layer.msg(res.msg, {icon: 5});
             }
-        }).fail(function () {
+        },function () {
             layer.msg('后台发生错误', {icon: 5});
-        });
+        })
         /**
          * 编辑按钮事件
          * */

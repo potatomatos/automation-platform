@@ -122,13 +122,14 @@
 	</div>
 </div>
 <script>
-    layui.use(['form', 'jsoneditor', 'wangEditor'], function () {
+    layui.use(['form', 'jsoneditor', 'wangEditor','request'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
             miniAdmin = layui.miniAdmin,
             miniPage = layui.miniPage,
             wangEditor = layui.wangEditor,
+            request = layui.request,
             jsoneditor = layui.jsoneditor;
 
         /**
@@ -139,7 +140,7 @@
         /**
          * 获取表单数据
          * */
-        $.getJSON('/agentType/detail/' + sessionStorage.getItem("agent_type_id"), function (res) {
+		request.get('/agentType/detail/' + sessionStorage.getItem("agent_type_id"),{},function (res) {
             if (res.code === 0) {
                 /**
                  * 获取下拉框
@@ -251,34 +252,27 @@
             } else {
                 layer.msg(res.msg, {icon: 5});
             }
-        }).fail(function () {
-            layer.msg('后台发生错误', {icon: 5});
+        },function () {
+            layer.msg('服务器发生错误', {icon: 5});
         });
-
         // 当前弹出层，防止ID被覆盖
         var parentIndex = layer.index;
         //监听提交
         form.on('submit(saveBtn)', function (data) {
             layer.confirm('确认修改', function () {
-                $.ajax({
-                    url: '/agentType/modify',
-                    type: 'post',
-                    data: data.field,
-                    success: function (res) {
-                        if (res.code === 0) {
-                            var index = layer.alert('保存成功', {icon: 6}, function () {
-                                // 关闭弹出层
-                                layer.close(index);
-                                layer.close(parentIndex);
-                                miniPage.hashChange('static/page/agent/agent_type.html');
-                            });
-                        } else {
-                            miniAdmin.error(res.msg)
-                        }
-                    },
-                    error: function () {
-                        miniAdmin.error('服务器发生错误');
+                request.post('/agentType/modify',data.field,function (res) {
+                    if (res.code === 0) {
+                        var index = layer.alert('保存成功', {icon: 6}, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+                            layer.close(parentIndex);
+                            miniPage.hashChange('static/page/agent/agent_type.html');
+                        });
+                    } else {
+                        miniAdmin.error(res.msg)
                     }
+                },function () {
+                    miniAdmin.error('服务器发生错误');
                 })
             });
             return false;
