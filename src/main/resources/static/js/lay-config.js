@@ -29,4 +29,5 @@ layui.config({
     cron: 'cron/cron', //  cron表达式生成器
     timeago: 'timeago/timeago', // 转换时间为"xx时间前"
     jsoneditor: 'jsoneditor-lay/jsoneditor', // json编辑器
+    request: 'request/request', // ajax请求
 });
