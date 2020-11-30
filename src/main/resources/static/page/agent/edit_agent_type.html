@@ -122,7 +122,7 @@
 	</div>
 </div>
 <script>
-    layui.use(['form', 'jsoneditor', 'wangEditor','request'], function () {
+    layui.use(['form', 'jsoneditor', 'wangEditor', 'request'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
@@ -140,7 +140,7 @@
         /**
          * 获取表单数据
          * */
-		request.get('/agentType/detail/' + sessionStorage.getItem("agent_type_id"),{},function (res) {
+        request.get('/agentType/detail/' + sessionStorage.getItem("agent_type_id"), {}, function (res) {
             if (res.code === 0) {
                 /**
                  * 获取下拉框
@@ -252,7 +252,7 @@
             } else {
                 layer.msg(res.msg, {icon: 5});
             }
-        },function () {
+        }, function () {
             layer.msg('服务器发生错误', {icon: 5});
         });
         // 当前弹出层，防止ID被覆盖
@@ -260,7 +260,7 @@
         //监听提交
         form.on('submit(saveBtn)', function (data) {
             layer.confirm('确认修改', function () {
-                request.post('/agentType/modify',data.field,function (res) {
+                request.post('/agentType/modify', data.field, function (res) {
                     if (res.code === 0) {
                         var index = layer.alert('保存成功', {icon: 6}, function () {
                             // 关闭弹出层
@@ -271,7 +271,7 @@
                     } else {
                         miniAdmin.error(res.msg)
                     }
-                },function () {
+                }, function () {
                     miniAdmin.error('服务器发生错误');
                 })
             });
