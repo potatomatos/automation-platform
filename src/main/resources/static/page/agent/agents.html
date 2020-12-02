@@ -1,0 +1,143 @@
+<style>
+	.layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
+		height: 34px;
+		line-height: 34px;
+		padding: 0 8px;
+	}
+</style>
+<body>
+<div class="layuimini-container layuimini-page-anim">
+	<div class="layuimini-main">
+		<div>
+			<script type="text/html" id="agentTypeTableToolBar">
+				<div class="layui-btn-container">
+					<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add">定义agent</button>
+				</div>
+			</script>
+			<table id="agentTypeTable" class="layui-table" lay-filter="agentTypeTable"></table>
+		</div>
+	</div>
+</div>
+<!-- 操作列 -->
+<script type="text/html" id="operation">
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+	<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['table', 'timeago'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var layer = layui.layer;
+        var miniPage = layui.miniPage;
+        var timeago = layui.timeago;
+        // 渲染表格
+        layer.load(2);
+        table.render({
+            elem: '#agentTypeTable',
+            url: '/agentType',
+            toolbar: '#agentTypeTableToolBar', //开启头部工具栏，并为其绑定左侧模板
+            defaultToolbar:null,
+            title: '代理定义信息',
+            page: false,
+            cols: [[
+                {field: 'agentTypeName', title: '名称', sort: true},
+                {field: 'handler', title: '处理器'},
+                {
+                    field: 'canCreateEvents', title: '生成事件',
+                    templet: function (d) {
+                        var val = '';
+                        if (d.canCreateEvents) {
+                            val = '是'
+                        } else {
+                            val = '否'
+                        }
+                        return '<em>' + val + '</em>';
+                    }
+                },
+                {
+                    field: 'canDryRun', title: '允许空运行',
+                    templet: function (d) {
+                        var val = '';
+                        if (d.canDryRun) {
+                            val = '是'
+                        } else {
+                            val = '否'
+                        }
+                        return '<em>' + val + '</em>';
+                    }
+                },
+                {
+                    field: 'canReceiveEvents', title: '接收事件',
+                    templet: function (d) {
+                        var val = '';
+                        if (d.canReceiveEvents) {
+                            val = '是'
+                        } else {
+                            val = '否'
+                        }
+                        return '<em>' + val + '</em>';
+                    }
+                },
+                {
+                    field: 'canBeScheduled', title: '定时执行',
+                    templet: function (d) {
+                        var val = '';
+                        if (d.canBeScheduled) {
+                            val = '是'
+                        } else {
+                            val = '否'
+                        }
+                        return '<em>' + val + '</em>';
+                    }
+                },
+                {field: 'defaultScheduleStr', title: '默认执行计划'},
+                {
+                    field: 'createdAt', title: '创建时间',
+                    templet: function (d) {
+                        return timeago.format(d.createdAt)
+                    }
+                },
+                {fixed: 'right', title: '操作', toolbar: '#operation', width: 150}
+            ]],
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+
+        table.on('toolbar(agentTypeTable)', function () {
+            miniPage.hashChange('static/page/agent/add_agent_type.html')
+        });
+
+        //监听工具条
+        table.on('tool(agentTypeTable)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'del') {
+                //删除
+                layer.confirm('真的删除行么', function (index) {
+                    $.getJSON('/agentType/delete/' + data.id, function (data) {
+                        if (data.code === 0) {
+                            layer.msg('删除成功', {icon: 6});
+                            table.reload("agentTypeTable");
+                        } else {
+                            layer.msg(data.msg, {icon: 5});
+                        }
+                    }).fail(function () {
+                        layer.msg('后台发生错误', {icon: 5});
+                    });
+                    layer.close(index);
+                });
+            } else if (layEvent === 'edit') {
+                //编辑
+                sessionStorage.setItem('agent_type_id',data.id)
+                miniPage.hashChange('static/page/agent/edit_agent_type.html')
+            } else if (layEvent === 'detail') {
+                //详情
+                sessionStorage.setItem('agent_type_id',data.id)
+                miniPage.hashChange('static/page/agent/agent_type_detail.html')
+            }
+        });
+    });
+</script>
+</body>

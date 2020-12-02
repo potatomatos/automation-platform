@@ -1,0 +1,141 @@
+<style>
+	.show {
+		/*display: none;*/
+	}
+</style>
+<div class="layuimini-main layui-col-xs12">
+	<div class="layui-form layuimini-form layui-col-sm12 layui-col-md6">
+		<div class="layui-form-item show">
+			<label class="layui-form-label">代理类型</label>
+			<div class="layui-input-block">
+				<label for="type">
+					<select name="type" id="type"></select>
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item show">
+			<label class="layui-form-label">代理名称</label>
+			<div class="layui-input-block">
+				<label for="name">
+					<input
+							type="text"
+							id="name"
+							name="name"
+							lay-verify="required"
+							lay-reqtext="代理名称不能为空"
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item show">
+			<label class="layui-form-label">执行计划</label>
+			<div class="layui-input-block">
+				<label for="schedule">
+					<select
+							id="schedule"
+							name="schedule"
+							class="layui-select">
+						<option value="">请选择</option>
+					</select>
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item show">
+			<label class="layui-form-label">结果保存时间</label>
+			<div class="layui-input-block">
+				<label for="keepDataTime">
+					<select
+							id="keepDataTime"
+							name="keepDataTime"
+							class="layui-select">
+						<option value="">请选择</option>
+					</select>
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item show">
+			<label class="layui-form-label">数据源</label>
+			<div class="layui-input-block">
+				<label for="sources">
+					<input
+							type="text"
+							id="sources"
+							name="sources"
+							class="layui-input">
+				</label>
+			</div>
+			<div class="layui-input-block">
+				<label for="propagateImmediately" class="layui-form-label" style="width: auto">
+					立即传播事件到下个agent
+				</label>
+				<div class="layui-input-block">
+					<input type="checkbox" id="propagateImmediately" name="propagateImmediately" lay-skin="switch"
+					       lay-text="是|否">
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item show">
+			<label class="layui-form-label">事件接收方</label>
+			<div class="layui-input-block">
+				<label for="receivers">
+					<input
+							type="text"
+							id="receivers"
+							name="receivers"
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item show">
+			<label class="layui-form-label">场景</label>
+			<div class="layui-input-block">
+				<label for="scenarios">
+					<input
+							type="text"
+							id="scenarios"
+							name="scenarios"
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item form-container show">
+
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-normal layui-btn-sm show" lay-submit lay-filter="saveBtn">保存</button>
+				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="back">返回</button>
+			</div>
+		</div>
+	</div>
+	<div class="layui-col-sm12 layui-col-md6" id="descriptionHtml">
+
+	</div>
+</div>
+<script>
+    layui.use(['form', 'wangEditor', 'jsoneditor', 'request'], function () {
+        var form = layui.form;
+        var $ = layui.$;
+        var wangEditor = layui.wangEditor;
+        var jsoneditor = layui.jsoneditor;
+        var request = layui.request;
+        var layer = layui.layer;
+        var miniAdmin = layui.miniAdmin;
+        //获取代理类型
+        request.get("/agentType", {}, function (res) {
+            if (res.code === 0) {
+                //执行计划
+                $.each(res.data[0].schedules, function (index, item) {
+                    $('#schedule').append(new Option(item.desc, item.code));
+                });
+                //保存时间
+                $.each(res.data[0].keepEventsTimes, function (index, item) {
+                    $('#keepDataTime').append(new Option(item.desc, item.code));
+                });
+                layui.form.render("select");
+            }
+        }, function () {
+            layer.msg('服务器发生错误', {icon: 5});
+        });
+    });
+</script>
