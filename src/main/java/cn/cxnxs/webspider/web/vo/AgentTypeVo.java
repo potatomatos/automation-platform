@@ -89,7 +89,7 @@ public class AgentTypeVo {
      */
     private LocalDateTime updatedAt;
 
-
+    private JSONArray keepEventsTimes;
     /**
      * 执行计划枚举
      */
@@ -212,6 +212,85 @@ public class AgentTypeVo {
         }
     }
 
+    public enum KeepEventsTime{
+        FOREVER(1, "", "永久"),
+        ONR_HOUR(2, "", "1小时"),
+        SIX_HOUR(3, "", "6小时"),
+        ONE_DAY(4, "", "1天"),
+        TWO_DAYS(5, "", "2天"),
+        THREE_DAYS(6, "", "3天"),
+        FOUR_DAYS(7, "", "4天"),
+        FIVE_DAYS(8, "", "5天"),
+        SIX_DAYS(9, "", "6天"),
+        SEVEN_DAYS(10, "", "7天"),
+        FOURTEEN_DAYS(11, "", "14天"),
+        TWENTY_ONE_DAYS(12, "", "21天"),
+        THIRTY_DAYS(13, "", "30天"),
+        FORTY_FIVE_DAYS(14, "", "45天"),
+        NINETY_DAYS(15, "", "90天"),
+        ONE_HUNDRED_AND_EIGHTY_DAYS(16, "", "180天"),
+        ONE_YEAR(17, "", "1年"),
+        ;
+        private Integer code;
+
+        private String cron;
+
+        private String desc;
+
+        KeepEventsTime(Integer code, String cron, String desc) {
+            this.code = code;
+            this.cron = cron;
+            this.desc = desc;
+        }
+        /**
+         * 将该枚举全部转化成json
+         *
+         * @return json字符串
+         */
+        public static JSONArray toJson() {
+            JSONArray jsonArray = new JSONArray();
+            for (AgentTypeVo.KeepEventsTime e : AgentTypeVo.KeepEventsTime.values()) {
+                JSONObject object = new JSONObject();
+                object.put("code", e.getCode());
+                object.put("cron", e.getCron());
+                object.put("desc", e.getDesc());
+                jsonArray.add(object);
+            }
+            return jsonArray;
+        }
+        public static String getCron(Integer code) {
+            for (AgentTypeVo.KeepEventsTime e : AgentTypeVo.KeepEventsTime.values()) {
+                if (e.getCode().equals(code)) {
+                    return e.cron;
+                }
+            }
+            return null;
+        }
+        public static String getDesc(Integer code) {
+            for (AgentTypeVo.KeepEventsTime e : AgentTypeVo.KeepEventsTime.values()) {
+                if (e.getCode().equals(code)) {
+                    return e.desc;
+                }
+            }
+            return null;
+        }
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getCron() {
+            return cron;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+    }
+
+    public JSONArray getKeepEventsTimes() {
+        this.keepEventsTimes = AgentTypeVo.KeepEventsTime.toJson();
+        return keepEventsTimes;
+    }
     public String getDefaultScheduleStr() {
         this.defaultScheduleStr = ScheduleEnum.getDesc(this.defaultSchedule);
         return this.defaultScheduleStr;
