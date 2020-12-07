@@ -29,22 +29,26 @@ layui.define(["jquery", "miniMenu", "element","miniPage", "miniTheme"], function
          * @param options.menuChildOpen 是否展开子菜单
          * @param options.loadingTime 初始化加载时间
          * @param options.pageAnim 切换菜单动画
+         * @param options.urlHashLocation
+         * @param options.maxTabNum
          */
         render: function (options) {
             options.iniUrl = options.iniUrl || null;
             options.clearUrl = options.clearUrl || null;
-            options.renderPageVersion = options.renderPageVersion || false;
+            options.urlHashLocation = options.urlHashLocation || false;
             options.bgColorDefault = options.bgColorDefault || 0;
             options.multiModule = options.multiModule || false;
             options.menuChildOpen = options.menuChildOpen || false;
             options.loadingTime = options.loadingTime || 1;
             options.pageAnim = options.pageAnim || false;
+            options.maxTabNum = options.maxTabNum || 20;
             $.getJSON(options.iniUrl, function (data) {
                 if (data == null) {
                     miniAdmin.error('暂无菜单信息')
                 } else {
                     miniAdmin.renderLogo(data.logoInfo);
                     miniAdmin.renderClear(options.clearUrl);
+                    miniAdmin.renderHome(data.homeInfo);
                     miniAdmin.renderAnim(options.pageAnim);
                     miniAdmin.listen({
                         homeInfo:data.homeInfo,
@@ -56,18 +60,20 @@ layui.define(["jquery", "miniMenu", "element","miniPage", "miniTheme"], function
                         menuChildOpen: options.menuChildOpen
                     });
                     miniPage.render({
-                        homeInfo:data.homeInfo,
-                        menuList: data.menuInfo,
+                        filter: 'layuiminiTab',
+                        urlHashLocation: options.urlHashLocation,
                         multiModule: options.multiModule,
-                        renderPageVersion: options.renderPageVersion,
                         menuChildOpen: options.menuChildOpen,
+                        maxTabNum: options.maxTabNum,
+                        menuList: data.menuInfo,
+                        homeInfo: data.homeInfo,
                         listenSwichCallback: function () {
                             miniAdmin.renderDevice();
                         }
                     });
                     miniTheme.render({
                         bgColorDefault: options.bgColorDefault,
-                        listen: true,
+                        listen: true
                     });
                     miniAdmin.deleteLoader(options.loadingTime);
                 }
@@ -75,7 +81,17 @@ layui.define(["jquery", "miniMenu", "element","miniPage", "miniTheme"], function
                 miniAdmin.error('菜单接口有误');
             });
         },
-
+        /**
+         * 初始化首页
+         * @param data
+         */
+        renderHome: function (data) {
+            sessionStorage.setItem('layuiminiHomeHref', data.href);
+            $('#layuiminiHomeTabId').html('<span class="layuimini-tab-active"></span><span class="disable-close">' + data.title + '</span><i class="layui-icon layui-unselect layui-tab-close">ဆ</i>');
+            $('#layuiminiHomeTabId').attr('lay-id', data.href);
+            $('#layuiminiHomeTabIframe').html('<div style="height: 100%;width: 100%;margin: 0;padding: 0" >' +
+                  miniPage.getHrefContent(data.href) + '</div>');
+        },
         /**
          * 初始化logo
          * @param data
@@ -258,8 +274,7 @@ layui.define(["jquery", "miniMenu", "element","miniPage", "miniTheme"], function
              * 刷新
              */
             $('body').on('click', '[data-refresh]', function () {
-                miniPage.refresh(options);
-                miniAdmin.success('刷新成功');
+                miniPage.refresh();
             });
 
             /**
