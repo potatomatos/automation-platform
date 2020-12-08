@@ -103,14 +103,16 @@ public class SysMenuController {
     public MenuVo getById(@PathVariable("id") Integer id) {
         SysMenu sysMenu = sysMenuService.getById(id);
         MenuVo menuVo=new MenuVo();
-        menuVo.setId(sysMenu.getId());
-        menuVo.setPId(sysMenu.getPId());
-        menuVo.setHref(sysMenu.getHref());
-        menuVo.setTitle(sysMenu.getTitle());
-        menuVo.setIcon(sysMenu.getIcon());
-        menuVo.setTarget(sysMenu.getTarget());
-        menuVo.setSort(sysMenu.getSort());
-        menuVo.setState(sysMenu.getState());
+        if (sysMenu!=null){
+            menuVo.setId(sysMenu.getId());
+            menuVo.setPId(sysMenu.getPId());
+            menuVo.setHref(sysMenu.getHref());
+            menuVo.setTitle(sysMenu.getTitle());
+            menuVo.setIcon(sysMenu.getIcon());
+            menuVo.setTarget(sysMenu.getTarget());
+            menuVo.setSort(sysMenu.getSort());
+            menuVo.setState(sysMenu.getState());
+        }
         return menuVo;
     }
 

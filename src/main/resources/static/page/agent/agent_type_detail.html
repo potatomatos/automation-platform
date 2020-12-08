@@ -1,3 +1,12 @@
+<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+<link rel="stylesheet" href="/static/css/public.css" media="all">
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
 <style>
 	.jsoneditor-menu {
 		background-color: #6c928c;
@@ -91,12 +100,14 @@
 		</div>
 	</div>
 </div>
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
     layui.use(['form', 'jsoneditor','request'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
-            miniPage = layui.miniPage,
+            miniTab = layui.miniTab,
             request = layui.request,
             jsoneditor = layui.jsoneditor;
 
@@ -155,13 +166,20 @@
          * */
         $(".edit-btn").click(function () {
             sessionStorage.setItem('agent_type_id',$(".id").val())
-            miniPage.hashChange('static/page/agent/edit_agent_type.html')
+            miniTab.openNewTabByIframe({
+                title:'编辑'+$('.agentTypeName').html(),
+                href:'static/page/agent/edit_agent_type.html?id='+$(".id").val()
+            })
         });
         /**
          * 返回按钮事件
          */
         $(".back-btn").click(function () {
-            window.history.go(-1);
+            miniTab.deleteCurrentByIframe();
+            miniTab.openNewTabByIframe({
+                title:'agent定义',
+                href:'static/page/agent/agent_type.html'
+            })
         });
     });
 </script>

@@ -20,6 +20,8 @@
 		</div>
 	</div>
 </div>
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <!-- 操作列 -->
 <script type="text/html" id="auth-state">
 	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
@@ -31,7 +33,7 @@
         var table = layui.table;
         var treetable = layui.treetable;
         var layer = layui.layer;
-        var miniPage = layui.miniPage;
+        var miniTab = layui.miniTab;
         var miniAdmin = layui.miniAdmin;
 
         // 渲染表格
@@ -118,8 +120,8 @@
                     break;
                 }
                 case 'add': {
-                    var content = miniPage.getHrefContent('/static/page/menu/add.html');
-                    var openWH = miniPage.getOpenWidthHeight();
+                    var content = miniTab.getHrefContent('/static/page/menu/add.html');
+                    var openWH = miniTab.getOpenWidthHeight();
                     var index = layer.open({
                         title: '添加菜单',
                         type: 1,
@@ -173,8 +175,8 @@
             } else if (layEvent === 'edit') {
                 //修改
                 window.sessionStorage.setItem("menuEditId",data.id)
-                var content = miniPage.getHrefContent('/static/page/menu/edit.html');
-                var openWH = miniPage.getOpenWidthHeight();
+                var content = miniTab.getHrefContent('/static/page/menu/edit.html');
+                var openWH = miniTab.getOpenWidthHeight();
                 var index = layer.open({
                     title: '修改菜单',
                     type: 1,

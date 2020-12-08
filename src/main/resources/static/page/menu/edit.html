@@ -102,13 +102,16 @@
 		</div>
 	</form>
 </div>
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'table', 'iconPickerFa', 'tree'], function () {
+    layui.use(['form', 'table', 'iconPickerFa', 'tree', 'request'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
             iconPickerFa = layui.iconPickerFa,
             tree = layui.tree,
+            request = layui.request,
             miniAdmin = layui.miniAdmin;
         /**
          * 初始化表单，要加上，不然刷新部分组件可能会不加载
@@ -117,8 +120,10 @@
         // 当前弹出层，防止ID被覆盖
         var parentIndex = layer.index;
 
-        //获取表单数据
-        $.getJSON('/sysMenu/' + sessionStorage.getItem("menuEditId"), function (res) {
+        /**
+         * 获取表单数据
+         * */
+        request.get('/sysMenu/' + sessionStorage.getItem("menuEditId"), {}, function (res) {
             if (res.code === 0) {
                 //表单初始赋值
                 form.val('menuForm', {
@@ -132,53 +137,32 @@
                     "target": res.data.target
                 })
                 $("#iconView").attr("class", res.data.icon);
-                $.getJSON('/sysMenu/' + res.data.pid, function (res) {
-                    $("#pidText").val(res.data.title);
+                request.get('/sysMenu/' + res.data.pid, {}, function (result) {
+                    if (result.data)
+                        $("#pidText").val(result.data.title);
                 })
-            } else {
-                layer.msg(res.msg, {icon: 5});
             }
-        }).fail(function () {
-            layer.msg('后台发生错误', {icon: 5});
-        });
+        }, function () {
+            layer.msg('服务器发生错误', {icon: 5});
+        })
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            $.ajax({
-                url: '/sysMenu/update/' + sessionStorage.getItem("menuEditId"),
-                type: 'post',
-                // contentType: "json",
-                data: data.field,
-                success: function (res) {
-                    if (res.code === 0) {
-                        //重新渲染菜单
-                        var options = {
-                            iniUrl: "sysMenu/menu",    // 初始化接口
-                            clearUrl: "api/clear.json", // 缓存清理接口
-                            renderPageVersion: true,    // 初始化页面是否加版本号
-                            bgColorDefault: false,      // 主题默认配置
-                            multiModule: true,          // 是否开启多模块
-                            menuChildOpen: false,       // 是否默认展开菜单
-                            loadingTime: 0,             // 初始化加载时间
-                            pageAnim: true,             // 切换菜单动画
-                        };
-                        miniAdmin.render(options);
-                        var index = layer.alert('保存成功', {icon: 6}, function () {
-                            // 关闭弹出层
-                            layer.close(index);
-                            layer.close(parentIndex);
-                        });
-                    } else {
-                        miniAdmin.error(res.msg)
-                    }
-                },
-                error: function () {
-                    miniAdmin.error('服务器发生错误');
+            request.post('/sysMenu/update/' + sessionStorage.getItem("menuEditId"), data.field, function (res) {
+                if (res.code === 0) {
+                    var index = layer.alert('保存成功', {icon: 6}, function () {
+                        // 关闭弹出层
+                        layer.close(index);
+                        layer.close(parentIndex);
+                    });
+                } else {
+                    miniAdmin.error(res.msg)
                 }
+            }, function () {
+                miniAdmin.error('服务器发生错误');
             })
             return false;
-        });
-
+        })
         /**
          * 图标选择器
          */
@@ -208,37 +192,31 @@
         /**
          * 菜单选择器
          */
-        $.ajax({
-            url: '/sysMenu/menuTree',
-            type: 'get',
-            contentType: "json",
-            success: function (res) {
-                if (res.code === 0) {
-                    tree.render({
-                        elem: '#menuTreeMore',
-                        data: res.data,
-                        click: function (obj) {
-                            console.log(obj.data); //得到当前点击的节点数据
-                            $("#pidText").val(obj.data.title);
-                            $("#pid").val(obj.data.id);
-                        }
-                    });
-                    //下拉交互显示
-                    $(".downpanel").on("click", ".layui-select-title", function (e) {
-                        $(".downpanel").not($(this).parents(".downpanel")).removeClass("layui-form-selected");
-                        $(this).parents(".downpanel").toggleClass("layui-form-selected");
-                        layui.stope(e);
-                    }).on("click", "dl i", function (e) {
-                        layui.stope(e);
-                    });
-                    $(document).on("click", function (e) {
-                        $(".downpanel").removeClass("layui-form-selected");
-                    });
-                }
-            },
-            error: function (e) {
-                console.log(e)
+        request.get('/sysMenu/menuTree', {}, function (res) {
+            if (res.code === 0) {
+                tree.render({
+                    elem: '#menuTreeMore',
+                    data: res.data,
+                    click: function (obj) {
+                        console.log(obj.data); //得到当前点击的节点数据
+                        $("#pidText").val(obj.data.title);
+                        $("#pid").val(obj.data.id);
+                    }
+                });
+                //下拉交互显示
+                $(".downpanel").on("click", ".layui-select-title", function (e) {
+                    $(".downpanel").not($(this).parents(".downpanel")).removeClass("layui-form-selected");
+                    $(this).parents(".downpanel").toggleClass("layui-form-selected");
+                    layui.stope(e);
+                }).on("click", "dl i", function (e) {
+                    layui.stope(e);
+                });
+                $(document).on("click", function (e) {
+                    $(".downpanel").removeClass("layui-form-selected");
+                });
             }
-        });
+        }, function () {
+            console.log(e);
+        })
     });
 </script>

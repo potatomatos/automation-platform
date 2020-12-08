@@ -20,8 +20,12 @@ layui.define( [],function (exports) {
                     success(result);
                 },
                 //请求失败，包含具体的错误信息
-                error: function (e) {
-                    error(e);
+                error: function (xhr, textstatus, thrown) {
+                    if (error){
+                        error(xhr, textstatus, thrown);
+                    }else {
+                        layer.msg('服务器发生错误', {icon: 5});
+                    }
                 }
             })
         },
@@ -44,8 +48,12 @@ layui.define( [],function (exports) {
                     success(result);
                 },
                 //请求失败，包含具体的错误信息
-                error: function (e) {
-                    error(e);
+                error: function (xhr, textstatus, thrown) {
+                    if (error){
+                        error(xhr, textstatus, thrown);
+                    }else {
+                        layer.msg('服务器发生错误', {icon: 5});
+                    }
                 }
             })
         },
@@ -67,8 +75,12 @@ layui.define( [],function (exports) {
                     success(result);
                 },
                 //请求失败，包含具体的错误信息
-                error: function (e) {
-                    error(e);
+                error: function (xhr, textstatus, thrown) {
+                    if (error){
+                        error(xhr, textstatus, thrown);
+                    }else {
+                        layer.msg('服务器发生错误', {icon: 5});
+                    }
                 }
             })
         },
@@ -91,8 +103,12 @@ layui.define( [],function (exports) {
                     success(result);
                 },
                 //请求失败，包含具体的错误信息
-                error: function (e) {
-                    error(e);
+                error: function (xhr, textstatus, thrown) {
+                    if (error){
+                        error(xhr, textstatus, thrown);
+                    }else {
+                        layer.msg('服务器发生错误', {icon: 5});
+                    }
                 }
             })
         }

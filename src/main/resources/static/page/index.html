@@ -29,7 +29,7 @@
 <div class="layui-layout layui-layout-admin">
 
     <div class="layui-header header">
-        <div class="layui-logo layuimini-logo layuimini-back-home"></div>
+        <div class="layui-logo layuimini-logo"></div>
 
         <div class="layuimini-header-content">
             <a>
@@ -99,7 +99,7 @@
     <!-- 移动导航 -->
     <div class="layuimini-site-mobile"><i class="layui-icon"></i></div>
 
-    <div class="layui-body layuimini-content-page">
+    <div class="layui-body">
 
         <div class="layuimini-tab layui-tab-rollTool layui-tab" lay-filter="layuiminiTab" lay-allowclose="true">
             <ul class="layui-tab-title">
@@ -128,19 +128,18 @@
         </div>
 
     </div>
-
 </div>
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=2.0.0" charset="utf-8"></script>
 <script>
-    layui.use(['jquery', 'layer', 'miniAdmin', 'miniTongji'], function () {
+    layui.use(['jquery', 'layer', 'miniAdmin','miniTongji'], function () {
         var $ = layui.jquery,
             layer = layui.layer,
             miniAdmin = layui.miniAdmin;
 
         var options = {
             iniUrl: "/sysMenu/menu",    // 初始化接口
-            clearUrl: "api/clear.json", // 缓存清理接口
+            clearUrl: "/static/api/clear.json", // 缓存清理接口
             urlHashLocation: true,      // 是否打开hash定位
             bgColorDefault: false,      // 主题默认配置
             multiModule: true,          // 是否开启多模块
