@@ -53,7 +53,7 @@ layui.define(["element", "layer", "jquery"], function (exports) {
             if (options.isIframe) ele = parent.layui.element;
             ele.tabAdd('layuiminiTab', {
                 title: '<span class="layuimini-tab-active"></span><span>' + options.title + '</span><i class="layui-icon layui-unselect layui-tab-close">ဆ</i>' //用于演示
-                , content: miniPage.getHrefContent(options.href)
+                , content: '<iframe width="100%" height="100%" frameborder="no" border="0" marginwidth="0" marginheight="0"   src="' + options.href + '"></iframe>'
                 , id: options.tabId
             });
             $('.layuimini-menu-left').attr('layuimini-tab-tag', 'add');
