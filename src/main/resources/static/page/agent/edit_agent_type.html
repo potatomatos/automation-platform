@@ -1,30 +1,33 @@
-<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
-<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
-<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
-<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
-<link rel="stylesheet" href="/static/css/public.css" media="all">
-<!--[if lt IE 9]>
-<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
-<style>
-	.jsoneditor-menu {
-		background-color: #6c928c;
-		border-bottom: #6c928c
-	}
+<html lang="zh">
+<head>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		.jsoneditor-menu {
+			background-color: #6c928c;
+			border-bottom: #6c928c
+		}
 
-	.jsoneditor {
-		border: thin solid #6c928c;
-	}
+		.jsoneditor {
+			border: thin solid #6c928c;
+		}
 
-	#descriptionEditor .w-e-text-container {
-		height: 778px !important; /*!important是重点，因为原div是行内样式设置的高度300px*/
-	}
+		#descriptionEditor .w-e-text-container {
+			height: 778px !important; /*!important是重点，因为原div是行内样式设置的高度300px*/
+		}
 
-	.layui-form-select dl {
-		z-index: 99999;
-	}
-</style>
+		.layui-form-select dl {
+			z-index: 99999;
+		}
+	</style>
+</head>
+<body>
 <div class="layuimini-main">
 	<div class="layui-form layuimini-form" lay-filter="agentTypeForm">
 		<input type="hidden" name="id">
@@ -133,12 +136,11 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'jsoneditor', 'wangEditor', 'request'], function () {
+    layui.use(['form', 'jsoneditor', 'wangEditor', 'request', 'miniTab','miniAdmin'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
             miniAdmin = layui.miniAdmin,
-            miniTab = layui.miniTab,
             wangEditor = layui.wangEditor,
             request = layui.request,
             jsoneditor = layui.jsoneditor;
@@ -270,15 +272,10 @@
         var parentIndex = layer.index;
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            layer.confirm('确认修改', function () {
+            parent.layer.confirm('确认修改', function () {
                 request.post('/agentType/modify', data.field, function (res) {
                     if (res.code === 0) {
-                        var index = layer.alert('保存成功', {icon: 6}, function () {
-                            // 关闭弹出层
-                            layer.close(index);
-                            layer.close(parentIndex);
-                            miniTab.deleteCurrentByIframe();
-                        });
+                       parent.layer.alert('保存成功', {icon: 6});
                     } else {
                         miniAdmin.error(res.msg)
                     }
@@ -289,5 +286,6 @@
             return false;
         });
     });
-
 </script>
+</body>
+</html>

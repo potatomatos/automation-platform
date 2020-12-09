@@ -1,26 +1,31 @@
-<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
-<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
-<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
-<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
-<link rel="stylesheet" href="/static/css/public.css" media="all">
-<!--[if lt IE 9]>
-<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
-<style>
-	.jsoneditor-menu {
-		background-color: #6c928c;
-		border-bottom: #6c928c
-	}
+<html lang="zh">
+<head>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<title>代理类型详情</title>
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		.jsoneditor-menu {
+			background-color: #6c928c;
+			border-bottom: #6c928c
+		}
 
-	.jsoneditor {
-		border: thin solid #6c928c;
-	}
+		.jsoneditor {
+			border: thin solid #6c928c;
+		}
 
-	.layui-form-text {
-		padding: 9px 15px;
-	}
-</style>
+		.layui-form-text {
+			padding: 9px 15px;
+		}
+	</style>
+</head>
+<body>
 <div class="layuimini-main">
 	<div class="layui-form layuimini-form" lay-filter="agentTypeForm">
 		<input type="hidden" name="id" class="id">
@@ -103,7 +108,7 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'jsoneditor','request'], function () {
+    layui.use(['form', 'jsoneditor','request','miniTab'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
@@ -183,3 +188,6 @@
         });
     });
 </script>
+</body>
+</html>
+

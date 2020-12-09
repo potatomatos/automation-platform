@@ -1,5 +1,14 @@
+<html lang="zh">
+<head>
+	<title>添加菜单</title>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+</head>
+<body>
 <div class="layuimini-main">
-
 	<div class="layui-form layuimini-form">
 		<div class="layui-form-item">
 			<label class="layui-form-label">菜单名称</label>
@@ -9,7 +18,7 @@
 							type="text"
 							name="title"
 							lay-verify="required"
-							lay-reqtext="用户名不能为空"
+							lay-reqtext="菜单名称不能为空"
 							placeholder="请输入菜单名称"
 							value=""
 							class="layui-input">
@@ -26,7 +35,7 @@
 								type="text"
 								placeholder="请选择上级菜单"
 								value=""
-								class="layui-input">
+								class="layui-input"/>
 						<input type="hidden" name="pId" id="pid">
 						<i class="layui-edge"></i>
 					</div>
@@ -84,6 +93,8 @@
 		</div>
 	</div>
 </div>
+</body>
+
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
@@ -106,10 +117,10 @@
                 url: '/sysMenu/save',
                 type: 'post',
                 // contentType: "json",
-	            data:data.field,
+                data: data.field,
                 success: function (res) {
-					if (res.code===0){
-					    //重新渲染菜单
+                    if (res.code === 0) {
+                        //重新渲染菜单
                         var options = {
                             iniUrl: "sysMenu/menu",    // 初始化接口
                             clearUrl: "api/clear.json", // 缓存清理接口
@@ -121,16 +132,16 @@
                             pageAnim: true,             // 切换菜单动画
                         };
                         miniAdmin.render(options);
-                        var index = layer.alert('保存成功', {icon: 6},function () {
+                        var index = layer.alert('保存成功', {icon: 6}, function () {
                             // 关闭弹出层
                             layer.close(index);
                             layer.close(parentIndex);
                         });
-					}else {
-					    miniAdmin.error(res.msg)
-					}
+                    } else {
+                        miniAdmin.error(res.msg)
+                    }
                 },
-	            error: function () {
+                error: function () {
                     miniAdmin.error('服务器发生错误');
                 }
             })
@@ -200,3 +211,4 @@
 
     });
 </script>
+</html>

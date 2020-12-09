@@ -220,17 +220,6 @@ layui.define(["element", "layer", "jquery"], function (exports) {
             return content;
         },
         /**
-         * 获取弹出层的宽高
-         * @returns {jQuery[]}
-         */
-        getOpenWidthHeight: function () {
-            var clienWidth = $(".layuimini-content-page").width();
-            var clientHeight = $(".layuimini-content-page").height();
-            var offsetLeft = $(".layuimini-content-page").offset().left;
-            var offsetTop = $(".layuimini-content-page").offset().top;
-            return [clienWidth, clientHeight, offsetTop, offsetLeft];
-        },
-        /**
          * 监听
          * @param options
          */

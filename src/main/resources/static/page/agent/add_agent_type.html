@@ -1,27 +1,33 @@
-<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
-<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
-<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
-<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
-<link rel="stylesheet" href="/static/css/public.css" media="all">
-<!--[if lt IE 9]>
-<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
-<style>
-	.jsoneditor-menu{
-		background-color: #6c928c;
-		border-bottom:#6c928c
-	}
-	.jsoneditor{
-		border: thin solid #6c928c;
-	}
-	#descriptionEditor .w-e-text-container{
-		height: 778px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/
-	}
-	.layui-form-select dl{
-		z-index: 99999;
-	}
-</style>
+<html lang="zh">
+<head>
+	<title>添加类型</title>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		.jsoneditor-menu {
+			background-color: #6c928c;
+			border-bottom: #6c928c
+		}
+
+		.jsoneditor {
+			border: thin solid #6c928c;
+		}
+
+		#descriptionEditor .w-e-text-container {
+			height: 778px !important; /*!important是重点，因为原div是行内样式设置的高度300px*/
+		}
+
+		.layui-form-select dl {
+			z-index: 99999;
+		}
+	</style>
+</head>
+<body>
+
 <div class="layuimini-main">
 	<div class="layui-form layuimini-form">
 		<div class="layui-form-item">
@@ -129,7 +135,7 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'wangEditor', 'jsoneditor','request'], function () {
+    layui.use(['form', 'wangEditor', 'jsoneditor', 'request'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
@@ -141,7 +147,7 @@
         /**
          * 获取下拉框
          * */
-        request.get('/agentType/schedules/',{},function (res) {
+        request.get('/agentType/schedules/', {}, function (res) {
             if (res.code === 0) {
                 $.each(res.data, function (index, item) {
                     $('#defaultSchedule').append(new Option(item.desc, item.code));// 下拉菜单里添加元素
@@ -150,7 +156,7 @@
             } else {
                 layer.msg(res.msg, {icon: 5});
             }
-        },function () {
+        }, function () {
             layer.msg('后台发生错误', {icon: 5});
         })
 
@@ -162,18 +168,18 @@
         var parentIndex = layer.index;
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            request.post('/agentType/save',data.field,function (res) {
+            request.post('/agentType/save', data.field, function (res) {
                 if (res.code === 0) {
                     var index = layer.alert('保存成功', {icon: 6}, function () {
                         // 关闭弹出层
                         layer.close(index);
                         layer.close(parentIndex);
-                        location.hash='/static/page/agent/agent_type.html';
+                        location.hash = '/static/page/agent/agent_type.html';
                     });
                 } else {
                     miniAdmin.error(res.msg)
                 }
-            },function () {
+            }, function () {
                 miniAdmin.error('服务器发生错误');
             })
             return false;
@@ -238,21 +244,21 @@
          */
         var options1 = {
             mode: 'code',
-            modes: ['code','tree'],
+            modes: ['code', 'tree'],
             onError: function (err) {
                 layer.msg(err.toString());
             },
-            onChangeText:function(json){
+            onChangeText: function (json) {
                 $("#optionsTemplate").val(json);
             }
         }
         var options2 = {
             mode: 'code',
-            modes: ['code','tree'],
+            modes: ['code', 'tree'],
             onError: function (err) {
                 layer.msg(err.toString());
             },
-            onChangeText:function(json){
+            onChangeText: function (json) {
                 $("#optionsSchema").val(json);
             }
         }
@@ -260,3 +266,5 @@
         jsoneditor.render('#optionsSchemaEditor', options2);
     });
 </script>
+</body>
+</html>
