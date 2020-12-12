@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>场景列表</title>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<style>
+		.layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
+			height: 34px;
+			line-height: 34px;
+			padding: 0 8px;
+		}
+	</style>
+</head>
+<body>
+<div class="layuimini-container layuimini-page-anim">
+	<div class="layuimini-main">
+		<blockquote class="layui-elem-quote layui-text">
+			场景就是代理分组组，通过场景您可以组织代理，导入和导出要共享的代理集合。
+		</blockquote>
+		<fieldset class="table-search-fieldset">
+			<legend></legend>
+			<div style="margin: 10px 10px 10px 10px">
+				<form class="layui-form layui-form-pane" action="">
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<label class="layui-form-label">场景名称</label>
+							<div class="layui-input-inline">
+								<input type="text" name="name" autocomplete="off" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-inline">
+							<button type="submit" class="layui-btn layui-btn-primary" lay-submit
+							        lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</fieldset>
+		<script type="text/html" id="scenarioToolBar">
+			<div class="layui-btn-container">
+				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="new">新建场景</button>
+				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="import">导入场景</button>
+			</div>
+		</script>
+		<table id="scenarioTable" class="layui-table" lay-filter="scenarioTable"></table>
+	</div>
+</div>
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<!-- 操作列 -->
+<script type="text/html" id="operation">
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">详情</a>
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="share">分享</a>
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['table', 'treetable', 'miniTab', 'miniAdmin'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        var miniTab = layui.miniTab;
+        var miniAdmin = layui.miniAdmin;
+
+        // 渲染表格
+        // layer.load(2);
+        table.render({
+            elem: '#scenarioTable',
+            url: '/scenarios',
+            toolbar: '#scenarioToolBar',
+            defaultToolbar: null,
+            cols: [[
+                {
+                    field: 'name',
+                    templet: function (d) {
+                        return '<span style="color: '+d.tagFgColor+';background-color: '+d.tagBgColor+'">' +
+		                        '<i class="'+d.icon+'"></i>'+
+	                        '</span>' +
+	                        '<a href="#">'+d.name+'</a>';
+                    },
+                    title: '名称',
+	                sort:true
+                },
+                {
+                    templet: function (d) {
+                        return  '<a href="#">'+d.agentCount+'个代理</a>';
+                    },
+                    title: '代理数量'
+                },
+                {
+                    templet: function (d) {
+                        return  '<span>'+(d.isPublic===0?"否":"是")+'</span>';
+                    },
+                    title: '是否公开'
+                },
+                {title: '操作', minWidth: 150, toolbar: '#operation', align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: true,
+            skin: 'line',
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+        /**
+         * 监听搜索操作
+         */
+        form.on('submit(data-search-btn)', function (data) {
+            console.log(data)
+            //执行搜索重载
+            table.reload('scenarioTable', {
+                page: {
+                    curr: 1
+                }
+                , where:data.field
+            }, 'data');
+            return false;
+        });
+
+        table.on('toolbar(scenarioTable)', function (obj) {
+            switch (obj.event) {
+                case 'import': {
+                    console.log('导入')
+                    break;
+                }
+                case 'new': {
+                    console.log('新建')
+                    break;
+                }
+            }
+        });
+
+        //监听工具条
+        table.on('tool(scenarioTable)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+
+            if (layEvent === 'detail') {
+                //详情
+                console.log('详情')
+            } else if (layEvent === 'edit') {
+                //编辑
+                console.log('编辑')
+            } else if (layEvent === 'share') {
+                //分享
+                console.log('分享')
+            } else if (layEvent === 'del') {
+                //删除
+                console.log('删除')
+            }
+        });
+    });
+</script>
+</body>
+</html>

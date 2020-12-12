@@ -1,6 +1,9 @@
 package cn.cxnxs.webspider.web.service;
 
 import cn.cxnxs.webspider.web.entity.Scenarios;
+import cn.cxnxs.webspider.web.vo.ScenariosVo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -13,4 +16,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IScenariosService extends IService<Scenarios> {
 
+    /**
+     * 分页获取场景
+     * @param scenariosVo
+     * @return
+     */
+    IPage<ScenariosVo> getList(Page<ScenariosVo> page, ScenariosVo scenariosVo);
 }
