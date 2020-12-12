@@ -33,7 +33,7 @@
 	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 <script>
-    layui.use(['table', 'treetable','miniTab'], function () {
+    layui.use(['table', 'treetable','miniTab','miniAdmin'], function () {
         var $ = layui.jquery;
         var table = layui.table;
         var treetable = layui.treetable;
@@ -74,6 +74,7 @@
                     },
                     title: '菜单图标'
                 },
+
                 {
                     templet: function (d) {
                         if (d.pid === 0) {
