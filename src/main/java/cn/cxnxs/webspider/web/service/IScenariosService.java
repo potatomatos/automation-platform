@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.Map;
+
 /**
  * <p>
  * 任务场景 服务类
@@ -22,4 +24,18 @@ public interface IScenariosService extends IService<Scenarios> {
      * @return
      */
     IPage<ScenariosVo> getList(Page<ScenariosVo> page, ScenariosVo scenariosVo);
+
+    /**
+     * 获取详情
+     * @param id none
+     * @return
+     */
+    ScenariosVo getDetail(Integer id);
+
+    /**
+     * 保存数据
+     * @param scenariosVo
+     * @return
+     */
+    Map<String,String> saveScenarios(ScenariosVo scenariosVo);
 }

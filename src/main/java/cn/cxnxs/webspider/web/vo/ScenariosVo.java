@@ -2,6 +2,7 @@ package cn.cxnxs.webspider.web.vo;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p></p>
@@ -65,6 +66,29 @@ public class ScenariosVo implements Serializable {
      */
     private Long agentCount;
 
+    /**
+     * 包含的代理
+     */
+    private List<AgentVo> agents;
+
+    private List<Integer> agentIds;
+
+    public List<Integer> getAgentIds() {
+        return agentIds;
+    }
+
+    public void setAgentIds(List<Integer> agentIds) {
+        this.agentIds = agentIds;
+    }
+
+    public List<AgentVo> getAgents() {
+        return agents;
+    }
+
+    public void setAgents(List<AgentVo> agents) {
+        this.agents = agents;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -97,11 +121,11 @@ public class ScenariosVo implements Serializable {
         this.description = description;
     }
 
-    public Boolean getPublic() {
+    public Boolean getIsPublic() {
         return isPublic;
     }
 
-    public void setPublic(Boolean aPublic) {
+    public void setIsPublic(Boolean aPublic) {
         isPublic = aPublic;
     }
 

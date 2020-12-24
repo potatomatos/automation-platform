@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
  * @author mengjinyuan
  * @since 2020-11-10
  */
-public class AgentVo implements Serializable{
+public class AgentVo implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * 主键
@@ -42,6 +42,8 @@ public class AgentVo implements Serializable{
      * 服务名称
      */
     private String name;
+
+    private Integer value;
 
     /**
      * 服务运行周期计划
@@ -261,6 +263,10 @@ public class AgentVo implements Serializable{
 
     public void setKeepDataTimeStr(String keepDataTimeStr) {
         this.keepDataTimeStr = keepDataTimeStr;
+    }
+
+    public Integer getValue() {
+        return this.id;
     }
 
     @Override

@@ -4,16 +4,15 @@ package cn.cxnxs.webspider.web.controller;
 import cn.cxnxs.webspider.web.service.IAgentService;
 import cn.cxnxs.webspider.web.service.IScenariosService;
 import cn.cxnxs.webspider.web.vo.PageResult;
+import cn.cxnxs.webspider.web.vo.ResponseResult;
 import cn.cxnxs.webspider.web.vo.ScenariosVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,6 +40,18 @@ public class ScenariosController {
         PageResult<List<ScenariosVo>> res=new PageResult<>(pagination.getTotal());
         res.setData(result.getRecords());
         return res;
+    }
+
+    @ResponseResult
+    @RequestMapping("detail/{id}")
+    public ScenariosVo detail(@PathVariable("id") Integer id){
+        return scenariosService.getDetail(id);
+    }
+
+    @ResponseResult
+    @RequestMapping("save")
+    public Map<String, String> save(ScenariosVo scenariosVo){
+        return scenariosService.saveScenarios(scenariosVo);
     }
 }
 

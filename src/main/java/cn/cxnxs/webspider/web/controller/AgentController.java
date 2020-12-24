@@ -1,16 +1,8 @@
 package cn.cxnxs.webspider.web.controller;
 
 
-import cn.cxnxs.webspider.web.vo.AgentTypeVo;
-import cn.cxnxs.webspider.web.vo.AgentVo;
-import cn.cxnxs.webspider.web.vo.ResponseResult;
-import com.alibaba.fastjson.JSONArray;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -25,9 +17,10 @@ import java.util.Map;
 public class AgentController {
 
 
-    public Map<String,Object> getAgentConfig(){
+
+    /*public Map<String,Object> getAgentConfig(){
 
         return null;
-    }
+    }*/
 }
 
