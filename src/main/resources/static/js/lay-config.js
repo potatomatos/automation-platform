@@ -31,6 +31,7 @@ layui.config({
     jsoneditor: 'jsoneditor-lay/jsoneditor', // json编辑器
     request: 'request/request', // ajax请求
     pace: 'pace/pace', // pace
+    xmSelect: 'xmSelect/xm-select', // 选择框
 });
 layui.use(['pace'],function (pace) {
     pace.start({
