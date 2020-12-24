@@ -80,9 +80,9 @@
                 {
                     field: 'name',
                     templet: function (d) {
-                        return '<span style="color: '+d.tagFgColor+';background-color: '+d.tagBgColor+'">' +
+                        return '<span style="font-size:18px;color: '+d.tagFgColor+';background-color: '+d.tagBgColor+'">' +
 		                        '<i class="'+d.icon+'"></i>'+
-	                        '</span>' +
+	                        '</span>&nbsp;&nbsp;' +
 	                        '<a href="#">'+d.name+'</a>';
                     },
                     title: '名称',
@@ -148,7 +148,11 @@
                 console.log('详情')
             } else if (layEvent === 'edit') {
                 //编辑
-                console.log('编辑')
+                sessionStorage.setItem('scenario_id',data.id)
+                miniTab.openNewTabByIframe({
+                    title:'编辑'+data.name,
+                    href:'static/page/scenario/edit.html?id='+data.id
+                })
             } else if (layEvent === 'share') {
                 //分享
                 console.log('分享')
