@@ -2,7 +2,12 @@ layui.define( [],function (exports) {
     var $=layui.$;
     var layer=layui.layer;
     var request= {
-        get: function (url, data, success, error) {
+        get: function (url, data, success, error,loading) {
+            if (loading){
+                var index = layer.load(1, {
+                    shade: [0.1,'#fff'] //0.1透明度的白色背景
+                });
+            }
             $.ajax({
                 //请求方式
                 type: "get",
@@ -12,6 +17,9 @@ layui.define( [],function (exports) {
                 data: data,
                 //请求成功
                 success: function (result) {
+                    if (loading){
+                        layer.close(index);
+                    }
                     if (result.code === 50008 || result.code === 50014) {
                         layer.msg(result.msg, {icon: 2, shade: this.shade, scrollbar: false, time: 3000, shadeClose: true});
                         location='/login';
@@ -21,6 +29,8 @@ layui.define( [],function (exports) {
                 },
                 //请求失败，包含具体的错误信息
                 error: function (xhr, textstatus, thrown) {
+                    if (loading)
+                        layer.close(index);
                     if (error){
                         error(xhr, textstatus, thrown);
                     }else {
@@ -29,7 +39,13 @@ layui.define( [],function (exports) {
                 }
             })
         },
-        syncGet: function (url, data, success, error) {
+        syncGet: function (url, data, success, error,loading) {
+            if (loading){
+                var index = layer.load(1, {
+                    shade: [0.1,'#fff'] //0.1透明度的白色背景
+                });
+            }
+
             $.ajax({
                 //请求方式
                 type: "get",
@@ -45,10 +61,14 @@ layui.define( [],function (exports) {
                         location='/login';
                         return;
                     }
+                    if (loading)
+                        layer.close(index);
                     success(result);
                 },
                 //请求失败，包含具体的错误信息
                 error: function (xhr, textstatus, thrown) {
+                    if (loading)
+                        layer.close(index);
                     if (error){
                         error(xhr, textstatus, thrown);
                     }else {
@@ -57,7 +77,12 @@ layui.define( [],function (exports) {
                 }
             })
         },
-        post: function (url, data, success, error) {
+        post: function (url, data, success, error,loading) {
+            if (loading){
+                var index = layer.load(1, {
+                    shade: [0.1,'#fff'] //0.1透明度的白色背景
+                });
+            }
             $.ajax({
                 //请求方式
                 type: "post",
@@ -67,6 +92,8 @@ layui.define( [],function (exports) {
                 data: data,
                 //请求成功
                 success: function (result) {
+                    if (loading)
+                        layer.close(index);
                     if (result.code === 50008 || result.code === 50014) {
                         layer.msg(result.msg, {icon: 2, shade: this.shade, scrollbar: false, time: 3000, shadeClose: true});
                         location='/login';
@@ -76,6 +103,8 @@ layui.define( [],function (exports) {
                 },
                 //请求失败，包含具体的错误信息
                 error: function (xhr, textstatus, thrown) {
+                    if (loading)
+                        layer.close(index);
                     if (error){
                         error(xhr, textstatus, thrown);
                     }else {
@@ -84,7 +113,12 @@ layui.define( [],function (exports) {
                 }
             })
         },
-        syncPost: function (url, data, success, error) {
+        syncPost: function (url, data, success, error,loading) {
+            if (loading){
+                var index = layer.load(1, {
+                    shade: [0.1,'#fff'] //0.1透明度的白色背景
+                });
+            }
             $.ajax({
                 //请求方式
                 type: "post",
@@ -95,6 +129,8 @@ layui.define( [],function (exports) {
                 data: data,
                 //请求成功
                 success: function (result) {
+                    if (loading)
+                        layer.close(index);
                     if (result.code === 50008 || result.code === 50014) {
                         layer.msg(result.msg, {icon: 2, shade: this.shade, scrollbar: false, time: 3000, shadeClose: true});
                         location='/login';
@@ -104,6 +140,8 @@ layui.define( [],function (exports) {
                 },
                 //请求失败，包含具体的错误信息
                 error: function (xhr, textstatus, thrown) {
+                    if (loading)
+                        layer.close(index);
                     if (error){
                         error(xhr, textstatus, thrown);
                     }else {

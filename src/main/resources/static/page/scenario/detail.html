@@ -1,0 +1,151 @@
+<html lang="zh">
+<head>
+	<title>编辑场景</title>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		#agents li{
+			line-height: 40px;
+		}
+		#agents a{
+			color: #428BCA;
+			text-decoration-color: #428BCA;
+			text-decoration-line:underline;
+		}
+		#agents a:hover {
+			text-decoration-line: none;
+		}
+		.layui-form-text{
+			padding: 9px 15px;
+			font-weight: 400;
+			line-height: 20px;
+			text-align: left;
+		}
+		#iconView{
+			font-size: 24px;
+			line-height: 18px;
+		}
+	</style>
+</head>
+<body>
+<div class="layuimini-main">
+	<div class="layui-form layuimini-form" lay-filter="scenariosForm">
+		<div class="layui-form-item">
+			<label class="layui-form-label">名称</label>
+			<div class="layui-input-block">
+				<div class="layui-form-text name"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">字体颜色</label>
+			<div class="layui-input-block">
+				<div class="layui-btn layui-form-text tag-fg-color"
+				      style="min-width:45px;min-height: 45px"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">背景颜色</label>
+			<div class="layui-input-block">
+				<div class="layui-btn layui-form-text tag-bg-color"
+				      style="min-width:45px;min-height: 45px"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">说明</label>
+			<div class="layui-input-block">
+				<div class="layui-form-text description"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">是否分享</label>
+			<div class="layui-input-block">
+				<div class="layui-form-text isPublish"></div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label for="iconView" class="layui-form-label">图标</label>
+			<div class="layui-input-block">
+				<div class="layui-form-text">
+					<div id="iconView"></div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">代理</label>
+			<div class="layui-input-block">
+				<ul id="agents" class="xm-select-agents"></ul>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-normal edit">编辑</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script src="/static/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/static/lib/jq-module/paigusu.min.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'request', 'miniAdmin', 'iconPickerFa', 'xmSelect'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$,
+            miniTab = layui.miniTab,
+            request = layui.request;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        /**
+         * 获取表单数据
+         * */
+        request.get('/scenarios/detail/' + sessionStorage.getItem("scenario_id"), {}, function (res) {
+            if (res.code === 0) {
+                $(".name").html(res.data.name);
+                $("#iconView").attr("class",res.data.icon);
+                $(".description").html(res.data.description);
+                $(".isPublish").html(res.data.isPublish?'是':'否');
+                $('.tag-fg-color').css('background-color', res.data.tagFgColor);
+                $('.tag-bg-color').css('background-color', res.data.tagBgColor);
+
+                for (var i=0;res.data.agents&&i<res.data.agents.length;i++) {
+                    if (res.data.agents[i].selected) {
+                        var li=$('<li>' +
+                            '<a href="javascript:" onclick="agentDetail(' + res.data.agents[i].id + ',\'' + res.data.agents[i].name + '\')">' + res.data.agents[i].name + '</a>'
+                            +'</li>');
+                        $('#agents').append(li);
+                    }
+
+                }
+                window.agentDetail = function (id, name) {
+                    //TODO 新标签打开代理详情
+                    console.log('id', id, 'name', name);
+                }
+                $('.edit').click(function () {
+                    sessionStorage.setItem('scenario_id',res.data.id)
+                    miniTab.openNewTabByIframe({
+                        title:'编辑'+res.data.name,
+                        href:'static/page/scenario/edit.html?id='+res.data.id
+                    })
+                });
+            } else {
+                layer.msg(res.msg, {icon: 5});
+            }
+        }, function () {
+            layer.msg('服务器发生错误', {icon: 5});
+        });
+    });
+</script>
+</body>
+</html>

@@ -11,16 +11,6 @@
 	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 	<style>
-		/*.xm-select-agents {
-			vertical-align: top;
-			display: inline-block;
-			width: 300px;
-		}*/
-		/*#agents a{
-			color: #428BCA;
-			text-decoration-color: #428BCA;
-			text-decoration-line:underline;
-		}*/
 		#agents a:hover {
 			color: #428BCA;
 			text-decoration-color: #428BCA;
@@ -31,7 +21,6 @@
 <body>
 <div class="layuimini-main">
 	<div class="layui-form layuimini-form" lay-filter="scenariosForm">
-		<input type="hidden" name="id">
 		<div class="layui-form-item">
 			<label class="layui-form-label">名称</label>
 			<div class="layui-input-block">
@@ -48,7 +37,7 @@
 			<div class="layui-input-block">
 				<input type="hidden" name="tagFgColor" value="#000000">
 				<span class="layui-btn layui-btn-primary tag-fg-color"
-				      style="padding:0 12px;min-width:45px;"></span>
+				      style="padding:0 12px;min-width:45px;background-color: #000000"></span>
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -56,7 +45,7 @@
 			<div class="layui-input-block">
 				<input type="hidden" name="tagBgColor" value="#ffffff">
 				<span class="layui-btn layui-btn-primary tag-bg-color"
-				      style="padding:0 12px;min-width:45px;"></span>
+				      style="padding:0 12px;min-width:45px;background-color: #ffffff"></span>
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -69,18 +58,13 @@
 			<label class="layui-form-label">是否分享</label>
 			<div class="layui-input-block">
 				<input type="radio" name="isPublish" value="1" title="是">
-				<input type="radio" name="isPublish" value="0" title="否">
+				<input type="radio" name="isPublish" value="0" title="否" checked>
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label for="iconPicker" class="layui-form-label">图标</label>
-			<div class="layui-input-inline" style="font-size: 26px;text-align: center;line-height: 40px">
-				<div id="iconView"></div>
-			</div>
 			<div class="layui-input-inline">
-				<input type="hidden" id="icon" name="icon"
-				       lay-verify="required"
-				       lay-reqtext="图标不能为空">
+				<input type="hidden" name="icon" id="icon">
 				<input type="text"  lay-filter="icon" id="iconPicker" class="hide">
 			</div>
 		</div>
@@ -117,90 +101,75 @@
         form.render();
 
         /**
-         * 获取表单数据
-         * */
-        request.get('/scenarios/detail/' + sessionStorage.getItem("scenario_id"), {}, function (res) {
-            if (res.code === 0) {
-                //表单初始赋值
-	            var data={
-                    "id": res.data.id,
-                    "name": res.data.name,
-                    "tagFgColor": res.data.tagFgColor,
-                    "tagBgColor": res.data.tagBgColor,
-                    "description": res.data.description,
-                    "icon": res.data.icon,
-                    "isPublish":  res.data.isPublic?1:0
+         * 多选下拉框
+         */
+        var agents = xmSelect.render({
+            el: '#agents',
+            toolbar: {
+                show: true,
+                list: ['CLEAR']
+            },
+            filterable: true,
+            name: 'agentIds',
+            paging: true,
+            pageSize: 10,
+            theme: {
+                color: '#C1C1C1'
+            },
+            filterMethod: function (val, item, index, prop) {
+                if (val === item.value) {
+                    return true;
                 }
-                console.log('表单数据',data)
-                form.val('scenariosForm', data)
-                $("#iconView").attr("class", res.data.icon);
-                /**
-                 * 多选下拉框
-                 */
-                var agents = xmSelect.render({
-                    el: '#agents',
-                    toolbar: {
-                        show: true,
-                        list: ['CLEAR']
-                    },
-                    filterable: true,
-                    name: 'agentIds',
-                    paging: true,
-                    pageSize: 10,
-                    theme: {
-                        color: '#C1C1C1'
-                    },
-                    filterMethod: function (val, item, index, prop) {
-                        if (val === item.value) {
-                            return true;
+                return item.name.indexOf(val) !== -1;
+            },
+            model: {
+                label: {
+                    block: {
+                        template: function (item, sels) {
+                            return '<a href="javascript:" onclick="agentDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
                         }
-                        return item.name.indexOf(val) !== -1;
-                    },
-                    model: {
-                        label: {
-                            block: {
-                                template: function (item, sels) {
-                                    return '<a href="javascript:" onclick="agentDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
-                                }
-                            }
-                        }
-                    },
-                    data: []
-                })
+                    }
+                }
+            },
+            data: []
+        })
+
+	    //获取下拉列表
+        request.post('/agents/all', {}, function (res) {
+            if (res.code === 0) {
                 agents.update({
-                    data: res.data.agents,
+                    data: res.data,
                     autoRow: true
                 })
-                window.agentDetail = function (id, name) {
-                    //TODO 新标签打开代理详情
-                    console.log('id', id, 'name', name);
-                    setTimeout(function () {
-                        agents.closed();
-                    }, 10);
-                }
-                /**
-                 * 颜色选择器
-                 */
-                $('.tag-fg-color').css('background-color', res.data.tagFgColor);
-                $('.tag-fg-color').paigusu({
-                    color: res.data.tagFgColor
-                }, function (event, obj) {
-                    $(event).css('background-color', '#' + obj.hex);
-                    $('input[name="tagFgColor"]').val('#' + obj.hex);
-                });
-                $('.tag-bg-color').css('background-color', res.data.tagBgColor);
-                $('.tag-bg-color').paigusu({
-                    color: res.data.tagBgColor
-                }, function (event, obj) {
-                    $(event).css('background-color', '#' + obj.hex);
-                    $('input[name="tagBgColor"]').val('#' + obj.hex);
-                });
             } else {
-                layer.msg(res.msg, {icon: 5});
+                miniAdmin.error(res.msg)
             }
         }, function () {
-            layer.msg('服务器发生错误', {icon: 5});
-        },true);
+            miniAdmin.error('服务器发生错误');
+        },true)
+
+        window.agentDetail = function (id, name) {
+            //TODO 新标签打开代理详情
+            setTimeout(function () {
+                agents.closed();
+            }, 10);
+        }
+        /**
+         * 颜色选择器
+         */
+        $('.tag-fg-color').paigusu({
+            color: '#000000'
+        }, function (event, obj) {
+            $(event).css('background-color', '#' + obj.hex);
+            $('input[name="tagFgColor"]').val('#' + obj.hex);
+        });
+        $('.tag-bg-color').paigusu({
+            color: '#ffffff'
+        }, function (event, obj) {
+            $(event).css('background-color', '#' + obj.hex);
+            $('input[name="tagBgColor"]').val('#' + obj.hex);
+        });
+
         //监听提交
         form.on('submit(saveBtn)', function (data) {
             layer.confirm('确认保存', function () {
@@ -233,12 +202,10 @@
             limit: 12,
             // 点击回调
             click: function (data) {
-                $("#iconView").attr("class", "fa " + data.icon);
                 $("#icon").val("fa " + data.icon);
             },
             // 渲染成功后的回调
-            success: function (d) {
-            }
+            success: function (d) {}
         });
     });
 </script>

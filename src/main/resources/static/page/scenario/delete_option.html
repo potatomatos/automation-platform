@@ -1,0 +1,104 @@
+<html lang="zh">
+<head>
+	<title>删除场景</title>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		.label{
+			display: inline;
+			padding: .6em .8em .5em;
+			font-size: 75%;
+			font-weight: bold;
+			line-height: 1;
+			color: #fff;
+			text-align: center;
+			white-space: nowrap;
+			vertical-align: baseline;
+			border-radius: .25em;
+		}
+		.label-success{
+			background-color: #5cb85c;
+		}
+		.label-warn{
+			background-color: #f0ad4e;
+		}
+		.label-danger{
+			background-color: #d9534f;
+		}
+	</style>
+</head>
+<body>
+<div class="layuimini-main">
+	<div class="layui-form layuimini-form" lay-filter="deleteOptionForm">
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<input type="radio" name="type" value="1" title='<h4><span class="label label-success">仅删除方案</span></h4>'
+				       checked="">
+			</div>
+			<div class="layui-input-block">
+				<p>只删除方案，保留代理。</p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<input type="radio" name="type" value="2" title='<h4><span class="label label-danger">删除方案以及关联的代理</span></h4>'>
+			</div>
+			<div class="layui-input-block">
+				<p class="">删除方案外还删除关联的代理。</p>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<hr class="layui-bg-black">
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block" style="text-align: right">
+				<button class="layui-btn layui-btn-primary layui-btn-sm btn-cancel">取消</button>
+				<button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit lay-filter="saveBtn">删除</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'request', 'miniAdmin'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$,
+            miniAdmin = layui.miniAdmin,
+            request = layui.request;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+		$('.btn-cancel').click(function () {
+			parent.layer.closeAll();
+        });
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            layer.confirm('确认删除？', function () {
+                request.post('/scenarios/delete/type/'+data.field.type+'/id/'+sessionStorage.getItem('scenario_id'), {}, function (res) {
+                    if (res.code === 0) {
+                        parent.layer.closeAll();
+                        parent.layer.alert('删除成功', {icon: 6});
+                    } else {
+                        miniAdmin.error(res.msg)
+                    }
+                }, function () {
+                    miniAdmin.error('服务器发生错误');
+                },true)
+            });
+            return false;
+        });
+    })
+</script>
+</body>
+</html>

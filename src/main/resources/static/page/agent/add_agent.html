@@ -20,11 +20,9 @@
 <div class="layuimini-container layuimini-page-anim layui-col-xs12">
 	<div class="layui-form layuimini-form layui-col-sm12 layui-col-md6">
 		<div class="layui-form-item show">
-			<label class="layui-form-label">代理类型</label>
+			<label class="layui-form-label" for="type">代理类型</label>
 			<div class="layui-input-block">
-				<label for="type">
-					<select name="type" id="type"></select>
-				</label>
+				<div id="type"></div>
 			</div>
 		</div>
 		<div class="layui-form-item show">
@@ -101,14 +99,10 @@
 			</div>
 		</div>
 		<div class="layui-form-item show">
-			<label class="layui-form-label">场景</label>
+			<label class="layui-form-label">方案</label>
 			<div class="layui-input-block">
 				<label for="scenarios">
-					<input
-							type="text"
-							id="scenarios"
-							name="scenarios"
-							class="layui-input">
+					<div id="scenarios" class="xm-select-scenarios"></div>
 				</label>
 			</div>
 		</div>
@@ -129,7 +123,7 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'wangEditor', 'jsoneditor', 'request'], function () {
+    layui.use(['form', 'wangEditor', 'jsoneditor', 'request','miniTab','xmSelect'], function () {
         var form = layui.form;
         var $ = layui.$;
         var wangEditor = layui.wangEditor;
@@ -137,6 +131,8 @@
         var request = layui.request;
         var layer = layui.layer;
         var miniAdmin = layui.miniAdmin;
+        var miniTab = layui.miniTab;
+        var xmSelect = layui.xmSelect;
         //获取代理类型
         request.get("/agentType", {}, function (res) {
             if (res.code === 0) {
@@ -153,6 +149,113 @@
         }, function () {
             layer.msg('服务器发生错误', {icon: 5});
         });
+
+        /**
+         * 多选下拉框
+         */
+        var scenarios = xmSelect.render({
+            el: '#scenarios',
+            toolbar: {
+                show: true,
+                list: ['CLEAR']
+            },
+            filterable: true,
+            name: 'scenarioIds',
+            paging: true,
+            pageSize: 10,
+            theme: {
+                color: '#C1C1C1'
+            },
+            filterMethod: function (val, item, index, prop) {
+                if (val === item.value) {
+                    return true;
+                }
+                return item.name.indexOf(val) !== -1;
+            },
+            model: {
+                label: {
+                    block: {
+                        template: function (item, sels) {
+                            return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                        }
+                    }
+                }
+            },
+            data: []
+        })
+        //获取下拉列表
+        request.post('/scenarios/all', {}, function (res) {
+            if (res.code === 0) {
+                scenarios.update({
+                    data: res.data,
+                    autoRow: true
+                })
+            } else {
+                miniAdmin.error(res.msg)
+            }
+        }, function () {
+            miniAdmin.error('服务器发生错误');
+        },true)
+
+
+        window.scenarioDetail = function (id, name) {
+            console.log('id', id, 'name', name);
+            sessionStorage.setItem('scenario_id',id)
+            miniTab.openNewTabByIframe({
+                title:name,
+                href:'static/page/scenario/detail.html?id='+id
+            })
+            setTimeout(function () {
+                scenarios.closed();
+            }, 10);
+        }
+
+        /**
+         * 类型下拉框
+         */
+        var list = [
+            { name: '杜甫', selected: true, content: '杜甫的思想核心是儒家的仁政思想，他有“致君尧舜上，再使风俗淳”的宏伟抱负。杜甫虽然在世时名声并不显赫，但后来声名远播，对中国文学和日本文学都产生了深远的影响。杜甫共有约1500首诗歌被保留了下来，大多集于《杜工部集》。' },
+            { name: '李清照', content: '李清照出生于书香门第，早期生活优裕，其父李格非藏书甚富，她小时候就在良好的家庭环境中打下文学基础。出嫁后与夫赵明诚共同致力于书画金石的搜集整理。金兵入据中原时，流寓南方，境遇孤苦。所作词，前期多写其悠闲生活，后期多悲叹身世，情调感伤。形式上善用白描手法，自辟途径，语言清丽。' },
+            { name: '鲁迅', content: '鲁迅一生在文学创作、文学批评、思想研究、文学史研究、翻译、美术理论引进、基础科学介绍和古籍校勘与研究等多个领域具有重大贡献。他对于五四运动以后的中国社会思想文化发展具有重大影响，蜚声世界文坛，尤其在韩国、日本思想文化领域有极其重要的地位和影响，被誉为“二十世纪东亚文化地图上占最大领土的作家”。' },
+        ]
+
+        var html = list.map(function(item){
+            var content=' <div class="layui-colla-item"> ' +
+	            '<h2 class="layui-colla-title" value="'+item.name+'">'+item.name+'</h2> ';
+                if (item.selected){
+                    content+='<div class="layui-colla-content layui-show">'+item.content+'</div></div>'
+                }else {
+                    content+='<div class="layui-colla-content">'+item.content+'</div></div>'
+                }
+                return content;
+        }).join('');
+        var types = xmSelect.render({
+            el: '#type',
+            content: '<div class="layui-collapse" lay-accordion lay-filter="collapse">'+html+'</div>',
+            name: 'type',
+            theme: {
+                color: '#C1C1C1'
+            },
+            height: 'auto',
+            autoRow: true,
+            data: list,
+	        prop: { value: 'name' },
+	        on: function(data){
+                if(!data.isAdd){
+                    var item = data.change[0];
+                    document.querySelector('#type .layui-collapse .layui-colla-title[value="'+item.name+'"]').nextElementSibling.classList.remove('layui-show')
+                }
+            }
+        })
+        layui.element.init()
+        layui.element.on('collapse(collapse)', function(data){
+            console.log(data);
+            var value = data.title.attr('value');
+            if(data.show){
+                types.setValue([value])
+            }
+        });
+
     });
 </script>
 </body>
