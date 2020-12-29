@@ -73,6 +73,41 @@ public class ScenariosVo implements Serializable {
 
     private List<Integer> agentIds;
 
+    /**
+     * 禁用状态
+     */
+    private Boolean disabled = false;
+
+    private Boolean selected = false;
+    private Integer value;
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
+    }
+
+    public Integer getValue() {
+        if (this.value!=null){
+            return this.value;
+        }
+        return this.id;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
     public List<Integer> getAgentIds() {
         return agentIds;
     }

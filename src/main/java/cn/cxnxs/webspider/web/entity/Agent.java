@@ -103,7 +103,7 @@ public class Agent extends Model<Agent> {
     /**
      * 禁用状态
      */
-    private Boolean disabled;
+    private Integer state;
 
     /**
      * 创建时间

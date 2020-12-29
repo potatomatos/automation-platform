@@ -51,8 +51,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
         map.put("menuInfo", TreeUtil.toTree(menuInfo, 0));
         home.put("title", "首页");
-        //控制器路由,自行定义
         home.put("href", "/static/page/welcome-1.html");
+        //控制器路由,自行定义
+        logo.put("href", "");
         logo.put("title", "后台管理系统");
         //静态资源文件路径,可使用默认的logo.png
         logo.put("image", "/static/images/logo.png");

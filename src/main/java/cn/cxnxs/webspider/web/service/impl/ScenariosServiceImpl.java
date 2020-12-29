@@ -1,5 +1,6 @@
 package cn.cxnxs.webspider.web.service.impl;
 
+import cn.cxnxs.webspider.exception.BusinessException;
 import cn.cxnxs.webspider.utils.ObjectUtil;
 import cn.cxnxs.webspider.web.entity.Agent;
 import cn.cxnxs.webspider.web.entity.ScenarioAgentRel;
@@ -46,6 +47,9 @@ public class ScenariosServiceImpl extends ServiceImpl<ScenariosMapper, Scenarios
     @Autowired
     private IAgentService agentService;
 
+    private static final String TYPE_ONLY_SCEN="1";
+    private static final String TYPE_SCEN_AGENT="2";
+
     @Override
     public IPage<ScenariosVo> getList(Page<ScenariosVo> page, ScenariosVo scenariosVo) {
         return scenariosMapper.selectScenariosList(page,scenariosVo);
@@ -66,12 +70,17 @@ public class ScenariosServiceImpl extends ServiceImpl<ScenariosMapper, Scenarios
             List<ScenarioAgentRel> scenarioAgentRels = scenarioAgentRelService
                     .list(new QueryWrapper<ScenarioAgentRel>().eq("scenario_id", id));
             if (scenarioAgentRels.size()!=0){
-                List<Integer> ids=new ArrayList<>();
-                scenarioAgentRels.forEach(scenarioAgentRel->{
-                    ids.add(scenarioAgentRel.getAgentId());
-                });
-                List<Agent> agents = agentService.list(new QueryWrapper<Agent>().in("id", ids));
-                scenariosVo.setAgents(ObjectUtil.copyListProperties(agents, AgentVo.class));
+                List<Agent> allAgents=agentService.list();
+                List<AgentVo> agentVos = ObjectUtil.copyListProperties(allAgents, AgentVo.class);
+                for (AgentVo agentVo : agentVos) {
+                    for (ScenarioAgentRel scenarioAgentRel : scenarioAgentRels) {
+                        if (scenarioAgentRel.getAgentId().equals(agentVo.getId())){
+                            agentVo.setSelected(true);
+                            break;
+                        }
+                    }
+                }
+                scenariosVo.setAgents(agentVos);
             }
         }
         return scenariosVo;
@@ -99,12 +108,49 @@ public class ScenariosServiceImpl extends ServiceImpl<ScenariosMapper, Scenarios
             for (Integer agentId: scenariosVo.getAgentIds()){
                 ScenarioAgentRel scenarioAgentRel=new ScenarioAgentRel();
                 scenarioAgentRel.setAgentId(agentId);
-                scenarioAgentRel.setScenarioId(scenariosVo.getId());
+                scenarioAgentRel.setScenarioId(scenarios.getId());
                 scenarioAgentRel.setCreatedAt(LocalDateTime.now());
                 scenarioAgentRels.add(scenarioAgentRel);
             }
             scenarioAgentRelService.saveBatch(scenarioAgentRels);
         }
-        return new HashMap<>();
+        return new HashMap<>(0);
+    }
+
+    /**
+     * 删除方案
+     *
+     * @param type 删除类型 1：只删除方案。2：删除方案以及关联的代理
+     * @param id   id
+     * @return none
+     */
+    @Transactional
+    @Override
+    public Map<String, String> deleteScenarios(String type, String id) {
+        if (TYPE_ONLY_SCEN.equals(type)){
+            //删除方案
+            super.removeById(id);
+            //删除方案和代理关系
+            Map<String,Object> condition=new HashMap<>(1);
+            condition.put("scenario_id",id);
+            scenarioAgentRelService.removeByMap(condition);
+        }else if (TYPE_SCEN_AGENT.equals(type)){
+            //删除方案
+            super.removeById(id);
+            List<ScenarioAgentRel> scenarioAgentRels = scenarioAgentRelService.list(new QueryWrapper<ScenarioAgentRel>().eq("scenario_id", id));
+            if (scenarioAgentRels.size()!=0){
+                List<Integer> ids=new ArrayList<>();
+                scenarioAgentRels.forEach(s->{
+                    ids.add(s.getAgentId());
+                });
+                //删除代理
+                agentService.removeByIds(ids);
+                //删除方案和代理关系
+                scenarioAgentRelService.remove(new QueryWrapper<ScenarioAgentRel>().in("agent_id",ids));
+            }
+        }else {
+            throw new BusinessException("删除类型不正确");
+        }
+        return new HashMap<>(0);
     }
 }

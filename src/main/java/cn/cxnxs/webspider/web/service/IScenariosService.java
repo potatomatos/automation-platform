@@ -20,22 +20,30 @@ public interface IScenariosService extends IService<Scenarios> {
 
     /**
      * 分页获取场景
-     * @param scenariosVo
-     * @return
+     * @param scenariosVo 查询条件
+     * @return -
      */
     IPage<ScenariosVo> getList(Page<ScenariosVo> page, ScenariosVo scenariosVo);
 
     /**
      * 获取详情
      * @param id none
-     * @return
+     * @return -
      */
     ScenariosVo getDetail(Integer id);
 
     /**
      * 保存数据
      * @param scenariosVo
-     * @return
+     * @return -
      */
     Map<String,String> saveScenarios(ScenariosVo scenariosVo);
+
+    /**
+     * 删除方案
+     * @param type 删除类型
+     * @param id id
+     * @return none
+     */
+    Map<String,String> deleteScenarios(String type,String id);
 }

@@ -1,6 +1,8 @@
 package cn.cxnxs.webspider.web.controller;
 
 
+import cn.cxnxs.webspider.utils.ObjectUtil;
+import cn.cxnxs.webspider.web.entity.Scenarios;
 import cn.cxnxs.webspider.web.service.IAgentService;
 import cn.cxnxs.webspider.web.service.IScenariosService;
 import cn.cxnxs.webspider.web.vo.PageResult;
@@ -9,7 +11,9 @@ import cn.cxnxs.webspider.web.vo.ScenariosVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -49,9 +53,21 @@ public class ScenariosController {
     }
 
     @ResponseResult
+    @RequestMapping("all")
+    public List<ScenariosVo> all(){
+        List<Scenarios> scenarios = scenariosService.list();
+        return ObjectUtil.copyListProperties(scenarios,ScenariosVo.class);
+    }
+
+    @ResponseResult
     @RequestMapping("save")
     public Map<String, String> save(ScenariosVo scenariosVo){
         return scenariosService.saveScenarios(scenariosVo);
+    }
+    @ResponseResult
+    @RequestMapping("delete/type/{type}/id/{id}")
+    public Map<String, String> delete(@PathVariable("type")String type,@PathVariable("id") String id){
+        return scenariosService.deleteScenarios(type, id);
     }
 }
 

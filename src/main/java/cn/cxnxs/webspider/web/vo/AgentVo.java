@@ -98,7 +98,7 @@ public class AgentVo implements Serializable {
     /**
      * 禁用状态
      */
-    private Boolean disabled;
+    private Integer state;
 
     /**
      * 创建时间
@@ -111,6 +111,40 @@ public class AgentVo implements Serializable {
     private LocalDateTime updatedAt;
 
     private String keepDataTimeStr;
+    /**
+     * 禁用状态
+     */
+    private Boolean disabled = false;
+
+    private Boolean selected = false;
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
 
     public Integer getId() {
         return id;
@@ -232,14 +266,6 @@ public class AgentVo implements Serializable {
         this.propagateImmediately = propagateImmediately;
     }
 
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -287,7 +313,6 @@ public class AgentVo implements Serializable {
                 ", lastDataIme=" + lastDataIme +
                 ", lastErrorLogTime=" + lastErrorLogTime +
                 ", propagateImmediately=" + propagateImmediately +
-                ", disabled=" + disabled +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
