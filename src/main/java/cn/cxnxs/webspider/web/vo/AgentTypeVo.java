@@ -54,6 +54,26 @@ public class AgentTypeVo {
 
     private JSONArray schedules;
 
+    private String name;
+
+    private Integer value;
+
+    public String getName() {
+        return this.agentTypeName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getValue() {
+        return this.id;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
     /**
      * 使用方法
      */
