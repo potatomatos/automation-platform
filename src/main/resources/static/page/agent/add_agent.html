@@ -14,14 +14,11 @@
 		.show {
 			/*display: none;*/
 		}
-
-		.agent-type-label p {
-			word-break: break-all !important;
-			word-wrap: break-word !important;
-		}
-
-		.agent-type-label strong {
+		.agent-type-label strong{
 			font-weight: bold;
+		}
+		xm-select > .xm-body .xm-option-content{
+			white-space:unset !important;
 		}
 	</style>
 </head>
@@ -206,10 +203,10 @@
 
         function htmlOption(item) {
             var width=$('#type').width();
-            return '<div class="agent-type-label" style="width: '+width+'px">' +
+            return '<div class="agent-type-label">' +
                 '<strong>' + item.name + '</strong>' +
                 '<br>' +
-                '<div>' + item.item.introduction + '</div>' +
+                '<div class="layui-form-text">' + item.item.introduction + '</div>' +
                 '</div>';
         }
 
@@ -233,19 +230,21 @@
                     autoRow: true,
                     radio: true,
                     filterable: true,
+                    clickClose: true,
                     toolbar: {
                         show: true,
                         list: ['CLEAR']
                     },
                     model: {
+                        icon: 'hidden',
                         label: {
-                            type: 'block',
-                            block: {
+                            type: 'text',
+                            /*text: {
                                 //最大显示数量, 0:不限制
                                 showCount: 0,
                                 //是否显示删除图标
                                 showIcon: false
-                            }
+                            }*/
                         }
                     },
                     filterMethod: function (val, item, index, prop) {
