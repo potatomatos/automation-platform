@@ -14,54 +14,13 @@
 		.show {
 			/*display: none;*/
 		}
-		.agent-type-search{
-			display: inline-block;
-			width: 100%;
-			min-height: 26px;
-			margin: 0;
-			padding-left: 4px;
-			padding-right: 4px;
-			position: relative;
-			z-index: 10000;
-			white-space: nowrap;
+
+		.agent-type-label p {
+			word-break: break-all !important;
+			word-wrap: break-word !important;
 		}
-		.agent-type-list{
-			max-height: 400px;
-			padding: 0 0 0 4px;
-			margin: 4px 4px 4px 0;
-			position: relative;
-			overflow-x: hidden;
-			overflow-y: auto;
-			-webkit-tap-highlight-color: transparent;
-		}
-		.agent-type-list li{
-			list-style: none;
-			display: list-item;
-			background-image: none;
-		}
-		.agent-type-list li:hover{
-			color: white;
-			background-color: #428bca;
-		}
-		.agent-type-label{
-			padding: 3px 7px 4px;
-			margin: 0;
-			cursor: pointer;
-			min-height: 1em;
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-		}
-		.agent-type-label p{
-			display: block;
-			margin-block-start: 1em;
-			margin-block-end: 1em;
-			margin-inline-start: 0;
-			margin-inline-end: 0;
-		}
-		.agent-type-label strong{
+
+		.agent-type-label strong {
 			font-weight: bold;
 		}
 	</style>
@@ -174,7 +133,7 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'wangEditor', 'jsoneditor', 'request','miniTab','xmSelect'], function () {
+    layui.use(['form', 'wangEditor', 'jsoneditor', 'request', 'miniTab', 'xmSelect'], function () {
         var form = layui.form;
         var $ = layui.$;
         var wangEditor = layui.wangEditor;
@@ -230,37 +189,30 @@
             }
         }, function () {
             miniAdmin.error('服务器发生错误');
-        },true)
+        }, true)
 
 
         window.scenarioDetail = function (id, name) {
             console.log('id', id, 'name', name);
-            sessionStorage.setItem('scenario_id',id)
+            sessionStorage.setItem('scenario_id', id)
             miniTab.openNewTabByIframe({
-                title:name,
-                href:'static/page/scenario/detail.html?id='+id
+                title: name,
+                href: 'static/page/scenario/detail.html?id=' + id
             })
             setTimeout(function () {
                 scenarios.closed();
             }, 10);
         }
 
-		function buildContent(list){
-            var html = list.map(function(item){
-                return '<li data-type-id="'+item.value+'" onclick="selectAgentType(this)">' +
-                    '<div class="agent-type-label">' +
-                    '<strong>'+item.name+'</strong>' +
-                    '<br>' +
-                    '<p>'+item.introduction+'</p>' +
-                    '</div>' +
-                    '</li>';
-            }).join('');
-            return '<div class="agent-type-search"> ' +
-            '<label> ' +
-            '<input type="text" class="layui-input agent-type-name" onkeyup="searchAgentType(this)" placeholder="输入搜索内容"> ' +
-            '</label> ' +
-            '</div><ul class="agent-type-list">'+html+'</ul>'
-		}
+        function htmlOption(item) {
+            var width=$('#type').width();
+            return '<div class="agent-type-label" style="width: '+width+'px">' +
+                '<strong>' + item.name + '</strong>' +
+                '<br>' +
+                '<div>' + item.item.introduction + '</div>' +
+                '</div>';
+        }
+
         //获取代理类型
         request.get("/agentType", {}, function (res) {
             if (res.code === 0) {
@@ -275,13 +227,16 @@
                 layui.form.render("select");
                 var types = xmSelect.render({
                     el: '#type',
-                    content: buildContent(res.data),
+                    template: htmlOption,
                     name: 'type',
-                    theme: {
-                        color: '#1F9FFF'
-                    },
                     height: 'auto',
                     autoRow: true,
+                    radio: true,
+                    filterable: true,
+                    toolbar: {
+                        show: true,
+                        list: ['CLEAR']
+                    },
                     model: {
                         label: {
                             type: 'block',
@@ -293,38 +248,14 @@
                             }
                         }
                     },
+                    filterMethod: function (val, item, index, prop) {
+                        return item.name.indexOf(val) !== -1;
+                    },
                     data: []
                 })
                 types.update({
-                    data: res.data,
-                    autoRow: true
-                })
-                window.selectAgentType=function (_this) {
-                    types.setValue([$(_this).attr('data-type-id')]);
-                    setTimeout(function () {
-                        types.closed();
-                    }, 10);
-                }
-                window.searchAgentType=function (_this) {
-                    var val=$(_this).val();
-                    console.log('搜索内容',val)
-	                var list=[];
-                    if (val){
-                        list=[];
-                        res.data.map(function(item){
-                            if (item.name.indexOf(val) !== -1){
-                                list.push(item);
-                            }
-                        })
-                    }else {
-                        list=res.data;
-                    }
-                    types.update({
-                        data: list,
-                        autoRow: true,
-	                    content:buildContent(list)
-                    })
-                }
+                    data: res.data
+                });
             }
         }, function () {
             layer.msg('服务器发生错误', {icon: 5});
