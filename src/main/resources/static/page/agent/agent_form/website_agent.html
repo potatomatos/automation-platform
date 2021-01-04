@@ -1,3 +1,31 @@
-<div>
-	<h1>网站代理</h1>
+<div class="layui-input-block">
+	<div id="optionsEditor" style="height: 800px"></div>
+	<textarea style="display: none" id="options" name="options"></textarea>
 </div>
+<script>
+    layui.use(['form', 'jsoneditor'], function () {
+        var layer = layui.layer,
+            $ = layui.$,
+            jsoneditor = layui.jsoneditor;
+
+        var option = {
+            mode: 'code',
+            modes: ['code', 'tree'],
+            onError: function (err) {
+                layer.msg(err.toString());
+            },
+            onChangeText: function (json) {
+                $("#options").val(json);
+            }
+        }
+        var optionsEditor = jsoneditor.render('#optionsEditor', option);
+        var agentType={};
+	    if (sessionStorage.getItem("agent_type")){
+	        agentType=JSON.parse(sessionStorage.getItem("agent_type"));
+	    }
+        console.log("agent_type",agentType)
+	    if (agentType.optionsTemplate){
+            optionsEditor.set(agentType.optionsTemplate);
+	    }
+    })
+</script>

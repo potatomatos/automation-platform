@@ -4,6 +4,7 @@ package cn.cxnxs.webspider.web.controller;
 import cn.cxnxs.webspider.utils.ObjectUtil;
 import cn.cxnxs.webspider.web.entity.Agent;
 import cn.cxnxs.webspider.web.service.IAgentService;
+import cn.cxnxs.webspider.web.vo.AgentTypeVo;
 import cn.cxnxs.webspider.web.vo.AgentVo;
 import cn.cxnxs.webspider.web.vo.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,12 @@ public class AgentController {
     List<AgentVo> listAll(){
         List<Agent> agents = agentService.list();
         return ObjectUtil.copyListProperties(agents,AgentVo.class);
+    }
+
+    @ResponseResult
+    @RequestMapping("find")
+    List<AgentVo> find(AgentTypeVo agentTypeVo){
+        return  agentService.findByTypeProperties(agentTypeVo);
     }
 }
 

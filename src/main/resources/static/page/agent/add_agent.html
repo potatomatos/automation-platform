@@ -11,27 +11,27 @@
 	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 	<style>
-		.show {
-			/*display: none;*/
-		}
 		.agent-type-label strong{
 			font-weight: bold;
 		}
 		xm-select > .xm-body .xm-option-content{
 			white-space:unset !important;
 		}
+		.btn-dry-run,.agent-form{
+			display: none;
+		}
 	</style>
 </head>
 <body>
 <div class="layuimini-container layuimini-page-anim layui-col-xs12">
-	<div class="layui-form layuimini-form layui-col-sm12 layui-col-md6">
-		<div class="layui-form-item show">
+	<div class="layui-form layuimini-form layui-col-sm12 layui-col-md6 layui-col-lg6">
+		<div class="layui-form-item">
 			<label class="layui-form-label" for="type">代理类型</label>
 			<div class="layui-input-block">
 				<div id="type"></div>
 			</div>
 		</div>
-		<div class="layui-form-item show">
+		<div class="layui-form-item layui-hide name-item">
 			<label class="layui-form-label">代理名称</label>
 			<div class="layui-input-block">
 				<label for="name">
@@ -45,7 +45,7 @@
 				</label>
 			</div>
 		</div>
-		<div class="layui-form-item show">
+		<div class="layui-form-item layui-hide schedule-item">
 			<label class="layui-form-label">执行计划</label>
 			<div class="layui-input-block">
 				<label for="schedule">
@@ -58,7 +58,7 @@
 				</label>
 			</div>
 		</div>
-		<div class="layui-form-item show">
+		<div class="layui-form-item layui-hide keepDataTime-item">
 			<label class="layui-form-label">结果保存时间</label>
 			<div class="layui-input-block">
 				<label for="keepDataTime">
@@ -71,15 +71,11 @@
 				</label>
 			</div>
 		</div>
-		<div class="layui-form-item show">
+		<div class="layui-form-item layui-hide sources-item">
 			<label class="layui-form-label">数据源</label>
 			<div class="layui-input-block">
 				<label for="sources">
-					<input
-							type="text"
-							id="sources"
-							name="sources"
-							class="layui-input">
+					<div id="sources"></div>
 				</label>
 			</div>
 			<div class="layui-input-block">
@@ -92,19 +88,15 @@
 				</div>
 			</div>
 		</div>
-		<div class="layui-form-item show">
+		<div class="layui-form-item layui-hide receivers-item">
 			<label class="layui-form-label">事件接收方</label>
 			<div class="layui-input-block">
 				<label for="receivers">
-					<input
-							type="text"
-							id="receivers"
-							name="receivers"
-							class="layui-input">
+					<div id="receivers"></div>
 				</label>
 			</div>
 		</div>
-		<div class="layui-form-item show">
+		<div class="layui-form-item layui-hide scenarios-item">
 			<label class="layui-form-label">方案</label>
 			<div class="layui-input-block">
 				<label for="scenarios">
@@ -112,17 +104,21 @@
 				</label>
 			</div>
 		</div>
-		<div class="layui-form-item form-container show">
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+			<legend>配置</legend>
+		</fieldset>
+		<div class="layui-form-item  agent-form">
 
 		</div>
-		<div class="layui-form-item">
+		<div class="layui-form-item layui-hide btn-item">
 			<div class="layui-input-block">
-				<button class="layui-btn layui-btn-normal layui-btn-sm show" lay-submit lay-filter="saveBtn">保存</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="saveBtn"><span class="fa fa-check"></span>保存</button>
+				<button class="layui-btn layui-btn-success layui-btn-sm btn-dry-run"><span class="fa fa-refresh"></span>测试运行</button>
 				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="back">返回</button>
 			</div>
 		</div>
 	</div>
-	<div class="layui-col-sm12 layui-col-md6" id="descriptionHtml">
+	<div class="layui-col-sm12 layui-col-md6 layui-col-lg6 layui-container layui-hide" id="descriptionHtml">
 
 	</div>
 </div>
@@ -130,20 +126,18 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'wangEditor', 'jsoneditor', 'request', 'miniTab', 'xmSelect'], function () {
+    layui.use(['form','request', 'miniTab', 'xmSelect'], function () {
         var form = layui.form;
         var $ = layui.$;
-        var wangEditor = layui.wangEditor;
-        var jsoneditor = layui.jsoneditor;
         var request = layui.request;
         var layer = layui.layer;
-        var miniAdmin = layui.miniAdmin;
         var miniTab = layui.miniTab;
         var xmSelect = layui.xmSelect;
 
         /**
          * 多选下拉框
          */
+        //方案
         var scenarios = xmSelect.render({
             el: '#scenarios',
             toolbar: {
@@ -175,19 +169,78 @@
             data: []
         })
         //获取下拉列表
-        request.post('/scenarios/all', {}, function (res) {
+        request.get('/scenarios/all', {}, function (res) {
             if (res.code === 0) {
                 scenarios.update({
                     data: res.data,
                     autoRow: true
                 })
-            } else {
-                miniAdmin.error(res.msg)
             }
-        }, function () {
-            miniAdmin.error('服务器发生错误');
-        }, true)
-
+        })
+	    //数据源
+        var sources = xmSelect.render({
+            el: '#sources',
+            toolbar: {
+                show: true,
+                list: ['CLEAR']
+            },
+            filterable: true,
+            name: 'sources',
+            paging: true,
+            autoRow: true,
+            pageSize: 10,
+            theme: {
+                color: '#C1C1C1'
+            },
+            filterMethod: function (val, item, index, prop) {
+                if (val === item.value) {
+                    return true;
+                }
+                return item.name.indexOf(val) !== -1;
+            },
+            model: {
+                label: {
+                    block: {
+                        template: function (item, sels) {
+                            return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                        }
+                    }
+                }
+            },
+            data: []
+        })
+		//接收者
+        var receivers = xmSelect.render({
+            el: '#receivers',
+            toolbar: {
+                show: true,
+                list: ['CLEAR']
+            },
+            filterable: true,
+            autoRow: true,
+            name: 'receivers',
+            paging: true,
+            pageSize: 10,
+            theme: {
+                color: '#C1C1C1'
+            },
+            filterMethod: function (val, item, index, prop) {
+                if (val === item.value) {
+                    return true;
+                }
+                return item.name.indexOf(val) !== -1;
+            },
+            model: {
+                label: {
+                    block: {
+                        template: function (item, sels) {
+                            return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                        }
+                    }
+                }
+            },
+            data: []
+        })
 
         window.scenarioDetail = function (id, name) {
             console.log('id', id, 'name', name);
@@ -202,11 +255,10 @@
         }
 
         function htmlOption(item) {
-            var width=$('#type').width();
             return '<div class="agent-type-label">' +
                 '<strong>' + item.name + '</strong>' +
                 '<br>' +
-                '<div class="layui-form-text">' + item.item.introduction + '</div>' +
+                '<div class="layui-form-text">' + item.item.introduction + '</div class="layui-form-text">' +
                 '</div>';
         }
 
@@ -221,7 +273,7 @@
                 $.each(res.data[0].keepEventsTimes, function (index, item) {
                     $('#keepDataTime').append(new Option(item.desc, item.code));
                 });
-                layui.form.render("select");
+                form.render("select");
                 var types = xmSelect.render({
                     el: '#type',
                     template: htmlOption,
@@ -232,23 +284,78 @@
                     filterable: true,
                     clickClose: true,
                     toolbar: {
-                        show: true,
-                        list: ['CLEAR']
+                        show: false
                     },
                     model: {
                         icon: 'hidden',
                         label: {
-                            type: 'text',
-                            /*text: {
-                                //最大显示数量, 0:不限制
-                                showCount: 0,
-                                //是否显示删除图标
-                                showIcon: false
-                            }*/
+                            type: 'text'
                         }
                     },
                     filterMethod: function (val, item, index, prop) {
                         return item.name.indexOf(val) !== -1;
+                    },
+                    on: function(data){
+                        //arr:  当前多选已选中的数据
+                        var arr = data.arr;
+                        //change, 此次选择变化的数据,数组
+                        var change = data.change;
+                        //isAdd, 此次操作是新增还是删除
+                        var isAdd = data.isAdd;
+
+                        console.log("arr",arr,'change',change,'isAdd',isAdd);
+
+                        if(isAdd){
+                            form.render();
+                            sessionStorage.setItem("agent_type",JSON.stringify(change[0]));
+							$('.scenarios-item').removeClass("layui-hide").addClass("layui-show");
+							$('.btn-item').removeClass("layui-hide").addClass("layui-show");
+							$('#descriptionHtml').html(change[0].descriptionHtml).removeClass("layui-hide").addClass("layui-show");
+                            $('.name-item').removeClass("layui-hide").addClass("layui-show");
+                            if (change[0].canDryRun){
+                                $('.btn-dry-run').show();
+                            }else{
+                                $('.btn-dry-run').hide();
+                            }
+							if (change[0].canBeScheduled){
+                                $('.schedule-item').removeClass("layui-hide").addClass("layui-show");
+                            }else{
+                                $('.schedule-item').removeClass("layui-show").addClass("layui-hide");
+                            }
+                            if (change[0].canReceiveEvents){
+                                $('.sources-item').removeClass("layui-hide").addClass("layui-show");
+                                request.get('/agents/find',{
+                                    canReceiveEvents:change[0].canReceiveEvents
+                                },function (res) {
+                                    if (res.code === 0) {
+                                        sources.update({
+	                                        data:res.data
+                                        })
+                                    }
+                                });
+                            }else{
+                                $('.sources-item').removeClass("layui-show").addClass("layui-hide");
+                            }
+                            if (change[0].canCreateEvents){
+                                $('.keepDataTime-item').removeClass("layui-hide").addClass("layui-show");
+                                $('.receivers-item').removeClass("layui-hide").addClass("layui-show");
+                                request.get('/agents/find',{
+                                    canCreateEvents:change[0].canCreateEvents
+                                },function (res) {
+                                    if (res.code === 0) {
+                                        receivers.update({
+                                            data:res.data
+                                        })
+                                    }
+                                });
+                            }else{
+                                $('.keepDataTime-item').removeClass("layui-show").addClass("layui-hide");
+                                $('.receivers-item').removeClass("layui-show").addClass("layui-hide")
+                            }
+
+                            $(".agent-form").html(miniTab.getHrefContent(change[0].formUrl)).show();
+                        }
+
                     },
                     data: []
                 })

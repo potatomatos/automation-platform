@@ -1,8 +1,11 @@
 package cn.cxnxs.webspider.web.service;
 
 import cn.cxnxs.webspider.web.entity.Agent;
+import cn.cxnxs.webspider.web.vo.AgentTypeVo;
+import cn.cxnxs.webspider.web.vo.AgentVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,4 +24,12 @@ public interface IAgentService extends IService<Agent> {
      * @return
      */
     Map<String,Object> getAgentConfig(String agentType);
+
+
+    /**
+     * 查询所有
+     * @param agentTypeVo 查询条件
+     * @return none
+     */
+    List<AgentVo> findByTypeProperties(AgentTypeVo agentTypeVo);
 }
