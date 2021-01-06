@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -39,6 +41,12 @@ public class AgentController {
     @RequestMapping("find")
     List<AgentVo> find(AgentTypeVo agentTypeVo){
         return  agentService.findByTypeProperties(agentTypeVo);
+    }
+
+    @ResponseResult
+    @RequestMapping("save")
+    public Map<String, String> saveAgent(AgentVo agentVo){
+        return  agentService.saveAgent(agentVo);
     }
 }
 

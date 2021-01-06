@@ -2,6 +2,7 @@ package cn.cxnxs.webspider.web.vo;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 
 import java.time.LocalDateTime;
 
@@ -407,7 +408,7 @@ public class AgentTypeVo {
 
     public void setOptionsTemplate(String optionsTemplate) {
         if (optionsTemplate != null) {
-            this.optionsTemplate = JSONObject.parseObject(optionsTemplate);
+            this.optionsTemplate = JSONObject.parseObject(optionsTemplate,Feature.OrderedField);
         }
     }
 
@@ -417,7 +418,7 @@ public class AgentTypeVo {
 
     public void setOptionsSchema(String optionsSchema) {
         if (optionsSchema != null) {
-            this.optionsSchema = JSONObject.parseObject(optionsSchema);
+            this.optionsSchema = JSONObject.parseObject(optionsSchema, Feature.OrderedField);
         }
     }
 

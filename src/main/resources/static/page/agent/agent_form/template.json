@@ -1,0 +1,21 @@
+{
+  "url": "https://movie.douban.com/cinema/nowplaying/hangzhou/",
+  "url_from_event": "{{ next_url }}",
+  "type": "html",
+  "mode": "on_change",
+  "uniqueness_look_back": 1,
+  "include_sort_info": true,
+  "extract": {
+    "title": {
+      "css": "li[@data-category='nowplaying']",
+      "value": "@data-title"
+    }
+  },
+  "headers": {
+  },
+  "disable_ssl_verification": true,
+  "template": {
+    "url": "https://www.pornhub.com/view_video.php?viewkey={{viewkey}}"
+  },
+  "events_order": []
+}

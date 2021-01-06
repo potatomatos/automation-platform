@@ -1,6 +1,7 @@
 <div class="layui-input-block">
+	<input type="hidden" class="validation-error" name="validationError" value="0">
 	<div id="optionsEditor" style="height: 800px"></div>
-	<textarea style="display: none" id="options" name="options"></textarea>
+	<input type="hidden" id="options" name="options">
 </div>
 <script>
     layui.use(['form', 'jsoneditor'], function () {
@@ -8,24 +9,37 @@
             $ = layui.$,
             jsoneditor = layui.jsoneditor;
 
+        var agentType = {};
+        var schema = {};
+        if (sessionStorage.getItem("agent_type")) {
+            agentType = JSON.parse(sessionStorage.getItem("agent_type"));
+        }
+        if (agentType.optionsSchema) {
+            schema = agentType.optionsSchema;
+        }
         var option = {
             mode: 'code',
             modes: ['code', 'tree'],
+            schema: schema,
             onError: function (err) {
                 layer.msg(err.toString());
             },
             onChangeText: function (json) {
                 $("#options").val(json);
+            },
+            onValidationError: function (errors) {
+                console.log("触发校验",errors)
+	            if (errors.length>0){
+	                $(".validation-error").val(1);
+	            }else {
+                    $(".validation-error").val(0);
+	            }
             }
         }
         var optionsEditor = jsoneditor.render('#optionsEditor', option);
-        var agentType={};
-	    if (sessionStorage.getItem("agent_type")){
-	        agentType=JSON.parse(sessionStorage.getItem("agent_type"));
-	    }
-        console.log("agent_type",agentType)
-	    if (agentType.optionsTemplate){
+        if (agentType.optionsTemplate) {
             optionsEditor.set(agentType.optionsTemplate);
-	    }
+            $("#options").val(JSON.stringify(agentType.optionsTemplate));
+        }
     })
 </script>

@@ -118,6 +118,36 @@ public class AgentVo implements Serializable {
 
     private Boolean selected = false;
 
+    private String receivers;
+
+    private String scenarioIds;
+
+    private String sources;
+
+    public String getReceivers() {
+        return receivers;
+    }
+
+    public void setReceivers(String receivers) {
+        this.receivers = receivers;
+    }
+
+    public String getScenarioIds() {
+        return scenarioIds;
+    }
+
+    public void setScenarioIds(String scenarioIds) {
+        this.scenarioIds = scenarioIds;
+    }
+
+    public String getSources() {
+        return sources;
+    }
+
+    public void setSources(String sources) {
+        this.sources = sources;
+    }
+
     public void setValue(Integer value) {
         this.value = value;
     }

@@ -93,7 +93,6 @@ public class ScenariosServiceImpl extends ServiceImpl<ScenariosMapper, Scenarios
      * @return
      */
     @Transactional
-    @ResponseBody
     @Override
     public Map<String,String> saveScenarios(ScenariosVo scenariosVo) {
         Scenarios scenarios=new Scenarios();

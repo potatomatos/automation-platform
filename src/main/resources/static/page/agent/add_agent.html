@@ -52,7 +52,8 @@
 					<select
 							id="schedule"
 							name="schedule"
-							class="layui-select">
+							class="layui-select"
+							lay-verify="required">
 						<option value="">请选择</option>
 					</select>
 				</label>
@@ -65,7 +66,8 @@
 					<select
 							id="keepDataTime"
 							name="keepDataTime"
-							class="layui-select">
+							class="layui-select"
+							lay-verify="required">
 						<option value="">请选择</option>
 					</select>
 				</label>
@@ -83,7 +85,12 @@
 					立即传播事件到下个agent
 				</label>
 				<div class="layui-input-block">
-					<input type="checkbox" id="propagateImmediately" name="propagateImmediately" lay-skin="switch"
+					<input type="checkbox"
+					       id="propagateImmediately"
+					       name="propagateImmediately"
+					       value="0"
+					       lay-filter="propagateImmediately"
+					       lay-skin="switch"
 					       lay-text="是|否">
 				</div>
 			</div>
@@ -107,12 +114,10 @@
 		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
 			<legend>配置</legend>
 		</fieldset>
-		<div class="layui-form-item  agent-form">
-
-		</div>
+		<div class="layui-form-item  agent-form"></div>
 		<div class="layui-form-item layui-hide btn-item">
 			<div class="layui-input-block">
-				<button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="saveBtn"><span class="fa fa-check"></span>保存</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="save"><span class="fa fa-check"></span>保存</button>
 				<button class="layui-btn layui-btn-success layui-btn-sm btn-dry-run"><span class="fa fa-refresh"></span>测试运行</button>
 				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="back">返回</button>
 			</div>
@@ -126,13 +131,14 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form','request', 'miniTab', 'xmSelect'], function () {
+    layui.use(['form','request', 'miniTab', 'xmSelect','miniAdmin'], function () {
         var form = layui.form;
         var $ = layui.$;
         var request = layui.request;
         var layer = layui.layer;
         var miniTab = layui.miniTab;
         var xmSelect = layui.xmSelect;
+        var miniAdmin = layui.miniAdmin;
 
         /**
          * 多选下拉框
@@ -365,6 +371,34 @@
             }
         }, function () {
             layer.msg('服务器发生错误', {icon: 5});
+        });
+
+        form.on('switch(propagateImmediately)', function (data) {
+            if (this.checked){
+                $(this).val(1);
+            }else {
+                $(this).val(0);
+            }
+        });
+
+        //提交表单
+        form.on('submit(save)', function (data) {
+            console.log('提交数据',data)
+
+	        if (data.field.validationError!=0){
+                miniAdmin.error('数据输入有误');
+	            return ;
+	        }
+            layer.confirm('确认提交吗？', function () {
+                request.post('/agents/save', data.field, function (res) {
+                    if (res.code === 0) {
+                        layer.alert('保存成功', {icon: 6});
+                    } else {
+                        miniAdmin.error(res.msg)
+                    }
+                },null,true)
+            });
+            return false;
         });
     });
 </script>

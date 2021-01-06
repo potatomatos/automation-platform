@@ -1,0 +1,57 @@
+{
+  "title": "options",
+  "description": "网站抓取配置",
+  "type": "object",
+  "properties": {
+    "url": {
+      "title": "请求链接",
+      "examples": [
+        "www.baidu.com"
+      ],
+      "type": "string"
+    },
+    "url_from_event": {
+      "type": "string"
+    },
+    "type": {
+      "title": "数据类型",
+      "enum": [
+        "html",
+        "xml",
+        "json",
+        "text"
+      ],
+      "type": "string",
+      "default": "html"
+    },
+    "include_sort_info": {
+      "type": "boolean",
+      "default": false
+    },
+    "disable_ssl_verification": {
+      "type": "boolean",
+      "default": false
+    },
+    "uniqueness_look_back": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "headers": {
+      "type": "object"
+    },
+    "extract": {
+      "type": "object"
+    },
+    "template": {
+      "type": "object"
+    },
+    "events_order": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "url",
+    "extract",
+    "type"
+  ]
+}

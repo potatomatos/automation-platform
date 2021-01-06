@@ -32,4 +32,11 @@ public interface IAgentService extends IService<Agent> {
      * @return none
      */
     List<AgentVo> findByTypeProperties(AgentTypeVo agentTypeVo);
+
+    /**
+     * 保存代理
+     * @param agentVo 代理数据
+     * @return none
+     */
+    Map<String, String> saveAgent(AgentVo agentVo);
 }
