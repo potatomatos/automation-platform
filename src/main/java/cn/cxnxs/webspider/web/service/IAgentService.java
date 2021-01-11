@@ -39,4 +39,11 @@ public interface IAgentService extends IService<Agent> {
      * @return none
      */
     Map<String, String> saveAgent(AgentVo agentVo);
+
+    /**
+     * 根据id获取代理
+     * @param id 主键
+     * @return none
+     */
+    AgentVo getAgentById(Integer id);
 }

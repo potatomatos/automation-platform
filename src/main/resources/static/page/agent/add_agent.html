@@ -24,6 +24,7 @@
 </head>
 <body>
 <div class="layuimini-container layuimini-page-anim layui-col-xs12">
+	<input type="hidden" class="agentTypeInfo">
 	<div class="layui-form layuimini-form layui-col-sm12 layui-col-md6 layui-col-lg6">
 		<div class="layui-form-item">
 			<label class="layui-form-label" for="type">代理类型</label>
@@ -123,9 +124,10 @@
 			</div>
 		</div>
 	</div>
-	<div class="layui-col-sm12 layui-col-md6 layui-col-lg6 layui-container layui-hide" id="descriptionHtml">
-
-	</div>
+	<fieldset class="layui-elem-field layui-field-title">
+		<legend>使用方式</legend>
+	</fieldset>
+	<div class="layui-col-sm12 layui-col-md6 layui-col-lg6 layui-container layui-hide" id="descriptionHtml"></div>
 </div>
 
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
@@ -313,7 +315,7 @@
 
                         if(isAdd){
                             form.render();
-                            sessionStorage.setItem("agent_type",JSON.stringify(change[0]));
+                            $('.agentTypeInfo').val(JSON.stringify(change[0]));
 							$('.scenarios-item').removeClass("layui-hide").addClass("layui-show");
 							$('.btn-item').removeClass("layui-hide").addClass("layui-show");
 							$('#descriptionHtml').html(change[0].descriptionHtml).removeClass("layui-hide").addClass("layui-show");

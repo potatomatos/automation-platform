@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -124,12 +125,52 @@ public class AgentVo implements Serializable {
 
     private String sources;
 
+    private List<AgentVo> sourceAgents;
+
+    private List<AgentVo> receiverAgents;
+
+    private List<ScenariosVo> scenarios;
+
+    private AgentTypeVo agentType;
+
+    public AgentTypeVo getAgentType() {
+        return agentType;
+    }
+
+    public void setAgentType(AgentTypeVo agentType) {
+        this.agentType = agentType;
+    }
+
     public String getReceivers() {
         return receivers;
     }
 
     public void setReceivers(String receivers) {
         this.receivers = receivers;
+    }
+
+    public List<AgentVo> getSourceAgents() {
+        return sourceAgents;
+    }
+
+    public void setSourceAgents(List<AgentVo> sourceAgents) {
+        this.sourceAgents = sourceAgents;
+    }
+
+    public List<AgentVo> getReceiverAgents() {
+        return receiverAgents;
+    }
+
+    public void setReceiverAgents(List<AgentVo> receiverAgents) {
+        this.receiverAgents = receiverAgents;
+    }
+
+    public List<ScenariosVo> getScenarios() {
+        return scenarios;
+    }
+
+    public void setScenarios(List<ScenariosVo> scenarios) {
+        this.scenarios = scenarios;
     }
 
     public String getScenarioIds() {
@@ -333,6 +374,7 @@ public class AgentVo implements Serializable {
                 ", options='" + options + '\'' +
                 ", type=" + type +
                 ", name='" + name + '\'' +
+                ", value=" + value +
                 ", schedule='" + schedule + '\'' +
                 ", dataCount=" + dataCount +
                 ", lastCheckAt=" + lastCheckAt +
@@ -343,8 +385,18 @@ public class AgentVo implements Serializable {
                 ", lastDataIme=" + lastDataIme +
                 ", lastErrorLogTime=" + lastErrorLogTime +
                 ", propagateImmediately=" + propagateImmediately +
+                ", state=" + state +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", keepDataTimeStr='" + keepDataTimeStr + '\'' +
+                ", disabled=" + disabled +
+                ", selected=" + selected +
+                ", receivers='" + receivers + '\'' +
+                ", scenarioIds='" + scenarioIds + '\'' +
+                ", sources='" + sources + '\'' +
+                ", sourceAgents=" + sourceAgents +
+                ", receiverAgents=" + receiverAgents +
+                ", scenarios=" + scenarios +
                 '}';
     }
 }

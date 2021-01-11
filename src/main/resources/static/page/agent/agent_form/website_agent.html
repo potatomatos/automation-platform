@@ -9,10 +9,16 @@
             $ = layui.$,
             jsoneditor = layui.jsoneditor;
 
-        var agentType = {};
+        var agentTypeInfo = $(".agentTypeInfo").val();
+        var agentType={};
+        var agentInfo=$(".agentInfo").val();
+        var agent={};
         var schema = {};
-        if (sessionStorage.getItem("agent_type")) {
-            agentType = JSON.parse(sessionStorage.getItem("agent_type"));
+        if (agentTypeInfo) {
+            agentType = JSON.parse(agentTypeInfo);
+        }
+        if (agentInfo) {
+            agent = JSON.parse(agentInfo);
         }
         if (agentType.optionsSchema) {
             schema = agentType.optionsSchema;
@@ -28,7 +34,6 @@
                 $("#options").val(json);
             },
             onValidationError: function (errors) {
-                console.log("触发校验",errors)
 	            if (errors.length>0){
 	                $(".validation-error").val(1);
 	            }else {
@@ -37,7 +42,10 @@
             }
         }
         var optionsEditor = jsoneditor.render('#optionsEditor', option);
-        if (agentType.optionsTemplate) {
+        if (agentInfo) {
+            optionsEditor.set(agent);
+            $("#options").val(JSON.stringify(agent));
+        }else{
             optionsEditor.set(agentType.optionsTemplate);
             $("#options").val(JSON.stringify(agentType.optionsTemplate));
         }

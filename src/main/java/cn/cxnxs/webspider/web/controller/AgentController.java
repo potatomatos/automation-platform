@@ -8,10 +8,10 @@ import cn.cxnxs.webspider.web.vo.AgentTypeVo;
 import cn.cxnxs.webspider.web.vo.AgentVo;
 import cn.cxnxs.webspider.web.vo.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +47,12 @@ public class AgentController {
     @RequestMapping("save")
     public Map<String, String> saveAgent(AgentVo agentVo){
         return  agentService.saveAgent(agentVo);
+    }
+
+    @ResponseResult
+    @RequestMapping("{id}")
+    public AgentVo getOne(@PathVariable("id") Integer id){
+        return  agentService.getAgentById(id);
     }
 }
 

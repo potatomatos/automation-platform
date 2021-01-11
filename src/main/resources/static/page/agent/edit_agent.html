@@ -1,0 +1,370 @@
+<html lang="zh">
+<head>
+	<title>编辑代理</title>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		.agent-type-label strong {
+			font-weight: bold;
+		}
+
+		xm-select > .xm-body .xm-option-content {
+			white-space: unset !important;
+		}
+
+		.hide {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+<div class="layuimini-container layuimini-page-anim layui-col-xs12">
+	<div class="layui-form layuimini-form layui-col-sm12 layui-col-md6 layui-col-lg6" lay-filter="agentForm">
+		<fieldset class="layui-elem-field layui-field-title">
+			<legend>编辑<span class="type-name"></span></legend>
+		</fieldset>
+		<input type="hidden" name="agentTypeInfo" class="agentTypeInfo">
+		<input type="hidden" name="agentInfo" class="agentInfo">
+		<input type="hidden" name="id">
+		<div class="layui-form-item  name-item">
+			<label class="layui-form-label">代理名称</label>
+			<div class="layui-input-block">
+				<label for="name">
+					<input
+							type="text"
+							id="name"
+							name="name"
+							lay-verify="required"
+							lay-reqtext="代理名称不能为空"
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item schedule-item hide">
+			<label class="layui-form-label">执行计划</label>
+			<div class="layui-input-block">
+				<label for="schedule">
+					<select
+							id="schedule"
+							name="schedule"
+							class="layui-select"
+							lay-verify="required">
+						<option value="">请选择</option>
+					</select>
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item  keepDataTime-item hide">
+			<label class="layui-form-label">结果保存时间</label>
+			<div class="layui-input-block">
+				<label for="keepDataTime">
+					<select
+							id="keepDataTime"
+							name="keepDataTime"
+							class="layui-select"
+							lay-verify="required">
+						<option value="">请选择</option>
+					</select>
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item  sources-item hide">
+			<label class="layui-form-label">数据源</label>
+			<div class="layui-input-block">
+				<label for="sources">
+					<div id="sources"></div>
+				</label>
+			</div>
+			<div class="layui-input-block">
+				<label for="propagateImmediately" class="layui-form-label" style="width: auto">
+					立即传播事件到下个agent
+				</label>
+				<div class="layui-input-block">
+					<input type="checkbox"
+					       id="propagateImmediately"
+					       name="propagateImmediately"
+					       lay-filter="propagateImmediately"
+					       lay-skin="switch"
+					       lay-text="是|否">
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item  receivers-item hide">
+			<label class="layui-form-label">事件接收方</label>
+			<div class="layui-input-block">
+				<label for="receivers">
+					<div id="receivers"></div>
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item  scenarios-item">
+			<label class="layui-form-label">方案</label>
+			<div class="layui-input-block">
+				<label for="scenarios">
+					<div id="scenarios" class="xm-select-scenarios"></div>
+				</label>
+			</div>
+		</div>
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+			<legend>配置</legend>
+		</fieldset>
+		<div class="layui-form-item  agent-form"></div>
+		<div class="layui-form-item  btn-item">
+			<div class="layui-input-block">
+				<button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="save"><span
+						class="fa fa-check"></span>保存
+				</button>
+				<button class="layui-btn layui-btn-success layui-btn-sm btn-dry-run hide"><span class="fa fa-refresh"></span>测试运行</button>
+				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="back">返回</button>
+			</div>
+		</div>
+	</div>
+	<fieldset class="layui-elem-field layui-field-title">
+		<legend>使用方式</legend>
+	</fieldset>
+	<div class="layui-col-sm12 layui-col-md6 layui-col-lg6 layui-container" id="descriptionHtml"></div>
+</div>
+
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'request', 'miniTab', 'xmSelect', 'miniAdmin'], function () {
+        var form = layui.form;
+        var $ = layui.$;
+        var request = layui.request;
+        var layer = layui.layer;
+        var miniTab = layui.miniTab;
+        var xmSelect = layui.xmSelect;
+        var miniAdmin = layui.miniAdmin;
+
+
+        /**
+         * 多选下拉框
+         */
+            //方案
+        var scenarios = xmSelect.render({
+                el: '#scenarios',
+                toolbar: {
+                    show: true,
+                    list: ['CLEAR']
+                },
+                filterable: true,
+                name: 'scenarioIds',
+                paging: true,
+                pageSize: 10,
+                theme: {
+                    color: '#C1C1C1'
+                },
+                filterMethod: function (val, item, index, prop) {
+                    if (val === item.value) {
+                        return true;
+                    }
+                    return item.name.indexOf(val) !== -1;
+                },
+                model: {
+                    label: {
+                        block: {
+                            template: function (item, sels) {
+                                return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                            }
+                        }
+                    }
+                },
+                data: []
+            })
+
+        window.scenarioDetail = function (id, name) {
+            sessionStorage.setItem('scenario_id', id)
+            miniTab.openNewTabByIframe({
+                title: name,
+                href: 'static/page/scenario/detail.html?id=' + id
+            })
+            setTimeout(function () {
+                scenarios.closed();
+            }, 10);
+            return false;
+        }
+        //数据源
+        var sources = xmSelect.render({
+            el: '#sources',
+            toolbar: {
+                show: true,
+                list: ['CLEAR']
+            },
+            filterable: true,
+            name: 'sources',
+            paging: true,
+            autoRow: true,
+            pageSize: 10,
+            theme: {
+                color: '#C1C1C1'
+            },
+            filterMethod: function (val, item, index, prop) {
+                if (val === item.value) {
+                    return true;
+                }
+                return item.name.indexOf(val) !== -1;
+            },
+            model: {
+                label: {
+                    block: {
+                        template: function (item, sels) {
+                            return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                        }
+                    }
+                }
+            },
+            data: []
+        })
+        //接收者
+        var receivers = xmSelect.render({
+            el: '#receivers',
+            toolbar: {
+                show: true,
+                list: ['CLEAR']
+            },
+            filterable: true,
+            autoRow: true,
+            name: 'receivers',
+            paging: true,
+            pageSize: 10,
+            theme: {
+                color: '#C1C1C1'
+            },
+            filterMethod: function (val, item, index, prop) {
+                if (val === item.value) {
+                    return true;
+                }
+                return item.name.indexOf(val) !== -1;
+            },
+            model: {
+                label: {
+                    block: {
+                        template: function (item, sels) {
+                            return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                        }
+                    }
+                }
+            },
+            data: []
+        })
+
+        //获取代理详情
+        request.get("/agents/5"/*+sessionStorage.getItem("agent_id")*/, {}, function (result) {
+            if (result.code === 0) {
+                var agentType=result.data.agentType;
+                //执行计划
+                $.each(agentType.schedules, function (index, item) {
+                    $('#schedule').append(new Option(item.desc, item.code));
+                });
+                //保存时间
+                $.each(agentType.keepEventsTimes, function (index, item) {
+                    $('#keepDataTime').append(new Option(item.desc, item.code));
+                });
+                form.render();
+                form.val('agentForm', {
+                    "id": result.data.id,
+                    "name": result.data.name,
+                    "schedule": result.data.schedule,
+                    "keepDataTime": result.data.keepDataTime,
+                    "agentTypeInfo": JSON.stringify(agentType),
+                    "agentInfo": result.data.options
+                })
+                if (result.data.propagateImmediately) {
+                    $("#propagateImmediately").val(1);
+                    $("#propagateImmediately").attr("checked","")
+                } else {
+                    $("#propagateImmediately").val(0);
+                }
+				if (agentType.canDryRun){
+                    $('.btn-dry-run').show();
+				}
+                if (agentType.canBeScheduled){
+                    $('.schedule-item').show();
+                }
+                if (agentType.canBeScheduled){
+                    $('.schedule-item').show();
+                }
+	            if(agentType.canReceiveEvents){
+                    $('.sources-item').show();
+                    request.syncGet('/agents/find', {
+                        canReceiveEvents: agentType.canReceiveEvents
+                    }, function (res) {
+                        if (res.code === 0) {
+                            sources.update({
+                                data: res.data
+                            });
+                        }
+                    });
+	            }
+				if (agentType.canCreateEvents){
+                    $('.keepDataTime-item').show();
+                    $('.receivers-item').show();
+                    request.syncGet('/agents/find', {
+                        canCreateEvents: agentType.canCreateEvents
+                    }, function (res) {
+                        if (res.code === 0) {
+                            receivers.update({
+                                data: res.data
+                            })
+                        }
+                    });
+				}
+                $('#descriptionHtml').html(agentType.descriptionHtml);
+                $(".type-name").html(agentType.name);
+                $(".agent-form").html(miniTab.getHrefContent(agentType.formUrl)).show();
+                //获取下拉列表
+                request.syncGet('/scenarios/all', {}, function (res) {
+                    if (res.code === 0) {
+                        scenarios.update({
+                            data: res.data,
+                            autoRow: true
+                        })
+                    }
+                })
+	            //设置值
+                sources.setValue(result.data.sourceAgents);
+                receivers.setValue(result.data.receiverAgents);
+                scenarios.setValue(result.data.scenarios);
+                form.render();
+            }
+        })
+
+        form.on('switch(propagateImmediately)', function (data) {
+            if (this.checked) {
+                $(this).val(1);
+            } else {
+                $(this).val(0);
+            }
+        });
+
+        //提交表单
+        form.on('submit(save)', function (data) {
+            console.log('提交数据', data)
+
+            if (data.field.validationError != 0) {
+                miniAdmin.error('数据输入有误');
+                return;
+            }
+            parent.layer.confirm('确认提交吗？', function () {
+                request.post('/agents/save', data.field, function (res) {
+                    if (res.code === 0) {
+                        parent.layer.alert('保存成功', {icon: 6});
+                    } else {
+                        miniAdmin.error(res.msg)
+                    }
+                }, null, true)
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>
