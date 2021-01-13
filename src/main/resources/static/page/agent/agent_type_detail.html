@@ -181,10 +181,7 @@
          */
         $(".back-btn").click(function () {
             miniTab.deleteCurrentByIframe();
-            miniTab.openNewTabByIframe({
-                title:'agent定义',
-                href:'static/page/agent/agent_type.html'
-            })
+            location.hash="static/page/agent/agent_type.html"
         });
     });
 </script>

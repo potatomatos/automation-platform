@@ -133,6 +133,60 @@ public class AgentVo implements Serializable {
 
     private AgentTypeVo agentType;
 
+    private String stateStr;
+
+    /**
+     * 状态 0暂停 1待运行 2执行中 3已禁用
+     */
+    public enum State{
+        PAUSE(0,"暂停"),
+        ENABLE(1,"待运行"),
+        WORKING(2,"执行中"),
+        DISABLE(3,"已禁用"),
+        ;
+        private Integer code;
+
+        private String str;
+
+        State(Integer code, String str) {
+            this.code = code;
+            this.str = str;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public void setCode(Integer code) {
+            this.code = code;
+        }
+        public String getStr() {
+            return this.str;
+        }
+        public static String getStr(Integer code) {
+            for (AgentVo.State e : AgentVo.State.values()) {
+                if (e.getCode().equals(code)) {
+                    return e.str;
+                }
+            }
+            return null;
+        }
+
+        public void setStr(String str) {
+            this.str = str;
+        }
+    }
+    public String getStateStr() {
+        if (this.stateStr==null){
+            this.stateStr=State.getStr(this.state);
+        }
+        return stateStr;
+    }
+
+    public void setStateStr(String stateStr) {
+        this.stateStr = stateStr;
+    }
+
     public AgentTypeVo getAgentType() {
         return agentType;
     }

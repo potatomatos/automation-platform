@@ -1,0 +1,268 @@
+<html lang="zh">
+<head>
+	<title>代理详情</title>
+	<link rel="stylesheet" href="/static/lib/layui-v2.5.5/css/layui.css" media="all">
+	<link rel="stylesheet" href="/static/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+	<link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
+	<link rel="stylesheet" href="/static/css/themes/default.css" media="all">
+	<link rel="stylesheet" href="/static/css/public.css" media="all">
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		/*.layui-nav,.layui-nav-item.layui-this{
+			background-color:#FFFFFF !important;
+			color: #393D49 !important;
+		}*/
+		.layui-nav .layui-nav-item a, .layui-nav .layui-nav-item a:hover {
+			height: 40px;
+			line-height: 40px;
+			color: #000;
+		}
+
+		.layui-nav .layui-nav-item {
+			background-color: #fff;
+		}
+
+		.layui-form-text {
+			padding: 9px 15px;
+		}
+	</style>
+</head>
+<body>
+<div class="layuimini-container layuimini-page-anim layui-col-xs12" style="padding: 10px">
+	<div class="layui-tab" lay-filter="subMenu">
+		<ul class="layui-tab-title">
+			<li lay-id="1" class="layui-this">详情</li>
+			<li lay-id="2">日志信息</li>
+			<li lay-id="3">数据源查看</li>
+			<li>
+				<ul class="layui-nav" lay-filter="operation">
+					<li class="layui-nav-item" lay-unselect>
+						<a href="javascript:">操作</a>
+						<dl class="layui-nav-child" lay-unselect>
+							<dd lay-unselect>
+								<a href="javascript:" operation-type="run">
+									<i class="layui-icon layui-icon-refresh-3"
+									   style="font-size: 16px; color:#5CB896;"></i>
+									运行
+								</a>
+							</dd>
+							<dd lay-unselect>
+								<a href="javascript:" operation-type="test">
+									<i class="layui-icon layui-icon-refresh-3" style="font-size: 16px;"></i>
+									测试
+								</a>
+							</dd>
+							<dd>
+								<hr>
+							</dd>
+							<dd lay-unselect>
+								<a href="javascript:" operation-type="edit">
+									<i class="layui-icon layui-icon-edit" style="font-size: 16px;"></i>
+									编辑
+								</a>
+							</dd>
+							<dd lay-unselect>
+								<a href="javascript:" operation-type="copy">
+									<i class="layui-icon layui-icon-template" style="font-size: 16px;"></i>
+									复制
+								</a>
+							</dd>
+							<dd lay-unselect>
+								<a href="javascript:" operation-type="enable">
+									<i class="layui-icon layui-icon-triangle-r" style="font-size: 16px;"></i>
+									启用
+								</a>
+							</dd>
+							<dd lay-unselect>
+								<a href="javascript:" operation-type="disable">
+									<i class="layui-icon layui-icon-pause" style="font-size: 16px;"></i>
+									停用
+								</a>
+							</dd>
+							<dd>
+								<hr>
+							</dd>
+							<dd lay-unselect>
+								<a href="javascript:" operation-type="delete">
+									<i class="layui-icon layui-icon-delete"
+									   style="font-size: 16px; color: #D9534F;"></i>
+									删除
+								</a>
+							</dd>
+						</dl>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<div class="layui-tab-content">
+			<div class="layui-tab-item layui-show">
+				<h2 class="agent-name">测试代理</h2>
+				<hr>
+				<div class="layui-form layuimini-form layui-col-sm12" lay-filter="agentForm">
+					<input type="hidden" name="agentTypeInfo" class="agentTypeInfo">
+					<input type="hidden" name="agentInfo" class="agentInfo" data-readonly="true">
+					<input type="hidden" name="id">
+					<div class="layui-form-item">
+						<label class="layui-form-label">类型</label>
+						<div class="layui-input-block">
+							<p class="layui-form-text" id="type"></p>
+						</div>
+					</div>
+					<div class="layui-form-item schedule-item">
+						<label class="layui-form-label">执行计划</label>
+						<div class="layui-input-block">
+							<p id="schedule" class="layui-form-text"></p>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">结果保存时间</label>
+						<div class="layui-input-block">
+							<p id="keepDataTime" class="layui-form-text"></p>
+						</div>
+					</div>
+					<div class="layui-form-item sources-item">
+						<label class="layui-form-label">数据源</label>
+						<div class="layui-input-block">
+							<ul id="sources" class="layui-form-text"></ul>
+						</div>
+					</div>
+					<div class="layui-form-item propagateImmediately-item">
+						<label class="layui-form-label">立即推送</label>
+						<div class="layui-input-block">
+							<p class="layui-form-text">
+								<span class="layui-badge layui-bg-blue" id="propagateImmediately"></span>
+							</p>
+						</div>
+					</div>
+					<div class="layui-form-item receivers-item">
+						<label class="layui-form-label">事件接收方</label>
+						<div class="layui-input-block">
+							<ul id="receivers" class="layui-form-text"></ul>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">方案</label>
+						<div class="layui-input-block">
+							<p id="scenarios" class="layui-form-text"></p>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">状态</label>
+						<div class="layui-input-block">
+							<p class="layui-form-text">
+								<span id="state"></span>
+							</p>
+						</div>
+					</div>
+					<div class="layui-form-item agent-form"></div>
+				</div>
+			</div>
+			<div class="layui-tab-item">2</div>
+			<div class="layui-tab-item">3</div>
+		</div>
+	</div>
+</div>
+
+<script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'request', 'miniTab', 'xmSelect', 'miniAdmin', 'element'], function () {
+        var form = layui.form;
+        var $ = layui.$;
+        var request = layui.request;
+        var layer = layui.layer;
+        var miniTab = layui.miniTab;
+        var xmSelect = layui.xmSelect;
+        var miniAdmin = layui.miniAdmin;
+        var element = layui.element;
+
+        request.get("/agents/5"/*+sessionStorage.getItem("agent_id")*/, {}, function (res) {
+            if (res.code === 0) {
+                var agentType = res.data.agentType;
+                form.render();
+                form.val('agentForm', {
+                    "id": res.data.id,
+                    "agentTypeInfo": JSON.stringify(agentType),
+                    "agentInfo": res.data.options
+                })
+                $(".agent-name").html(res.data.name);
+                $("#type").html(agentType.name);
+                var schedules = agentType.schedules;
+                schedules.map(function (schedule) {
+                    if (schedule.code == res.data.schedule) {
+                        $("#schedule").html(schedule.desc);
+                    }
+                });
+                $("#keepDataTime").html(res.data.keepDataTimeStr);
+                $("#propagateImmediately").html(res.data.propagateImmediately ? '是' : '否');
+                $("#state").html(res.data.stateStr);
+
+                for (let i = 0; res.data.sourceAgents && i < res.data.sourceAgents.length; i++) {
+                    let sourceAgent = res.data.sourceAgents[i];
+                    let li = $('<li style="margin-bottom: 5px">' +
+                        '<a href="javascript:" class="layui-badge-rim">' + sourceAgent.name + '</a>'
+                        + '</li>');
+                    li.find("a").click(function () {
+                        miniTab.openNewTabByIframe({
+                            title: sourceAgent.name,
+                            href: 'static/page/agent/agent_detail.html?id=' + sourceAgent.id
+                        })
+                    })
+                    $('#sources').append(li);
+                }
+                for (let i = 0; res.data.receiverAgents && i < res.data.receiverAgents.length; i++) {
+                    let receiverAgent = res.data.receiverAgents[i];
+                    let li = $('<li style="margin-bottom: 5px">' +
+                        '<a href="javascript:" class="layui-badge-rim">' + receiverAgent.name + '</a>'
+                        + '</li>');
+                    li.find("a").click(function () {
+                        miniTab.openNewTabByIframe({
+                            title: receiverAgent.name,
+                            href: 'static/page/agent/agent_detail.html?id=' + receiverAgent.id
+                        })
+                    })
+                    $('#receivers').append(li);
+                }
+                for (let i = 0; res.data.scenarios && i < res.data.scenarios.length; i++) {
+                    let scenario = res.data.scenarios[i];
+                    let li = $('<li style="margin-bottom: 5px">' +
+                        '<a href="javascript:" class="layui-badge-rim">' + scenario.name + '</a>'
+                        + '</li>');
+                    li.find("a").click(function () {
+                        sessionStorage.setItem('scenario_id', scenario.id)
+                        miniTab.openNewTabByIframe({
+                            title: scenario.name,
+                            href: 'static/page/scenario/detail.html?id=' + scenario.id
+                        })
+                        return false;
+                    })
+                    $('#scenarios').append(li);
+                }
+                $("#state").html(res.data.stateStr);
+                if (res.data.state===2){
+                    $("#state").addClass("layui-badge layui-bg-green");
+                }else if (res.data.state===3){
+                    $("#state").addClass("layui-badge");
+                }else if (res.data.state===0){
+                    $("#state").addClass("layui-badge layui-bg-orange");
+                }else {
+                    $("#state").addClass("layui-badge-rim");
+                }
+                $(".agent-form").html(miniTab.getHrefContent(agentType.formUrl)).show();
+            }
+        })
+        element.on('tab(subMenu)', function () {
+            console.log(this.getAttribute('lay-id'))
+        });
+
+        element.on('nav(operation)', function (elem) {
+            var operationType = $(this).attr('operation-type');
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

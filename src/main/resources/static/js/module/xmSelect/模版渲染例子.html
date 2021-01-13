@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div id="demo">
+    </div>
+</body>
+
+</html>
+<script src="./xm-select.js"></script>
+<script>
+
+    const xmSelectTemplateMethod = {
+            default(item){
+                    return item.name
+            },
+            1(item){
+                return `<div style='color:${item.color};background:${item.background||'black'}'>${item.name}</div>`
+            },
+            static(item){
+                const {name,value,list} = item
+                console.log(list);
+                return `</br><ul>${list.reduce((prv,next)=>{
+                    return prv+`<li>${name}-${value}-${next}</li>`
+                },'')}</ul>`
+            },
+            htmlOption(item){
+                const {option,value} = item
+                const { tagName,selfClose,elementAttr } = option
+                let elementStr = selfClose ? `<${tagName} {{elementAttr}} />` : `<${tagName} {{elementAttr}}></${tagName}>`
+                return elementStr.replace('{{elementAttr}}',elementAttr)
+            }
+    }
+
+    const selectData = [
+        {
+            name:'demo1',
+            value:'1',
+            type:1,
+            color:'red'
+        },
+        {
+            name:'demo2',
+            type:'1',
+            value:'2',
+            background:'yellow'
+        },
+        {
+            name:'demo3',
+            type:'static',
+            value:'3',
+            list:[1,2,3,'aa','00000']
+        },
+        {
+            name:'demo4',
+            type:'htmlOption',
+            value:4,
+            option:{
+                tagName:'input',
+                selfClose:true,
+                elementAttr:'id="option" data-value="10000" value=4'
+            }
+        }
+    ]
+xmSelect.render({
+    el:"#demo",
+    data:selectData,
+    template({item}){
+        const renderMethod = xmSelectTemplateMethod[item.type] || xmSelectTemplateMethod.default
+        return renderMethod(item)
+    }
+})
+</script>

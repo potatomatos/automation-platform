@@ -1,3 +1,13 @@
+<style>
+	.jsoneditor-menu {
+		background-color: #6c928c;
+		border-bottom: #6c928c
+	}
+
+	.jsoneditor {
+		border: thin solid #6c928c;
+	}
+</style>
 <div class="layui-input-block">
 	<input type="hidden" class="validation-error" name="validationError" value="0">
 	<div id="optionsEditor" style="height: 800px"></div>
@@ -8,7 +18,6 @@
         var layer = layui.layer,
             $ = layui.$,
             jsoneditor = layui.jsoneditor;
-
         var agentTypeInfo = $(".agentTypeInfo").val();
         var agentType={};
         var agentInfo=$(".agentInfo").val();
@@ -39,6 +48,15 @@
 	            }else {
                     $(".validation-error").val(0);
 	            }
+            }
+        }
+        if ($(".agentInfo").attr('data-readonly')){
+			option.mode='code';
+            option.modes=['code','text'];
+            option.onEditable=function (node) {
+                if (!node.path) {
+                    return false;
+                }
             }
         }
         var optionsEditor = jsoneditor.render('#optionsEditor', option);
