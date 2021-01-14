@@ -110,7 +110,7 @@
         /**
          * 获取表单数据
          * */
-        request.get('/scenarios/detail/' + sessionStorage.getItem("scenario_id"), {}, function (res) {
+        request.get('/scenarios/detail/' +miniTab.getQueryVariable("id"), {}, function (res) {
             if (res.code === 0) {
                 $(".name").html(res.data.name);
                 $("#iconView").attr("class",res.data.icon);
@@ -133,7 +133,6 @@
                     console.log('id', id, 'name', name);
                 }
                 $('.edit').click(function () {
-                    sessionStorage.setItem('scenario_id',res.data.id)
                     miniTab.openNewTabByIframe({
                         title:'编辑'+res.data.name,
                         href:'static/page/scenario/edit.html?id='+res.data.id

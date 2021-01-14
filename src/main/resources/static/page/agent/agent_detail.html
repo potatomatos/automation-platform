@@ -179,8 +179,9 @@
         var miniAdmin = layui.miniAdmin;
         var element = layui.element;
 
-        request.get("/agents/5"/*+sessionStorage.getItem("agent_id")*/, {}, function (res) {
+        request.get("/agents/"+miniTab.getQueryVariable("id"), {}, function (res) {
             if (res.code === 0) {
+                console.log("location",location.href)
                 var agentType = res.data.agentType;
                 form.render();
                 form.val('agentForm', {
@@ -232,7 +233,6 @@
                         '<a href="javascript:" class="layui-badge-rim">' + scenario.name + '</a>'
                         + '</li>');
                     li.find("a").click(function () {
-                        sessionStorage.setItem('scenario_id', scenario.id)
                         miniTab.openNewTabByIframe({
                             title: scenario.name,
                             href: 'static/page/scenario/detail.html?id=' + scenario.id

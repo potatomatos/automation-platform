@@ -148,14 +148,12 @@
                 });
             } else if (layEvent === 'edit') {
                 //编辑
-                sessionStorage.setItem('agent_type_id',data.id)
                 miniTab.openNewTabByIframe({
                     title:'编辑'+data.agentTypeName,
                     href:'static/page/agent/edit_agent_type.html?id='+data.id
                 })
             } else if (layEvent === 'detail') {
                 //详情
-                sessionStorage.setItem('agent_type_id',data.id)
                 miniTab.openNewTabByIframe({
                     title:data.agentTypeName+'详情',
                     href:'static/page/agent/agent_type_detail.html?id='+data.id

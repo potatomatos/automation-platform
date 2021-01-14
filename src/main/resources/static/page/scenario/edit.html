@@ -102,14 +102,15 @@
 <script src="/static/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
 <script src="/static/lib/jq-module/paigusu.min.js" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'request', 'miniAdmin', 'iconPickerFa', 'xmSelect'], function () {
+    layui.use(['form', 'request', 'miniAdmin', 'iconPickerFa', 'xmSelect','miniTab'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
             miniAdmin = layui.miniAdmin,
             iconPickerFa = layui.iconPickerFa,
             xmSelect = layui.xmSelect,
-            request = layui.request;
+            request = layui.request,
+            miniTab = layui.miniTab;
 
         /**
          * 初始化表单，要加上，不然刷新部分组件可能会不加载
@@ -119,7 +120,7 @@
         /**
          * 获取表单数据
          * */
-        request.get('/scenarios/detail/' + sessionStorage.getItem("scenario_id"), {}, function (res) {
+        request.get('/scenarios/detail/' +miniTab.getQueryVariable("id"), {}, function (res) {
             if (res.code === 0) {
                 //表单初始赋值
 	            var data={

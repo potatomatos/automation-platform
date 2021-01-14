@@ -251,8 +251,6 @@
         })
 
         window.scenarioDetail = function (id, name) {
-            console.log('id', id, 'name', name);
-            sessionStorage.setItem('scenario_id', id)
             miniTab.openNewTabByIframe({
                 title: name,
                 href: 'static/page/scenario/detail.html?id=' + id

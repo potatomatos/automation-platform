@@ -136,13 +136,14 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'jsoneditor', 'wangEditor', 'request', 'miniTab','miniAdmin'], function () {
+    layui.use(['form', 'jsoneditor', 'wangEditor', 'request', 'miniTab','miniAdmin','miniTab'], function () {
         var form = layui.form,
             layer = layui.layer,
             $ = layui.$,
             miniAdmin = layui.miniAdmin,
             wangEditor = layui.wangEditor,
             request = layui.request,
+            miniTab = layui.miniTab,
             jsoneditor = layui.jsoneditor;
 
         /**
@@ -153,7 +154,7 @@
         /**
          * 获取表单数据
          * */
-        request.get('/agentType/detail/' + sessionStorage.getItem("agent_type_id"), {}, function (res) {
+        request.get('/agentType/detail/' +miniTab.getQueryVariable("id"), {}, function (res) {
             if (res.code === 0) {
                 /**
                  * 获取下拉框

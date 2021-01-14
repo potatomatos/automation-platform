@@ -181,7 +181,6 @@
             })
 
         window.scenarioDetail = function (id, name) {
-            sessionStorage.setItem('scenario_id', id)
             miniTab.openNewTabByIframe({
                 title: name,
                 href: 'static/page/scenario/detail.html?id=' + id
@@ -257,7 +256,7 @@
         })
 
         //获取代理详情
-        request.get("/agents/5"/*+sessionStorage.getItem("agent_id")*/, {}, function (result) {
+        request.get("/agents/"+miniTab.getQueryVariable("id"), {}, function (result) {
             if (result.code === 0) {
                 var agentType=result.data.agentType;
                 //执行计划

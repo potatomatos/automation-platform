@@ -147,14 +147,12 @@
 
             if (layEvent === 'detail') {
                 //详情
-                sessionStorage.setItem('scenario_id',data.id)
                 miniTab.openNewTabByIframe({
                     title:data.name,
                     href:'static/page/scenario/detail.html?id='+data.id
                 })
             } else if (layEvent === 'edit') {
                 //编辑
-                sessionStorage.setItem('scenario_id',data.id)
                 miniTab.openNewTabByIframe({
                     title:'编辑'+data.name,
                     href:'static/page/scenario/edit.html?id='+data.id

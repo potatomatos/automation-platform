@@ -124,7 +124,7 @@
         /**
          * 获取表单数据
          * */
-        request.get('/agentType/detail/' + sessionStorage.getItem("agent_type_id"),{},function (res) {
+        request.get('/agentType/detail/' + miniTab.getQueryVariable("id"),{},function (res) {
             if (res.code === 0) {
                 //表单初始赋值
                 form.val('agentTypeForm', {
@@ -170,7 +170,6 @@
          * 编辑按钮事件
          * */
         $(".edit-btn").click(function () {
-            sessionStorage.setItem('agent_type_id',$(".id").val())
             miniTab.openNewTabByIframe({
                 title:'编辑'+$('.agentTypeName').html(),
                 href:'static/page/agent/edit_agent_type.html?id='+$(".id").val()
