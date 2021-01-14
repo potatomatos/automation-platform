@@ -11,6 +11,7 @@ import cn.cxnxs.webspider.web.vo.AgentVo;
 import cn.cxnxs.webspider.web.vo.ScenariosVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,7 +104,7 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
     }
 
     @Override
-    public AgentVo getAgentById(Integer id) {
+    public AgentVo getAgentById(@NotNull Integer id) {
         //获取代理信息
         Agent agent=getById(id);
         AgentVo agentVo=new AgentVo();

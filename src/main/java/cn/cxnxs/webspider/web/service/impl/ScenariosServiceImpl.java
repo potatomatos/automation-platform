@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.istack.internal.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class ScenariosServiceImpl extends ServiceImpl<ScenariosMapper, Scenarios
      * @return
      */
     @Override
-    public ScenariosVo getDetail(Integer id) {
+    public ScenariosVo getDetail(@NotNull Integer id) {
         Scenarios scenarios = super.getById(id);
         ScenariosVo scenariosVo=new ScenariosVo();
         if (scenarios!=null){
