@@ -28,6 +28,9 @@
 		.layui-form-text {
 			padding: 9px 15px;
 		}
+		.hide {
+			display: none;
+		}
 	</style>
 </head>
 <body>
@@ -49,7 +52,7 @@
 									运行
 								</a>
 							</dd>
-							<dd lay-unselect>
+							<dd lay-unselect class="hide dry-run">
 								<a href="javascript:" operation-type="test">
 									<i class="layui-icon layui-icon-refresh-3" style="font-size: 16px;"></i>
 									测试
@@ -111,25 +114,25 @@
 							<p class="layui-form-text" id="type"></p>
 						</div>
 					</div>
-					<div class="layui-form-item schedule-item">
+					<div class="layui-form-item schedule-item hide">
 						<label class="layui-form-label">执行计划</label>
 						<div class="layui-input-block">
 							<p id="schedule" class="layui-form-text"></p>
 						</div>
 					</div>
-					<div class="layui-form-item">
+					<div class="layui-form-item hide">
 						<label class="layui-form-label">结果保存时间</label>
 						<div class="layui-input-block">
 							<p id="keepDataTime" class="layui-form-text"></p>
 						</div>
 					</div>
-					<div class="layui-form-item sources-item">
+					<div class="layui-form-item sources-item hide">
 						<label class="layui-form-label">数据源</label>
 						<div class="layui-input-block">
 							<ul id="sources" class="layui-form-text"></ul>
 						</div>
 					</div>
-					<div class="layui-form-item propagateImmediately-item">
+					<div class="layui-form-item propagateImmediately-item hide">
 						<label class="layui-form-label">立即推送</label>
 						<div class="layui-input-block">
 							<p class="layui-form-text">
@@ -137,7 +140,7 @@
 							</p>
 						</div>
 					</div>
-					<div class="layui-form-item receivers-item">
+					<div class="layui-form-item receivers-item hide">
 						<label class="layui-form-label">事件接收方</label>
 						<div class="layui-input-block">
 							<ul id="receivers" class="layui-form-text"></ul>
@@ -169,19 +172,17 @@
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'request', 'miniTab', 'xmSelect', 'miniAdmin', 'element'], function () {
+    layui.use(['form', 'request', 'miniTab', 'miniAdmin', 'element'], function () {
         var form = layui.form;
         var $ = layui.$;
         var request = layui.request;
         var layer = layui.layer;
         var miniTab = layui.miniTab;
-        var xmSelect = layui.xmSelect;
         var miniAdmin = layui.miniAdmin;
         var element = layui.element;
 
         request.get("/agents/"+miniTab.getQueryVariable("id"), {}, function (res) {
             if (res.code === 0) {
-                console.log("location",location.href)
                 var agentType = res.data.agentType;
                 form.render();
                 form.val('agentForm', {
@@ -191,42 +192,56 @@
                 })
                 $(".agent-name").html(res.data.name);
                 $("#type").html(agentType.name);
-                var schedules = agentType.schedules;
-                schedules.map(function (schedule) {
-                    if (schedule.code == res.data.schedule) {
-                        $("#schedule").html(schedule.desc);
-                    }
-                });
-                $("#keepDataTime").html(res.data.keepDataTimeStr);
-                $("#propagateImmediately").html(res.data.propagateImmediately ? '是' : '否');
-                $("#state").html(res.data.stateStr);
 
-                for (let i = 0; res.data.sourceAgents && i < res.data.sourceAgents.length; i++) {
-                    let sourceAgent = res.data.sourceAgents[i];
-                    let li = $('<li style="margin-bottom: 5px">' +
-                        '<a href="javascript:" class="layui-badge-rim">' + sourceAgent.name + '</a>'
-                        + '</li>');
-                    li.find("a").click(function () {
-                        miniTab.openNewTabByIframe({
-                            title: sourceAgent.name,
-                            href: 'static/page/agent/agent_detail.html?id=' + sourceAgent.id
-                        })
-                    })
-                    $('#sources').append(li);
+                if (agentType.canDryRun){
+                    $('.dry-run').show();
                 }
-                for (let i = 0; res.data.receiverAgents && i < res.data.receiverAgents.length; i++) {
-                    let receiverAgent = res.data.receiverAgents[i];
-                    let li = $('<li style="margin-bottom: 5px">' +
-                        '<a href="javascript:" class="layui-badge-rim">' + receiverAgent.name + '</a>'
-                        + '</li>');
-                    li.find("a").click(function () {
-                        miniTab.openNewTabByIframe({
-                            title: receiverAgent.name,
-                            href: 'static/page/agent/agent_detail.html?id=' + receiverAgent.id
-                        })
-                    })
-                    $('#receivers').append(li);
+                if (agentType.canBeScheduled){
+                    $('.schedule-item').show();
+                    var schedules = agentType.schedules;
+                    schedules.map(function (schedule) {
+                        if (schedule.code == res.data.schedule) {
+                            $("#schedule").html(schedule.desc);
+                        }
+                    });
                 }
+                if(agentType.canReceiveEvents){
+                    $('.sources-item').show();
+                    $('.propagateImmediately-item').show();
+                    $("#propagateImmediately").html(res.data.propagateImmediately ? '是' : '否');
+                    for (let i = 0; res.data.sourceAgents && i < res.data.sourceAgents.length; i++) {
+                        let sourceAgent = res.data.sourceAgents[i];
+                        let li = $('<li style="margin-bottom: 5px">' +
+                            '<a href="javascript:" class="layui-badge-rim">' + sourceAgent.name + '</a>'
+                            + '</li>');
+                        li.find("a").click(function () {
+                            miniTab.openNewTabByIframe({
+                                title: sourceAgent.name,
+                                href: 'static/page/agent/agent_detail.html?id=' + sourceAgent.id
+                            })
+                        })
+                        $('#sources').append(li);
+                    }
+                }
+                if (agentType.canCreateEvents){
+                    $('.keepDataTime-item').show();
+                    $('.receivers-item').show();
+                    $("#keepDataTime").html(res.data.keepDataTimeStr);
+                    for (let i = 0; res.data.receiverAgents && i < res.data.receiverAgents.length; i++) {
+                        let receiverAgent = res.data.receiverAgents[i];
+                        let li = $('<li style="margin-bottom: 5px">' +
+                            '<a href="javascript:" class="layui-badge-rim">' + receiverAgent.name + '</a>'
+                            + '</li>');
+                        li.find("a").click(function () {
+                            miniTab.openNewTabByIframe({
+                                title: receiverAgent.name,
+                                href: 'static/page/agent/agent_detail.html?id=' + receiverAgent.id
+                            })
+                        })
+                        $('#receivers').append(li);
+                    }
+                }
+
                 for (let i = 0; res.data.scenarios && i < res.data.scenarios.length; i++) {
                     let scenario = res.data.scenarios[i];
                     let li = $('<li style="margin-bottom: 5px">' +

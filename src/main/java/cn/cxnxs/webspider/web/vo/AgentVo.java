@@ -15,9 +15,7 @@ import java.util.List;
  * @author mengjinyuan
  * @since 2020-11-10
  */
-public class AgentVo implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class AgentVo extends BaseVo{
 
     /**
      * 主键
@@ -135,6 +133,12 @@ public class AgentVo implements Serializable {
 
     private String stateStr;
 
+    private Integer scenarioId;
+
+    private Boolean hasSources;
+
+    private Boolean hasReceivers;
+
     /**
      * 状态 0暂停 1待运行 2执行中 3已禁用
      */
@@ -176,11 +180,42 @@ public class AgentVo implements Serializable {
             this.str = str;
         }
     }
+
+    public Boolean getHasSources() {
+        if (this.sourceAgents!=null&&this.sourceAgents.size()!=0){
+            return true;
+        }
+        return hasSources;
+    }
+
+    public void setHasSources(Boolean hasSources) {
+        this.hasSources = hasSources;
+    }
+
+    public Boolean getHasReceivers() {
+        if (this.receiverAgents!=null&&this.receiverAgents.size()!=0){
+            return true;
+        }
+        return this.hasReceivers;
+    }
+
+    public void setHasReceivers(Boolean hasReceivers) {
+        this.hasReceivers = hasReceivers;
+    }
+
     public String getStateStr() {
         if (this.stateStr==null){
             this.stateStr=State.getStr(this.state);
         }
         return stateStr;
+    }
+
+    public Integer getScenarioId() {
+        return scenarioId;
+    }
+
+    public void setScenarioId(Integer scenarioId) {
+        this.scenarioId = scenarioId;
     }
 
     public void setStateStr(String stateStr) {
@@ -451,6 +486,9 @@ public class AgentVo implements Serializable {
                 ", sourceAgents=" + sourceAgents +
                 ", receiverAgents=" + receiverAgents +
                 ", scenarios=" + scenarios +
-                '}';
+                ", agentType=" + agentType +
+                ", stateStr='" + stateStr + '\'' +
+                ", scenarioId=" + scenarioId +
+                "} " + super.toString();
     }
 }

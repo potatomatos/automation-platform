@@ -15,12 +15,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.istack.internal.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,7 +61,7 @@ public class ScenariosServiceImpl extends ServiceImpl<ScenariosMapper, Scenarios
      * @return
      */
     @Override
-    public ScenariosVo getDetail(@NotNull Integer id) {
+    public ScenariosVo getDetail(Integer id) {
         Scenarios scenarios = super.getById(id);
         ScenariosVo scenariosVo=new ScenariosVo();
         if (scenarios!=null){
@@ -91,7 +89,7 @@ public class ScenariosServiceImpl extends ServiceImpl<ScenariosMapper, Scenarios
      * 保存数据
      *
      * @param scenariosVo
-     * @return
+     * @return none
      */
     @Transactional
     @Override

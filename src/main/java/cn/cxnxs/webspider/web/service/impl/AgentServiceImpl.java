@@ -1,20 +1,22 @@
 package cn.cxnxs.webspider.web.service.impl;
 
+import cn.cxnxs.webspider.exception.AgentNotFoundException;
 import cn.cxnxs.webspider.utils.ObjectUtil;
+import cn.cxnxs.webspider.utils.StringUtil;
 import cn.cxnxs.webspider.web.entity.*;
 import cn.cxnxs.webspider.web.mapper.AgentMapper;
 import cn.cxnxs.webspider.web.service.IAgentService;
 import cn.cxnxs.webspider.web.service.ILinksService;
 import cn.cxnxs.webspider.web.service.IScenarioAgentRelService;
-import cn.cxnxs.webspider.web.vo.AgentTypeVo;
-import cn.cxnxs.webspider.web.vo.AgentVo;
-import cn.cxnxs.webspider.web.vo.ScenariosVo;
+import cn.cxnxs.webspider.web.vo.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,22 +56,22 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
     public List<AgentVo> findByTypeProperties(AgentTypeVo agentTypeVo) {
         AgentMapper agentMapper = getBaseMapper();
         List<Agent> agents = agentMapper.selectByTypeProperties(agentTypeVo);
-        return ObjectUtil.copyListProperties(agents,AgentVo.class);
+        return ObjectUtil.copyListProperties(agents, AgentVo.class);
     }
 
     @Transactional
     @Override
     public Map<String, String> saveAgent(AgentVo agentVo) {
         //保存代理
-        Agent agent=new Agent();
-        ObjectUtil.transValues(agentVo,agent);
+        Agent agent = new Agent();
+        ObjectUtil.transValues(agentVo, agent);
         agent.insertOrUpdate();
         //保存代理和方案关系
-        scenarioAgentRelService.remove(new QueryWrapper<ScenarioAgentRel>().eq("agent_id",agent.getId()));
-        if (agentVo.getScenarioIds()!=null){
+        scenarioAgentRelService.remove(new QueryWrapper<ScenarioAgentRel>().eq("agent_id", agent.getId()));
+        if (agentVo.getScenarioIds() != null) {
             String[] scenarios = agentVo.getScenarioIds().split(",");
             for (String scenarioId : scenarios) {
-                ScenarioAgentRel senarioAgentRel=new ScenarioAgentRel();
+                ScenarioAgentRel senarioAgentRel = new ScenarioAgentRel();
                 senarioAgentRel.setAgentId(agent.getId());
                 senarioAgentRel.setScenarioId(Integer.parseInt(scenarioId));
                 senarioAgentRel.setCreatedAt(LocalDateTime.now());
@@ -77,22 +79,22 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
             }
         }
         //保存代理-代理关系
-        linksService.remove(new QueryWrapper<Links>().eq("source_id",agent.getId()));
-        if (agentVo.getReceivers()!=null){
+        linksService.remove(new QueryWrapper<Links>().eq("source_id", agent.getId()));
+        if (agentVo.getReceivers() != null) {
             String[] receivers = agentVo.getReceivers().split(",");
             for (String receiverId : receivers) {
-                Links links=new Links();
+                Links links = new Links();
                 links.setSourceId(agent.getId());
                 links.setReceiverId(Integer.parseInt(receiverId));
                 links.setCreatedAt(LocalDateTime.now());
                 links.insertOrUpdate();
             }
         }
-        linksService.remove(new QueryWrapper<Links>().eq("receiver_id",agent.getId()));
-        if (agentVo.getSources()!=null){
+        linksService.remove(new QueryWrapper<Links>().eq("receiver_id", agent.getId()));
+        if (agentVo.getSources() != null) {
             String[] sources = agentVo.getSources().split(",");
-            for (String sourceId: sources) {
-                Links links=new Links();
+            for (String sourceId : sources) {
+                Links links = new Links();
                 links.setSourceId(Integer.parseInt(sourceId));
                 links.setReceiverId(agent.getId());
                 links.setCreatedAt(LocalDateTime.now());
@@ -104,48 +106,90 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
     }
 
     @Override
-    public AgentVo getAgentById(@NotNull Integer id) {
+    public AgentVo getAgentById(Integer id) throws AgentNotFoundException {
+        if (id == null) {
+            throw new AgentNotFoundException();
+        }
         //获取代理信息
-        Agent agent=getById(id);
-        AgentVo agentVo=new AgentVo();
-        ObjectUtil.transValues(agent,agentVo);
+        Agent agent = getById(id);
+        if (agent == null) {
+            throw new AgentNotFoundException();
+        }
+        AgentVo agentVo = new AgentVo();
+        ObjectUtil.transValues(agent, agentVo);
         //获取数据源
-        List<Links> sourcesLinks=new Links().selectList(new QueryWrapper<Links>().eq("receiver_id",id));
-        if (sourcesLinks.size()!=0){
-            List<Integer> sourcesIds=new ArrayList<>();
+        List<Links> sourcesLinks = new Links().selectList(new QueryWrapper<Links>().eq("receiver_id", id));
+        if (sourcesLinks.size() != 0) {
+            List<Integer> sourcesIds = new ArrayList<>();
             for (Links links : sourcesLinks) {
                 sourcesIds.add(links.getSourceId());
             }
-            List<Agent> sources=new Agent().selectList(new QueryWrapper<Agent>().in("id",sourcesIds));
-            agentVo.setSourceAgents(ObjectUtil.copyListProperties(sources,AgentVo.class));
+            List<Agent> sources = new Agent().selectList(new QueryWrapper<Agent>().in("id", sourcesIds));
+            agentVo.setSourceAgents(ObjectUtil.copyListProperties(sources, AgentVo.class));
         }
         //获取接收者
-        List<Links> receiversLinks=new Links().selectList(new QueryWrapper<Links>().eq("source_id",id));
-        if (receiversLinks.size()!=0){
-            List<Integer> receiversIds=new ArrayList<>();
+        List<Links> receiversLinks = new Links().selectList(new QueryWrapper<Links>().eq("source_id", id));
+        if (receiversLinks.size() != 0) {
+            List<Integer> receiversIds = new ArrayList<>();
             for (Links links : receiversLinks) {
                 receiversIds.add(links.getReceiverId());
             }
-            List<Agent> receivers=new Agent().selectList(new QueryWrapper<Agent>().in("id",receiversIds));
-            agentVo.setReceiverAgents(ObjectUtil.copyListProperties(receivers,AgentVo.class));
+            List<Agent> receivers = new Agent().selectList(new QueryWrapper<Agent>().in("id", receiversIds));
+            agentVo.setReceiverAgents(ObjectUtil.copyListProperties(receivers, AgentVo.class));
         }
         //获取方案
         List<ScenarioAgentRel> scenarioAgentRels = new ScenarioAgentRel().selectList(new QueryWrapper<ScenarioAgentRel>().eq("agent_id", id));
-        if (scenarioAgentRels.size()!=0){
-            List<Integer> scenarioIds=new ArrayList<>();
+        if (scenarioAgentRels.size() != 0) {
+            List<Integer> scenarioIds = new ArrayList<>();
             for (ScenarioAgentRel scenarioAgentRel : scenarioAgentRels) {
                 scenarioIds.add(scenarioAgentRel.getScenarioId());
             }
-            List<Scenarios> scenarios=new Scenarios().selectList(new QueryWrapper<Scenarios>().in("id",scenarioIds));
+            List<Scenarios> scenarios = new Scenarios().selectList(new QueryWrapper<Scenarios>().in("id", scenarioIds));
             agentVo.setScenarios(ObjectUtil.copyListProperties(scenarios, ScenariosVo.class));
         }
-        if (agentVo.getType()!=null){
+        if (agentVo.getType() != null) {
             AgentType agentType = new AgentType().selectById(agentVo.getType());
-            AgentTypeVo agentTypeVo=new AgentTypeVo();
-            ObjectUtil.transValues(agentType,agentTypeVo);
+            AgentTypeVo agentTypeVo = new AgentTypeVo();
+            ObjectUtil.transValues(agentType, agentTypeVo);
             agentVo.setAgentType(agentTypeVo);
         }
         return agentVo;
+    }
+
+    @Override
+    public PageResult<List<AgentVo>> pageList(AgentVo agentVo) {
+        if (StringUtil.isNotEmpty(agentVo.getName())) {
+            agentVo.setName(StringUtil.sqlLike(agentVo.getName()));
+        }
+        IPage<Agent> page = getBaseMapper().pageSelectList(new Page<>(agentVo.getPage(), agentVo.getLimit()), agentVo);
+        List<AgentVo> agentVos = ObjectUtil.copyListProperties(page.getRecords(), AgentVo.class);
+        agentVos.forEach(agent -> {
+            //获取方案
+            List<ScenarioAgentRel> scenarioAgentRels = new ScenarioAgentRel().selectList(new QueryWrapper<ScenarioAgentRel>().eq("agent_id", agent.getId()));
+            if (scenarioAgentRels.size() != 0) {
+                List<Integer> scenarioIds = new ArrayList<>();
+                for (ScenarioAgentRel scenarioAgentRel : scenarioAgentRels) {
+                    scenarioIds.add(scenarioAgentRel.getScenarioId());
+                }
+                List<Scenarios> scenarios = new Scenarios().selectList(new QueryWrapper<Scenarios>().in("id", scenarioIds));
+                agent.setScenarios(ObjectUtil.copyListProperties(scenarios, ScenariosVo.class));
+            }
+            //获取类型
+            if (agent.getType() != null) {
+                AgentType agentType = new AgentType().selectById(agent.getType());
+                AgentTypeVo agentTypeVo = new AgentTypeVo();
+                ObjectUtil.transValues(agentType, agentTypeVo);
+                agent.setAgentType(agentTypeVo);
+            }
+            //是否有数据源
+            Integer hasSources = new Links().selectCount(new QueryWrapper<Links>().eq("receiver_id", agent.getId()));
+            Integer hasReceiver = new Links().selectCount(new QueryWrapper<Links>().eq("source_id", agent.getId()));
+            agent.setHasSources(hasSources!=0);
+            agent.setHasReceivers(hasReceiver!=0);
+        });
+        PageResult<List<AgentVo>> result = new PageResult<>(page.getTotal());
+        result.setData(agentVos);
+        return result;
     }
 
 }

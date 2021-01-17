@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="/static/css/layuimini.css?v=2.0.4.2" media="all">
 <link rel="stylesheet" href="/static/css/themes/default.css" media="all">
 <link rel="stylesheet" href="/static/css/public.css" media="all">
+<link rel="stylesheet" href="/static/js/module/dropdown/dropdown.css" media="all">
 <!--[if lt IE 9]>
 <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
 <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
@@ -13,115 +14,265 @@
 		line-height: 34px;
 		padding: 0 8px;
 	}
+
+	.layui-table-cell {
+		display: table-cell;
+		vertical-align: middle;
+	}
+	.layui-nav .layui-nav-item a, .layui-nav .layui-nav-item a:hover {
+		height: 40px;
+		line-height: 40px;
+		color: #000;
+	}
+
+	.layui-nav .layui-nav-item {
+		background-color: #fff;
+	}
+	.type-name{
+		color: #999999;
+		font-size: 12px;
+		margin-right: 4px;
+		margin-top: 3px;
+	}
+	.scenarios{
+		margin-top: 10px;
+	}
+	.label{
+		display: inline;
+		padding: .2em;
+		font-size: 75%;
+		font-weight: bold;
+		line-height: 1;
+		color: #fff;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: baseline;
+		border-radius: .25em;
+	}
 </style>
 <body>
 <div class="layuimini-container layuimini-page-anim">
 	<div class="layuimini-main">
 		<div>
-			<script type="text/html" id="agentTypeTableToolBar">
+			<fieldset class="table-search-fieldset">
+				<legend></legend>
+				<div style="margin: 10px 10px 10px 10px">
+					<form class="layui-form layui-form-pane" action="">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<input type="text" name="name" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline">
+								<button type="submit" class="layui-btn layui-btn-primary" lay-submit
+								        lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</fieldset>
+			<script type="text/html" id="agentTableToolBar">
 				<div class="layui-btn-container">
-					<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add">定义agent</button>
+					<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add"><i
+							class="layui-icon layui-icon-add-1"></i>添加
+					</button>
+					<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="fold"><i
+							class="layui-icon layui-icon-refresh"></i>全部运行
+					</button>
+					<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add"><i
+							class="layui-icon layui-icon-chart"></i>查看图表
+					</button>
+					<button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add"><i
+							class="fa fa-adjust"></i>&nbsp;隐藏禁用代理
+					</button>
 				</div>
 			</script>
-			<table id="agentTypeTable" class="layui-table" lay-filter="agentTypeTable"></table>
+			<table id="agentTable" class="layui-table" lay-filter="agentTable"></table>
 		</div>
 	</div>
 </div>
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <!-- 操作列 -->
-<script type="text/html" id="operation">
-	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
-	<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+<script type="text/html" id="operationTpl">
+	<button class="layui-btn layui-btn-xs"
+	        lay-filter="ft{{d.id}}"
+	        lay-dropdown="{
+	        align:'left',
+	        menus: [
+		        {layIcon:'layui-icon-refresh-3',txt: '运行', event:'{{d.id}}-run'},
+		        {layIcon:'layui-icon-refresh-1',txt: '测试', event:'{{d.id}}-test'},
+		        {layIcon:'layui-icon-survey',txt: '详情', event:'{{d.id}}-detail'},
+		        'hr',
+		        {layIcon:'layui-icon-edit',txt: '编辑', event:'{{d.id}}-edit'},
+		        {layIcon:'layui-icon-template',txt: '复制', event:'{{d.id}}-copy'},
+		        {layIcon:'layui-icon-triangle-r',txt: '启用', event:'{{d.id}}-enable'},
+		        {layIcon:'layui-icon-pause',txt: '停用', event:'{{d.id}}-disable'},
+		        'hr',
+		        {layIcon:'layui-icon-delete',txt: '删除', event:'{{d.id}}-delete'},
+	        ]
+	        }">
+		<span>操作</span>
+		<i class="layui-icon layui-icon-triangle-d"></i>
+	</button>
+</script>
+<script type="text/html" id="nameTpl">
+	<div class="layui-col-xs12" style="padding: 10px 0">
+		<div>{{d.name}}</div>
+		<dl class="layui-col-xs12">
+			<dt class="pull-left type-name">{{d.agentType.agentTypeName}}</dt>
+			{{#  layui.each(d.scenarios, function(index, item){ }}
+			<dd class="pull-left scenarios">
+				<a class="label" href="javascript:" style="color: #FFFFFF;background-color: {{item.tagBgColor}}">
+					{{item.name}}
+				</a>
+			</dd>
+			{{#  }) }}
+		</dl>
+	</div>
 </script>
 <script>
-    layui.use(['table', 'timeago'], function () {
+    layui.use(['table', 'timeago','element','dropdown','miniTab'], function () {
         var $ = layui.jquery;
         var table = layui.table;
         var layer = layui.layer;
         var miniTab = layui.miniTab;
         var timeago = layui.timeago;
+        var form = layui.form;
+        var dropdown = layui.dropdown;
         // 渲染表格
         layer.load(2);
         table.render({
-            elem: '#agentTypeTable',
-            url: '/agentType',
-            toolbar: '#agentTypeTableToolBar', //开启头部工具栏，并为其绑定左侧模板
-            defaultToolbar:null,
+            elem: '#agentTable',
+            url: '/agents',
+            toolbar: '#agentTableToolBar', //开启头部工具栏，并为其绑定左侧模板
+            defaultToolbar: null,
             title: '代理定义信息',
-            page: false,
+            limits: [15, 30, 50, 100],
+            limit: 15,
+            page: true,
+            skin: 'line',
             cols: [[
-                {field: 'agentTypeName', title: '名称', sort: true},
-                {field: 'handler', title: '处理器'},
                 {
-                    field: 'canCreateEvents', title: '生成事件',
+                    title: '&nbsp;&nbsp;&nbsp;&nbsp;',
+                    width: 32,
                     templet: function (d) {
-                        var val = '';
-                        if (d.canCreateEvents) {
-                            val = '是'
-                        } else {
-                            val = '否'
-                        }
-                        return '<em>' + val + '</em>';
+                        return '<i class="layui-icon layui-icon-link"></i>';
                     }
                 },
                 {
-                    field: 'canDryRun', title: '允许空运行',
-                    templet: function (d) {
-                        var val = '';
-                        if (d.canDryRun) {
-                            val = '是'
-                        } else {
-                            val = '否'
-                        }
-                        return '<em>' + val + '</em>';
-                    }
+                    field: 'name', title: '名称',
+                    templet: '#nameTpl'
                 },
-                {
-                    field: 'canReceiveEvents', title: '接收事件',
-                    templet: function (d) {
-                        var val = '';
-                        if (d.canReceiveEvents) {
-                            val = '是'
-                        } else {
-                            val = '否'
-                        }
-                        return '<em>' + val + '</em>';
-                    }
-                },
-                {
-                    field: 'canBeScheduled', title: '定时执行',
-                    templet: function (d) {
-                        var val = '';
-                        if (d.canBeScheduled) {
-                            val = '是'
-                        } else {
-                            val = '否'
-                        }
-                        return '<em>' + val + '</em>';
-                    }
-                },
-                {field: 'defaultScheduleStr', title: '默认执行计划'},
                 {
                     field: 'createdAt', title: '创建时间',
                     templet: function (d) {
                         return timeago.format(d.createdAt)
                     }
                 },
-                {fixed: 'right', title: '操作', toolbar: '#operation', width: 150}
+                {
+                    field: 'schedule', title: '执行计划',
+                    templet: function (d) {
+                        var agentType = d.agentType;
+                        var schedules = agentType.schedules;
+                        var s = '';
+                        schedules.map(function (schedule) {
+                            if (schedule.code == d.schedule) {
+                                s = schedule.desc;
+                            }
+                        });
+                        return s;
+                    }
+                },
+                {
+                    field: 'lastCheckAt', title: '上次执行时间',
+                    templet: function (d) {
+                        return timeago.format(d.lastCheckAt)
+                    }
+                },
+                {
+                    field: 'lastDataIme', title: '上次产生数据时间',
+                    templet: function (d) {
+                        return timeago.format(d.lastDataIme)
+                    }
+                },
+                {
+                    field: 'dataCount', title: '数据总数'
+                },
+                {
+                    field: 'stateStr', title: '状态',
+                    templet: function (d) {
+                        var div=$("<div></div>");
+                        var el=$("<div></div>");
+                        el.html(d.stateStr);
+                        if (d.state===2){
+                            el.addClass("layui-badge layui-bg-green");
+                        }else if (d.state===3){
+                            el.addClass("layui-badge");
+                        }else if (d.state===0){
+                            el.addClass("layui-badge layui-bg-orange");
+                        }else {
+                            el.addClass("layui-badge-rim");
+                        }
+                        return div.append(el).html();
+                    }
+                },
+                {
+                    title: '&nbsp;&nbsp;&nbsp;&nbsp;',
+                    toolbar: '#operationTpl'
+                },
             ]],
-            done: function () {
+            done: function (res) {
                 layer.closeAll('loading');
+                let tableData = res.data;
+                dropdown.suite();
+                for (let i = 0; i < tableData.length; i++) {
+                    dropdown.onFilter("ft" + tableData[i].id, function (event) {
+                        layer.msg("你点击了："  + event);
+                        let split = event.split("-");
+                        var id=split[0];
+                        var ev=split[1];
+                        if (ev==='edit'){
+                            //编辑
+                            miniTab.openNewTabByIframe({
+                                title:'编辑'+tableData[i].name,
+                                href:'static/page/agent/edit_agent.html?id='+id
+                            })
+                        }else if (ev==='detail'){
+                            //详情
+                            miniTab.openNewTabByIframe({
+                                title:tableData[i].name,
+                                href:'static/page/agent/agent_detail.html?id='+id
+                            })
+                        }
+
+                    });
+                }
             }
         });
-
+        /**
+         * 监听搜索操作
+         */
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('agentTable', {
+                page: {
+                    curr: 1
+                }, where: data.field
+            }, 'data');
+            return false;
+        });
         table.on('toolbar(agentTypeTable)', function () {
             // miniPage.hashChange('static/page/agent/add_agent_type.html')
         });
-
+        //行单击事件
+        table.on('row(agentTable)', function (obj) {
+            //标注选中样式
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+            return true;
+        });
         //监听工具条
-        table.on('tool(agentTypeTable)', function (obj) {
+        table.on('tool(agentTable)', function (obj) {
             var data = obj.data;
             var layEvent = obj.event;
             if (layEvent === 'del') {

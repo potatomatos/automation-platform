@@ -1,8 +1,10 @@
 package cn.cxnxs.webspider.web.service;
 
+import cn.cxnxs.webspider.exception.AgentNotFoundException;
 import cn.cxnxs.webspider.web.entity.Agent;
 import cn.cxnxs.webspider.web.vo.AgentTypeVo;
 import cn.cxnxs.webspider.web.vo.AgentVo;
+import cn.cxnxs.webspider.web.vo.Result;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -45,5 +47,12 @@ public interface IAgentService extends IService<Agent> {
      * @param id 主键
      * @return none
      */
-    AgentVo getAgentById(Integer id);
+    AgentVo getAgentById(Integer id) throws AgentNotFoundException;
+
+    /**
+     * 分页查询
+     * @param agentVo 入参
+     * @return none
+     */
+    Result<List<AgentVo>> pageList(AgentVo agentVo);
 }

@@ -38,8 +38,8 @@ public class ScenariosController {
 
 
     @RequestMapping("")
-    public PageResult<List<ScenariosVo>> list(Long page,Long limit,ScenariosVo scenario){
-        Page<ScenariosVo> pagination=new Page<>(page,limit);
+    public PageResult<List<ScenariosVo>> list(ScenariosVo scenario){
+        Page<ScenariosVo> pagination=new Page<>(scenario.getPage(),scenario.getLimit());
         IPage<ScenariosVo> result = scenariosService.getList(pagination,scenario);
         PageResult<List<ScenariosVo>> res=new PageResult<>(pagination.getTotal());
         res.setData(result.getRecords());

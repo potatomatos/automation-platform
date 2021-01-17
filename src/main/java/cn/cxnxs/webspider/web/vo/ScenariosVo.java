@@ -10,7 +10,7 @@ import java.util.List;
  * @author mengjinyuan
  * @date 2020-12-10 00:18
  **/
-public class ScenariosVo implements Serializable {
+public class ScenariosVo extends BaseVo {
     /**
      * 主键
      */
