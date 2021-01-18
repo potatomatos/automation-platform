@@ -255,8 +255,11 @@
             data: []
         })
 
+
         //获取代理详情
+        layer.load(2);
         request.get("/agents/"+miniTab.getQueryVariable("id"), {}, function (result) {
+            layer.closeAll('loading');
             if (result.code === 0) {
                 var agentType=result.data.agentType;
                 //执行计划

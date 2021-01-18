@@ -181,7 +181,9 @@
         var miniAdmin = layui.miniAdmin;
         var element = layui.element;
 
+        layer.load(2);
         request.get("/agents/"+miniTab.getQueryVariable("id"), {}, function (res) {
+            layer.closeAll('loading');
             if (res.code === 0) {
                 var agentType = res.data.agentType;
                 form.render();
