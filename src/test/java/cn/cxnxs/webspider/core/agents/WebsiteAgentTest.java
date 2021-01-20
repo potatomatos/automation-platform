@@ -4,7 +4,6 @@ import cn.cxnxs.webspider.utils.ObjectUtil;
 import cn.cxnxs.webspider.web.entity.Agent;
 import cn.cxnxs.webspider.web.service.IAgentService;
 import cn.cxnxs.webspider.web.vo.AgentVo;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -25,7 +26,7 @@ public class WebsiteAgentTest {
     private static final Logger logger= LoggerFactory.getLogger(WebsiteAgentTest.class);
 
     @Test
-    public void testGet() throws IOException {
+    public void testGet() throws  NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         Agent agent = agentService.getById(5);
         AgentVo agentVo=new AgentVo();
         ObjectUtil.transValues(agent,agentVo);
