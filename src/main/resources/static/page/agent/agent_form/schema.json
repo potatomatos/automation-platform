@@ -13,6 +13,15 @@
     "url_from_event": {
       "type": "string"
     },
+    "method": {
+      "title": "请求方式",
+      "enum": [
+        "get",
+        "post"
+      ],
+      "type": "string",
+      "default": "get"
+    },
     "type": {
       "title": "数据类型",
       "enum": [
@@ -37,21 +46,28 @@
       "minimum": 1
     },
     "headers": {
+      "title": "请求头信息",
       "type": "object"
     },
     "extract": {
+      "title": "数据获取规则配置",
       "type": "object"
     },
     "template": {
       "type": "object"
     },
     "events_order": {
+      "type": "array"
+    },
+    "data": {
+      "title": "请求数据",
       "type": "object"
     }
   },
   "required": [
     "url",
     "extract",
-    "type"
+    "type",
+    "method"
   ]
 }
