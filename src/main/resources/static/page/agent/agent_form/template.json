@@ -7,8 +7,32 @@
   "include_sort_info": true,
   "extract": {
     "title": {
-      "css": "li[@data-category='nowplaying']",
+      "css": "li[data-category='nowplaying']",
       "value": "@data-title"
+    },
+    "score": {
+      "css": "li[data-category='nowplaying']",
+      "value": "@data-score"
+    },
+    "star": {
+      "css": "li[data-category='nowplaying']",
+      "value": "@data-star"
+    },
+    "release": {
+      "css": "li[data-category='nowplaying']",
+      "value": "@data-release"
+    },
+    "region": {
+      "css": "li[data-category='nowplaying']",
+      "value": "@data-region"
+    },
+    "actors": {
+      "css": "li[data-category='nowplaying']",
+      "value": "@data-actors"
+    },
+    "director": {
+      "css": "li[data-category='nowplaying']",
+      "value": "@data-director"
     }
   },
   "headers": {},

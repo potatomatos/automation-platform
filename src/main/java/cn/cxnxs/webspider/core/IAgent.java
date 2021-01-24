@@ -1,11 +1,10 @@
 package cn.cxnxs.webspider.core;
 
 import com.alibaba.fastjson.JSONObject;
+import com.arronlong.httpclientutil.exception.HttpProcessException;
 
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 代理接口
@@ -15,16 +14,23 @@ public interface IAgent {
 
     /**
      * 接收上个代理传来的事件
-     * @param options 配置信息
      * @param event 数据源事件
+     * @return 当前对象
      */
-    void receive(JSONObject options,Event event) throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException;
+    List<Map<String, String>> collect(Event event) throws HttpProcessException;
+
 
     /**
-     * 输出
-     * @param event 输入事件
-     * @return 输出事件
+     * 获取状态
+     * @return int
      */
-    JSONObject output(Event event);
+    int getStatus();
+
+    /**
+     * 设置配置参数
+     * @param options 配置
+     * @return 当前对象
+     */
+    IAgent option(JSONObject options);
 
 }
