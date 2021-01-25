@@ -74,6 +74,12 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
+			<label class="layui-form-label">任务处理器</label>
+			<div class="layui-input-block">
+				<p class="handler layui-form-text"></p>
+			</div>
+		</div>
+		<div class="layui-form-item">
 			<label class="layui-form-label">简介</label>
 			<div class="layui-input-block">
 				<div class="introduction" style="height: auto"></div>
@@ -138,6 +144,7 @@
                 $(".formUrl").html(res.data.formUrl)
                 $(".introduction").html(res.data.introduction)
                 $(".description").html(res.data.descriptionHtml)
+                $(".handler").html(res.data.handler)
 
                 for (var i = 0; i < res.data.schedules.length; i++) {
                     var obj = res.data.schedules[i];

@@ -99,6 +99,19 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
+			<label class="layui-form-label">任务处理器</label>
+			<div class="layui-input-block">
+				<label>
+					<input
+							type="text"
+							name="handler"
+							lay-verify="required"
+							lay-reqtext="任务处理器不能为空"
+							class="layui-input">
+				</label>
+			</div>
+		</div>
+		<div class="layui-form-item">
 			<label class="layui-form-label" for="introduction">简介</label>
 			<div class="layui-input-block">
 				<div id="introductionEditor"></div>
@@ -173,6 +186,7 @@
                     "canDryRun": res.data.id,
                     "canReceiveEvents": res.data.id,
                     "formUrl": res.data.formUrl,
+                    "handler": res.data.handler,
                     "defaultSchedule": res.data.defaultSchedule
                 })
                 //json编辑器赋值 start
