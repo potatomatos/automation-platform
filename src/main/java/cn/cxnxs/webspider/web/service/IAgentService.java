@@ -1,10 +1,13 @@
 package cn.cxnxs.webspider.web.service;
 
+import cn.cxnxs.webspider.core.Event;
 import cn.cxnxs.webspider.exception.AgentNotFoundException;
 import cn.cxnxs.webspider.web.entity.Agent;
 import cn.cxnxs.webspider.web.vo.AgentTypeVo;
 import cn.cxnxs.webspider.web.vo.AgentVo;
 import cn.cxnxs.webspider.web.vo.Result;
+import com.alibaba.fastjson.JSONObject;
+import com.arronlong.httpclientutil.exception.HttpProcessException;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -55,4 +58,14 @@ public interface IAgentService extends IService<Agent> {
      * @return none
      */
     Result<List<AgentVo>> pageList(AgentVo agentVo);
+
+    /**
+     * 测试运行
+     * @param type 任务类型
+     * @param options  任务配置
+     * @param event
+     * @return 解析数据结果
+     */
+    List<Map<String,String>> dryRun(Integer type, JSONObject options, JSONObject payload) throws AgentNotFoundException, ClassNotFoundException, HttpProcessException;
+
 }

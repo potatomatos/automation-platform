@@ -22,6 +22,42 @@
 		.hide {
 			display: none;
 		}
+
+		pre {
+			display: block;
+			padding: 9.5px;
+			margin: 0 0 10px;
+			font-size: 13px;
+			line-height: 1.42857;
+			word-break: break-all;
+			word-wrap: break-word;
+			background-color: #f5f5f5;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+		h5 {
+			display: block;
+			font-size: 0.83em;
+			margin-block-start: 1.67em;
+			margin-block-end: 1.67em;
+			margin-inline-start: 0px;
+			margin-inline-end: 0px;
+			font-weight: bold;
+		}
+
+		.dry-run-event-sample a {
+			color: #333333;
+		}
+
+		.dry-run-event-sample a:hover {
+			color: #428bca;
+			text-decoration-line: underline;
+		}
+
+		.modal-body {
+			padding: 20px;
+		}
 	</style>
 </head>
 <body>
@@ -121,7 +157,9 @@
 				<button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="save"><span
 						class="fa fa-check"></span>保存
 				</button>
-				<button class="layui-btn layui-btn-success layui-btn-sm btn-dry-run hide"><span class="fa fa-refresh"></span>测试运行</button>
+				<button class="layui-btn layui-btn-success layui-btn-sm btn-dry-run hide"><span
+						class="fa fa-refresh"></span>测试运行
+				</button>
 				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="back">返回</button>
 			</div>
 		</div>
@@ -131,11 +169,48 @@
 	</fieldset>
 	<div class="layui-col-sm12 layui-col-md6 layui-col-lg6 layui-container" id="descriptionHtml"></div>
 </div>
+<script type="text/html" id="dataModal">
+	<div class="modal-body ">
+		<h5>最近接收到的数据</h5>
+		<hr class="layui-bg-gray">
+		<ul>
+			{{# layui.each(d.list, function(index, item){ }}
+			<li class="dry-run-event-sample">
+				<a href="javascript:" data-index='{{index}}'>
+					<pre>
+						{{JSON.stringify(item).substring(0,d.length)}}
+					</pre>
+				</a>
+			</li>
+			{{# }); }}
+		</ul>
+		<h5>即将提交的数据</h5>
+		<hr class="layui-bg-gray">
+		<div id="sourceDataEditor" style="height: 500px"></div>
+		<div style="padding-top: 20px">
+			<button class="layui-btn layui-btn-success layui-btn-sm btn-run">运行</button>
+		</div>
+	</div>
+</script>
+<script type="text/html" id="resultModal">
+	<div class="modal-body ">
+			{{#  if(d.code === 0){ }}
+		{{# layui.each(d.data, function(index, item){ }}
+			<pre>
+				{{JSON.stringify(item,null, 4)}}
+			</pre>
+		{{# }); }}
+			 {{#  } }}
+			{{#  if(d.code !== 0){ }}
+				{{d.data}}
+			{{#  } }}
+	</div>
+</script>
 
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'request', 'miniTab', 'xmSelect', 'miniAdmin'], function () {
+    layui.use(['form', 'request', 'miniTab', 'xmSelect', 'miniAdmin', "laytpl", "jsoneditor"], function () {
         var form = layui.form;
         var $ = layui.$;
         var request = layui.request;
@@ -143,8 +218,8 @@
         var miniTab = layui.miniTab;
         var xmSelect = layui.xmSelect;
         var miniAdmin = layui.miniAdmin;
-
-
+        var laytpl = layui.laytpl;
+        var jsoneditor = layui.jsoneditor;
         /**
          * 多选下拉框
          */
@@ -191,7 +266,7 @@
             return false;
         }
         //数据源
-        var sources = xmSelect.render({
+        let sources = xmSelect.render({
             el: '#sources',
             toolbar: {
                 show: true,
@@ -258,10 +333,10 @@
 
         //获取代理详情
         layer.load(2);
-        request.get("/agents/"+miniTab.getQueryVariable("id"), {}, function (result) {
+        request.get("/agents/" + miniTab.getQueryVariable("id"), {}, function (result) {
             layer.closeAll('loading');
             if (result.code === 0) {
-                var agentType=result.data.agentType;
+                var agentType = result.data.agentType;
                 //执行计划
                 $.each(agentType.schedules, function (index, item) {
                     $('#schedule').append(new Option(item.desc, item.code));
@@ -281,20 +356,20 @@
                 })
                 if (result.data.propagateImmediately) {
                     $("#propagateImmediately").val(1);
-                    $("#propagateImmediately").attr("checked","")
+                    $("#propagateImmediately").attr("checked", "")
                 } else {
                     $("#propagateImmediately").val(0);
                 }
-				if (agentType.canDryRun){
+                if (agentType.canDryRun) {
                     $('.btn-dry-run').show();
-				}
-                if (agentType.canBeScheduled){
+                }
+                if (agentType.canBeScheduled) {
                     $('.schedule-item').show();
                 }
-                if (agentType.canBeScheduled){
+                if (agentType.canBeScheduled) {
                     $('.schedule-item').show();
                 }
-	            if(agentType.canReceiveEvents){
+                if (agentType.canReceiveEvents) {
                     $('.sources-item').show();
                     request.syncGet('/agents/find', {
                         canReceiveEvents: agentType.canReceiveEvents
@@ -305,8 +380,8 @@
                             });
                         }
                     });
-	            }
-				if (agentType.canCreateEvents){
+                }
+                if (agentType.canCreateEvents) {
                     $('.keepDataTime-item').show();
                     $('.receivers-item').show();
                     request.syncGet('/agents/find', {
@@ -318,7 +393,7 @@
                             })
                         }
                     });
-				}
+                }
                 $('#descriptionHtml').html(agentType.descriptionHtml);
                 $(".type-name").html(agentType.name);
                 $(".agent-form").html(miniTab.getHrefContent(agentType.formUrl)).show();
@@ -331,13 +406,88 @@
                         })
                     }
                 })
-	            //设置值
+                //设置值
                 sources.setValue(result.data.sourceAgents);
                 receivers.setValue(result.data.receiverAgents);
                 scenarios.setValue(result.data.scenarios);
                 form.render();
+
+                $(".btn-dry-run").click(function () {
+                    var sourceIds = sources.getValue();
+                    if (sourceIds && sourceIds.length > 0) {
+                        //获取数据源最近数据
+                        request.syncGet("/agents/events/" + sourceIds[0].id, {
+                            page: 1, limit: 5
+                        }, function (res) {
+                            if (res.code === 0) {
+                                renderDataModal(agentType.id, res.data);
+                            }
+                        })
+                    } else {
+                        renderDataModal(agentType.id, []);
+                    }
+                });
             }
         })
+
+        function renderDataModal(agentType, data) {
+            var getTpl = dataModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            var length = parseInt(clientWidth / 8)
+            console.log("长度", length)
+            laytpl(getTpl).render({list: data, length: length}, function (html) {
+                layer.open({
+                    title: '选择数据',
+                    type: 1,
+                    area: [clientWidth + 'px', clientHeight + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+
+                var sourceDataEditor = jsoneditor.render('#sourceDataEditor', {
+                    mode: 'code',
+                    modes: ['code', 'tree']
+                });
+                $(".dry-run-event-sample").click(function () {
+                    sourceDataEditor.set(data[$(this).find("a").attr("data-index")].payload)
+                });
+
+                $(".btn-run").click(function () {
+                    request.post("/agents/dryRun/" + agentType, {
+                        payload: JSON.stringify(sourceDataEditor.get()),
+                        options: $("#options").val()
+                    }, function (res) {
+                        if (res.code === 0) {
+                            renderResultModal(res.code, res.data);
+                        } else {
+                            renderResultModal(res.code, res.stackInfo);
+                        }
+                    })
+                    return false;
+                })
+            });
+        }
+
+        function renderResultModal(code, data) {
+            var getTpl = resultModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            laytpl(getTpl).render({data: data, code: code}, function (html) {
+                layer.closeAll();
+                layer.open({
+                    title: '采集结果',
+                    type: 1,
+                    area: [clientWidth + 'px', (clientHeight-600) + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+            });
+        }
 
         form.on('switch(propagateImmediately)', function (data) {
             if (this.checked) {

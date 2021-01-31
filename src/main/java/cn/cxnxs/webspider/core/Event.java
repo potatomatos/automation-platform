@@ -77,7 +77,9 @@ public class Event{
     public void setPayload(JSONObject payload) {
         this.payload = payload;
     }
-
+    public void setPayload(String payload) {
+        this.payload = JSONObject.parseObject(payload);
+    }
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

@@ -15,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Map;
  * @author mengjinyuan
  * @date 2021-01-18 14:02
  **/
+@Component
 public class WebsiteAgent extends AbstractAgent {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsiteAgent.class);

@@ -1,14 +1,22 @@
 package cn.cxnxs.webspider.web.service.impl;
 
+import cn.cxnxs.webspider.core.Event;
+import cn.cxnxs.webspider.core.IAgent;
 import cn.cxnxs.webspider.exception.AgentNotFoundException;
 import cn.cxnxs.webspider.utils.ObjectUtil;
+import cn.cxnxs.webspider.utils.SpringContextUtil;
 import cn.cxnxs.webspider.utils.StringUtil;
 import cn.cxnxs.webspider.web.entity.*;
 import cn.cxnxs.webspider.web.mapper.AgentMapper;
 import cn.cxnxs.webspider.web.service.IAgentService;
 import cn.cxnxs.webspider.web.service.ILinksService;
 import cn.cxnxs.webspider.web.service.IScenarioAgentRelService;
-import cn.cxnxs.webspider.web.vo.*;
+import cn.cxnxs.webspider.web.vo.AgentTypeVo;
+import cn.cxnxs.webspider.web.vo.AgentVo;
+import cn.cxnxs.webspider.web.vo.PageResult;
+import cn.cxnxs.webspider.web.vo.ScenariosVo;
+import com.alibaba.fastjson.JSONObject;
+import com.arronlong.httpclientutil.exception.HttpProcessException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,7 +24,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -190,6 +197,19 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
         PageResult<List<AgentVo>> result = new PageResult<>(page.getTotal());
         result.setData(agentVos);
         return result;
+    }
+
+    @Override
+    public List<Map<String, String>> dryRun(Integer type, JSONObject options, JSONObject payload) throws AgentNotFoundException, ClassNotFoundException, HttpProcessException {
+        AgentType agentType=new AgentType().selectById(type);
+        if (agentType==null){
+            throw new AgentNotFoundException("代理类型不存在");
+        }
+        Class<IAgent> clazz= (Class<IAgent>) Class.forName(agentType.getHandler());
+        IAgent agent=SpringContextUtil.getBean(clazz);
+        Event event=new Event();
+        event.setPayload(payload);
+        return agent.option(options).collect(event);
     }
 
 }
