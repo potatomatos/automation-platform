@@ -437,7 +437,6 @@
             var offsetLeft = $(".layuimini-container").offset().left;
             var offsetTop = $(".layuimini-container").offset().top;
             var length = parseInt(clientWidth / 8)
-            console.log("长度", length)
             laytpl(getTpl).render({list: data, length: length}, function (html) {
                 layer.open({
                     title: '选择数据',

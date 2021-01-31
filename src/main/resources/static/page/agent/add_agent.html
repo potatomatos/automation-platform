@@ -11,14 +11,51 @@
 	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 	<style>
-		.agent-type-label strong{
+		.agent-type-label strong {
 			font-weight: bold;
 		}
-		xm-select > .xm-body .xm-option-content{
-			white-space:unset !important;
+
+		xm-select > .xm-body .xm-option-content {
+			white-space: unset !important;
 		}
-		.btn-dry-run,.agent-form{
+
+		.btn-dry-run, .agent-form {
 			display: none;
+		}
+		pre {
+			display: block;
+			padding: 9.5px;
+			margin: 0 0 10px;
+			font-size: 13px;
+			line-height: 1.42857;
+			word-break: break-all;
+			word-wrap: break-word;
+			background-color: #f5f5f5;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+		h5 {
+			display: block;
+			font-size: 0.83em;
+			margin-block-start: 1.67em;
+			margin-block-end: 1.67em;
+			margin-inline-start: 0px;
+			margin-inline-end: 0px;
+			font-weight: bold;
+		}
+
+		.dry-run-event-sample a {
+			color: #333333;
+		}
+
+		.dry-run-event-sample a:hover {
+			color: #428bca;
+			text-decoration-line: underline;
+		}
+
+		.modal-body {
+			padding: 20px;
 		}
 	</style>
 </head>
@@ -118,8 +155,11 @@
 		<div class="layui-form-item  agent-form"></div>
 		<div class="layui-form-item layui-hide btn-item">
 			<div class="layui-input-block">
-				<button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="save"><span class="fa fa-check"></span>保存</button>
-				<button class="layui-btn layui-btn-success layui-btn-sm btn-dry-run"><span class="fa fa-refresh"></span>测试运行</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="save"><span
+						class="fa fa-check"></span>保存
+				</button>
+				<button class="layui-btn layui-btn-success layui-btn-sm btn-dry-run"><span class="fa fa-refresh"></span>测试运行
+				</button>
 				<button class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="back">返回</button>
 			</div>
 		</div>
@@ -128,12 +168,50 @@
 		<legend>使用方式</legend>
 	</fieldset>
 	<div class="layui-col-sm12 layui-col-md6 layui-col-lg6 layui-container layui-hide" id="descriptionHtml"></div>
+	<script type="text/html" id="dataModal">
+		<div class="modal-body ">
+			<h5>最近接收到的数据</h5>
+			<hr class="layui-bg-gray">
+			<ul>
+				{{# layui.each(d.list, function(index, item){ }}
+				<li class="dry-run-event-sample">
+					<a href="javascript:" data-index='{{index}}'>
+					<pre>
+						{{JSON.stringify(item).substring(0,d.length)}}
+					</pre>
+					</a>
+				</li>
+				{{# }); }}
+			</ul>
+			<h5>即将提交的数据</h5>
+			<hr class="layui-bg-gray">
+			<div id="sourceDataEditor" style="height: 500px"></div>
+			<div style="padding-top: 20px">
+				<button class="layui-btn layui-btn-success layui-btn-sm btn-run">运行</button>
+			</div>
+		</div>
+	</script>
+	<script type="text/html" id="resultModal">
+		<div class="modal-body ">
+			{{# if(d.code === 0){ }}
+			{{# layui.each(d.data, function(index, item){ }}
+			<pre>
+				{{JSON.stringify(item,null, 4)}}
+			</pre>
+			{{# });
+			}}
+			{{# } }}
+			{{# if(d.code !== 0){ }}
+			{{d.data}}
+			{{# } }}
+		</div>
+	</script>
 </div>
 
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form','request', 'miniTab', 'xmSelect','miniAdmin'], function () {
+    layui.use(['form', 'request', 'miniTab', 'xmSelect', 'miniAdmin',"laytpl", "jsoneditor"], function () {
         var form = layui.form;
         var $ = layui.$;
         var request = layui.request;
@@ -141,41 +219,43 @@
         var miniTab = layui.miniTab;
         var xmSelect = layui.xmSelect;
         var miniAdmin = layui.miniAdmin;
+        var laytpl = layui.laytpl;
+        var jsoneditor = layui.jsoneditor;
 
         /**
          * 多选下拉框
          */
-        //方案
+            //方案
         var scenarios = xmSelect.render({
-            el: '#scenarios',
-            toolbar: {
-                show: true,
-                list: ['CLEAR']
-            },
-            filterable: true,
-            name: 'scenarioIds',
-            paging: true,
-            pageSize: 10,
-            theme: {
-                color: '#C1C1C1'
-            },
-            filterMethod: function (val, item, index, prop) {
-                if (val === item.value) {
-                    return true;
-                }
-                return item.name.indexOf(val) !== -1;
-            },
-            model: {
-                label: {
-                    block: {
-                        template: function (item, sels) {
-                            return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                el: '#scenarios',
+                toolbar: {
+                    show: true,
+                    list: ['CLEAR']
+                },
+                filterable: true,
+                name: 'scenarioIds',
+                paging: true,
+                pageSize: 10,
+                theme: {
+                    color: '#C1C1C1'
+                },
+                filterMethod: function (val, item, index, prop) {
+                    if (val === item.value) {
+                        return true;
+                    }
+                    return item.name.indexOf(val) !== -1;
+                },
+                model: {
+                    label: {
+                        block: {
+                            template: function (item, sels) {
+                                return '<a href="javascript:" onclick="scenarioDetail(' + item.id + ',\'' + item.name + '\')">' + item.name + '</a>';
+                            }
                         }
                     }
-                }
-            },
-            data: []
-        })
+                },
+                data: []
+            })
         //获取下拉列表
         request.get('/scenarios/all', {}, function (res) {
             if (res.code === 0) {
@@ -185,7 +265,7 @@
                 })
             }
         })
-	    //数据源
+        //数据源
         var sources = xmSelect.render({
             el: '#sources',
             toolbar: {
@@ -217,7 +297,7 @@
             },
             data: []
         })
-		//接收者
+        //接收者
         var receivers = xmSelect.render({
             el: '#receivers',
             toolbar: {
@@ -301,7 +381,7 @@
                     filterMethod: function (val, item, index, prop) {
                         return item.name.indexOf(val) !== -1;
                     },
-                    on: function(data){
+                    on: function (data) {
                         //arr:  当前多选已选中的数据
                         var arr = data.arr;
                         //change, 此次选择变化的数据,数组
@@ -309,59 +389,75 @@
                         //isAdd, 此次操作是新增还是删除
                         var isAdd = data.isAdd;
 
-                        console.log("arr",arr,'change',change,'isAdd',isAdd);
+                        console.log("arr", arr, 'change', change, 'isAdd', isAdd);
 
-                        if(isAdd){
+                        if (isAdd) {
                             form.render();
                             $('.agentTypeInfo').val(JSON.stringify(change[0]));
-							$('.scenarios-item').removeClass("layui-hide").addClass("layui-show");
-							$('.btn-item').removeClass("layui-hide").addClass("layui-show");
-							$('#descriptionHtml').html(change[0].descriptionHtml).removeClass("layui-hide").addClass("layui-show");
+                            $('.scenarios-item').removeClass("layui-hide").addClass("layui-show");
+                            $('.btn-item').removeClass("layui-hide").addClass("layui-show");
+                            $('#descriptionHtml').html(change[0].descriptionHtml).removeClass("layui-hide").addClass("layui-show");
                             $('.name-item').removeClass("layui-hide").addClass("layui-show");
-                            if (change[0].canDryRun){
+                            if (change[0].canDryRun) {
                                 $('.btn-dry-run').show();
-                            }else{
+                            } else {
                                 $('.btn-dry-run').hide();
                             }
-							if (change[0].canBeScheduled){
+                            if (change[0].canBeScheduled) {
                                 $('.schedule-item').removeClass("layui-hide").addClass("layui-show");
-                            }else{
+                            } else {
                                 $('.schedule-item').removeClass("layui-show").addClass("layui-hide");
                             }
-                            if (change[0].canReceiveEvents){
+                            if (change[0].canReceiveEvents) {
                                 $('.sources-item').removeClass("layui-hide").addClass("layui-show");
-                                request.get('/agents/find',{
-                                    canReceiveEvents:change[0].canReceiveEvents
-                                },function (res) {
+                                request.get('/agents/find', {
+                                    canReceiveEvents: change[0].canReceiveEvents
+                                }, function (res) {
                                     if (res.code === 0) {
                                         sources.update({
-	                                        data:res.data
+                                            data: res.data
                                         })
                                     }
                                 });
-                            }else{
+                            } else {
                                 $('.sources-item').removeClass("layui-show").addClass("layui-hide");
                             }
-                            if (change[0].canCreateEvents){
+                            if (change[0].canCreateEvents) {
                                 $('.keepDataTime-item').removeClass("layui-hide").addClass("layui-show");
                                 $('.receivers-item').removeClass("layui-hide").addClass("layui-show");
-                                request.get('/agents/find',{
-                                    canCreateEvents:change[0].canCreateEvents
-                                },function (res) {
+                                request.get('/agents/find', {
+                                    canCreateEvents: change[0].canCreateEvents
+                                }, function (res) {
                                     if (res.code === 0) {
                                         receivers.update({
-                                            data:res.data
+                                            data: res.data
                                         })
                                     }
                                 });
-                            }else{
+                            } else {
                                 $('.keepDataTime-item').removeClass("layui-show").addClass("layui-hide");
                                 $('.receivers-item').removeClass("layui-show").addClass("layui-hide")
                             }
 
                             $(".agent-form").html(miniTab.getHrefContent(change[0].formUrl)).show();
-                        }
 
+                            $(".btn-dry-run").unbind();
+                            $(".btn-dry-run").click(function () {
+                                var sourceIds = sources.getValue();
+                                if (sourceIds && sourceIds.length > 0) {
+                                    //获取数据源最近数据
+                                    request.syncGet("/agents/events/" + sourceIds[0].id, {
+                                        page: 1, limit: 5
+                                    }, function (res) {
+                                        if (res.code === 0) {
+                                            renderDataModal(change[0].id, res.data);
+                                        }
+                                    })
+                                } else {
+                                    renderDataModal(change[0].id, []);
+                                }
+                            });
+                        }
                     },
                     data: []
                 })
@@ -373,22 +469,80 @@
             layer.msg('服务器发生错误', {icon: 5});
         });
 
+        function renderDataModal(agentType, data) {
+            var getTpl = dataModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            var length = parseInt(clientWidth / 8)
+            laytpl(getTpl).render({list: data, length: length}, function (html) {
+                layer.open({
+                    title: '选择数据',
+                    type: 1,
+                    area: [clientWidth + 'px', clientHeight + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+
+                var sourceDataEditor = jsoneditor.render('#sourceDataEditor', {
+                    mode: 'code',
+                    modes: ['code', 'tree']
+                });
+                $(".dry-run-event-sample").click(function () {
+                    sourceDataEditor.set(data[$(this).find("a").attr("data-index")].payload)
+                });
+
+                $(".btn-run").click(function () {
+                    request.post("/agents/dryRun/" + agentType, {
+                        payload: JSON.stringify(sourceDataEditor.get()),
+                        options: $("#options").val()
+                    }, function (res) {
+                        if (res.code === 0) {
+                            renderResultModal(res.code, res.data);
+                        } else {
+                            renderResultModal(res.code, res.stackInfo);
+                        }
+                    })
+                    return false;
+                })
+            });
+        }
+
+        function renderResultModal(code, data) {
+            var getTpl = resultModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            laytpl(getTpl).render({data: data, code: code}, function (html) {
+                layer.closeAll();
+                layer.open({
+                    title: '采集结果',
+                    type: 1,
+                    area: [clientWidth + 'px', (clientHeight-600) + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+            });
+        }
+
         form.on('switch(propagateImmediately)', function (data) {
-            if (this.checked){
+            if (this.checked) {
                 $(this).val(1);
-            }else {
+            } else {
                 $(this).val(0);
             }
         });
 
         //提交表单
         form.on('submit(save)', function (data) {
-            console.log('提交数据',data)
+            console.log('提交数据', data)
 
-	        if (data.field.validationError!=0){
+            if (data.field.validationError != 0) {
                 miniAdmin.error('数据输入有误');
-	            return ;
-	        }
+                return;
+            }
             layer.confirm('确认提交吗？', function () {
                 request.post('/agents/save', data.field, function (res) {
                     if (res.code === 0) {
@@ -396,7 +550,7 @@
                     } else {
                         miniAdmin.error(res.msg)
                     }
-                },null,true)
+                }, null, true)
             });
             return false;
         });

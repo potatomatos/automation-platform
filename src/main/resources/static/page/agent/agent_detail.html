@@ -28,8 +28,45 @@
 		.layui-form-text {
 			padding: 9px 15px;
 		}
+
 		.hide {
 			display: none;
+		}
+
+		pre {
+			display: block;
+			padding: 9.5px;
+			margin: 0 0 10px;
+			font-size: 13px;
+			line-height: 1.42857;
+			word-break: break-all;
+			word-wrap: break-word;
+			background-color: #f5f5f5;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+		h5 {
+			display: block;
+			font-size: 0.83em;
+			margin-block-start: 1.67em;
+			margin-block-end: 1.67em;
+			margin-inline-start: 0px;
+			margin-inline-end: 0px;
+			font-weight: bold;
+		}
+
+		.dry-run-event-sample a {
+			color: #333333;
+		}
+
+		.dry-run-event-sample a:hover {
+			color: #428bca;
+			text-decoration-line: underline;
+		}
+
+		.modal-body {
+			padding: 20px;
 		}
 	</style>
 </head>
@@ -108,6 +145,7 @@
 					<input type="hidden" name="agentTypeInfo" class="agentTypeInfo">
 					<input type="hidden" name="agentInfo" class="agentInfo" data-readonly="true">
 					<input type="hidden" name="id">
+					<input type="hidden" id="testAgentId">
 					<div class="layui-form-item">
 						<label class="layui-form-label">类型</label>
 						<div class="layui-input-block">
@@ -168,11 +206,47 @@
 		</div>
 	</div>
 </div>
-
+<script type="text/html" id="dataModal">
+	<div class="modal-body ">
+		<h5>最近接收到的数据</h5>
+		<hr class="layui-bg-gray">
+		<ul>
+			{{# layui.each(d.list, function(index, item){ }}
+			<li class="dry-run-event-sample">
+				<a href="javascript:" data-index='{{index}}'>
+					<pre>
+						{{JSON.stringify(item).substring(0,d.length)}}
+					</pre>
+				</a>
+			</li>
+			{{# }); }}
+		</ul>
+		<h5>即将提交的数据</h5>
+		<hr class="layui-bg-gray">
+		<div id="sourceDataEditor" style="height: 500px"></div>
+		<div style="padding-top: 20px">
+			<button class="layui-btn layui-btn-success layui-btn-sm btn-run">运行</button>
+		</div>
+	</div>
+</script>
+<script type="text/html" id="resultModal">
+	<div class="modal-body ">
+		{{#  if(d.code === 0){ }}
+		{{# layui.each(d.data, function(index, item){ }}
+		<pre>
+				{{JSON.stringify(item,null, 4)}}
+			</pre>
+		{{# }); }}
+		{{#  } }}
+		{{#  if(d.code !== 0){ }}
+		{{d.data}}
+		{{#  } }}
+	</div>
+</script>
 <script src="/static/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'request', 'miniTab', 'miniAdmin', 'element'], function () {
+    layui.use(['form', 'request', 'miniTab', 'miniAdmin', 'element',"laytpl", "jsoneditor"], function () {
         var form = layui.form;
         var $ = layui.$;
         var request = layui.request;
@@ -180,9 +254,10 @@
         var miniTab = layui.miniTab;
         var miniAdmin = layui.miniAdmin;
         var element = layui.element;
-
+        var laytpl = layui.laytpl;
+        var jsoneditor = layui.jsoneditor;
         layer.load(2);
-        request.get("/agents/"+miniTab.getQueryVariable("id"), {}, function (res) {
+        request.get("/agents/" + miniTab.getQueryVariable("id"), {}, function (res) {
             layer.closeAll('loading');
             if (res.code === 0) {
                 var agentType = res.data.agentType;
@@ -195,10 +270,10 @@
                 $(".agent-name").html(res.data.name);
                 $("#type").html(agentType.name);
 
-                if (agentType.canDryRun){
+                if (agentType.canDryRun) {
                     $('.dry-run').show();
                 }
-                if (agentType.canBeScheduled){
+                if (agentType.canBeScheduled) {
                     $('.schedule-item').show();
                     var schedules = agentType.schedules;
                     schedules.map(function (schedule) {
@@ -207,7 +282,7 @@
                         }
                     });
                 }
-                if(agentType.canReceiveEvents){
+                if (agentType.canReceiveEvents) {
                     $('.sources-item').show();
                     $('.propagateImmediately-item').show();
                     $("#propagateImmediately").html(res.data.propagateImmediately ? '是' : '否');
@@ -222,10 +297,11 @@
                                 href: 'static/page/agent/agent_detail.html?id=' + sourceAgent.id
                             })
                         })
+	                    $("#testAgentId").val(sourceAgent.id)
                         $('#sources').append(li);
                     }
                 }
-                if (agentType.canCreateEvents){
+                if (agentType.canCreateEvents) {
                     $('.keepDataTime-item').show();
                     $('.receivers-item').show();
                     $("#keepDataTime").html(res.data.keepDataTimeStr);
@@ -259,24 +335,97 @@
                     $('#scenarios').append(li);
                 }
                 $("#state").html(res.data.stateStr);
-                if (res.data.state===2){
+                if (res.data.state === 2) {
                     $("#state").addClass("layui-badge layui-bg-green");
-                }else if (res.data.state===3){
+                } else if (res.data.state === 3) {
                     $("#state").addClass("layui-badge");
-                }else if (res.data.state===0){
+                } else if (res.data.state === 0) {
                     $("#state").addClass("layui-badge layui-bg-orange");
-                }else {
+                } else {
                     $("#state").addClass("layui-badge-rim");
                 }
                 $(".agent-form").html(miniTab.getHrefContent(agentType.formUrl)).show();
             }
         })
+        function renderDataModal(agentType, data) {
+            var getTpl = dataModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            var length = parseInt(clientWidth / 8)
+            laytpl(getTpl).render({list: data, length: length}, function (html) {
+                layer.open({
+                    title: '选择数据',
+                    type: 1,
+                    area: [clientWidth + 'px', clientHeight + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+
+                var sourceDataEditor = jsoneditor.render('#sourceDataEditor', {
+                    mode: 'code',
+                    modes: ['code', 'tree']
+                });
+                $(".dry-run-event-sample").click(function () {
+                    sourceDataEditor.set(data[$(this).find("a").attr("data-index")].payload)
+                });
+
+                $(".btn-run").click(function () {
+                    request.post("/agents/dryRun/" + agentType, {
+                        payload: JSON.stringify(sourceDataEditor.get()),
+                        options: $("#options").val()
+                    }, function (res) {
+                        if (res.code === 0) {
+                            renderResultModal(res.code, res.data);
+                        } else {
+                            renderResultModal(res.code, res.stackInfo);
+                        }
+                    })
+                    return false;
+                })
+            });
+        }
+
+        function renderResultModal(code, data) {
+            var getTpl = resultModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            laytpl(getTpl).render({data: data, code: code}, function (html) {
+                layer.closeAll();
+                layer.open({
+                    title: '采集结果',
+                    type: 1,
+                    area: [clientWidth + 'px', (clientHeight-600) + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+            });
+        }
         element.on('tab(subMenu)', function () {
             console.log(this.getAttribute('lay-id'))
         });
 
         element.on('nav(operation)', function (elem) {
             var operationType = $(this).attr('operation-type');
+            if (operationType==='test'){
+                var sourceId =$("#testAgentId").val();
+                var agentType=JSON.parse($(".agentTypeInfo").val());
+                if (sourceId) {
+                    //获取数据源最近数据
+                    request.syncGet("/agents/events/" + sourceId, {
+                        page: 1, limit: 5
+                    }, function (res) {
+                        if (res.code === 0) {
+                            renderDataModal(agentType.id, res.data);
+                        }
+                    })
+                } else {
+                    renderDataModal(agentType.id, []);
+                }
+            }
             return false;
         });
     });
