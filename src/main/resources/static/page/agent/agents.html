@@ -19,6 +19,7 @@
 		display: table-cell;
 		vertical-align: middle;
 	}
+
 	.layui-nav .layui-nav-item a, .layui-nav .layui-nav-item a:hover {
 		height: 40px;
 		line-height: 40px;
@@ -28,16 +29,19 @@
 	.layui-nav .layui-nav-item {
 		background-color: #fff;
 	}
-	.type-name{
+
+	.type-name {
 		color: #999999;
 		font-size: 12px;
 		margin-right: 4px;
 		margin-top: 3px;
 	}
-	.scenarios{
+
+	.scenarios {
 		margin-top: 10px;
 	}
-	.label{
+
+	.label {
 		display: inline;
 		padding: .2em;
 		font-size: 75%;
@@ -48,6 +52,42 @@
 		white-space: nowrap;
 		vertical-align: baseline;
 		border-radius: .25em;
+	}
+
+	pre {
+		display: block;
+		padding: 9.5px;
+		margin: 0 0 10px;
+		font-size: 13px;
+		line-height: 1.42857;
+		word-break: break-all;
+		word-wrap: break-word;
+		background-color: #f5f5f5;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+
+	h5 {
+		display: block;
+		font-size: 0.83em;
+		margin-block-start: 1.67em;
+		margin-block-end: 1.67em;
+		margin-inline-start: 0px;
+		margin-inline-end: 0px;
+		font-weight: bold;
+	}
+
+	.dry-run-event-sample a {
+		color: #333333;
+	}
+
+	.dry-run-event-sample a:hover {
+		color: #428bca;
+		text-decoration-line: underline;
+	}
+
+	.modal-body {
+		padding: 20px;
 	}
 </style>
 <body>
@@ -121,18 +161,55 @@
 		<div>{{d.name}}</div>
 		<dl class="layui-col-xs12">
 			<dt class="pull-left type-name">{{d.agentType.agentTypeName}}</dt>
-			{{#  layui.each(d.scenarios, function(index, item){ }}
+			{{# layui.each(d.scenarios, function(index, item){ }}
 			<dd class="pull-left scenarios">
 				<a class="label" href="javascript:" style="color: #FFFFFF;background-color: {{item.tagBgColor}}">
 					{{item.name}}
 				</a>
 			</dd>
-			{{#  }) }}
+			{{# }) }}
 		</dl>
 	</div>
 </script>
+<script type="text/html" id="dataModal">
+	<div class="modal-body ">
+		<h5>最近接收到的数据</h5>
+		<hr class="layui-bg-gray">
+		<ul>
+			{{# layui.each(d.list, function(index, item){ }}
+			<li class="dry-run-event-sample">
+				<a href="javascript:" data-index='{{index}}'>
+					<pre>
+						{{JSON.stringify(item).substring(0,d.length)}}
+					</pre>
+				</a>
+			</li>
+			{{# }); }}
+		</ul>
+		<h5>即将提交的数据</h5>
+		<hr class="layui-bg-gray">
+		<div id="sourceDataEditor" style="height: 500px"></div>
+		<div style="padding-top: 20px">
+			<button class="layui-btn layui-btn-success layui-btn-sm btn-run">运行</button>
+		</div>
+	</div>
+</script>
+<script type="text/html" id="resultModal">
+	<div class="modal-body ">
+		{{# if(d.code === 0){ }}
+		{{# layui.each(d.data, function(index, item){ }}
+		<pre>
+				{{JSON.stringify(item,null, 4)}}
+			</pre>
+		{{# }); }}
+		{{# } }}
+		{{# if(d.code !== 0){ }}
+		{{d.data}}
+		{{# } }}
+	</div>
+</script>
 <script>
-    layui.use(['table', 'timeago','element','dropdown','miniTab'], function () {
+    layui.use(['table', 'timeago', 'element', 'dropdown', 'miniTab', "laytpl", "jsoneditor", "request"], function () {
         var $ = layui.jquery;
         var table = layui.table;
         var layer = layui.layer;
@@ -140,6 +217,9 @@
         var timeago = layui.timeago;
         var form = layui.form;
         var dropdown = layui.dropdown;
+        var laytpl = layui.laytpl;
+        var jsoneditor = layui.jsoneditor;
+        var request = layui.request;
         // 渲染表格
         layer.load(2);
         table.render({
@@ -202,16 +282,16 @@
                 {
                     field: 'stateStr', title: '状态',
                     templet: function (d) {
-                        var div=$("<div></div>");
-                        var el=$("<div></div>");
+                        var div = $("<div></div>");
+                        var el = $("<div></div>");
                         el.html(d.stateStr);
-                        if (d.state===2){
+                        if (d.state === 2) {
                             el.addClass("layui-badge layui-bg-green");
-                        }else if (d.state===3){
+                        } else if (d.state === 3) {
                             el.addClass("layui-badge");
-                        }else if (d.state===0){
+                        } else if (d.state === 0) {
                             el.addClass("layui-badge layui-bg-orange");
-                        }else {
+                        } else {
                             el.addClass("layui-badge-rim");
                         }
                         return div.append(el).html();
@@ -228,28 +308,111 @@
                 dropdown.suite();
                 for (let i = 0; i < tableData.length; i++) {
                     dropdown.onFilter("ft" + tableData[i].id, function (event) {
-                        layer.msg("你点击了："  + event);
+                        layer.msg("你点击了：" + event);
                         let split = event.split("-");
-                        var id=split[0];
-                        var ev=split[1];
-                        if (ev==='edit'){
+                        var id = split[0];
+                        var ev = split[1];
+                        if (ev === 'edit') {
                             //编辑
                             miniTab.openNewTabByIframe({
-                                title:'编辑'+tableData[i].name,
-                                href:'static/page/agent/edit_agent.html?id='+id
+                                title: '编辑' + tableData[i].name,
+                                href: 'static/page/agent/edit_agent.html?id=' + id
                             })
-                        }else if (ev==='detail'){
+                        } else if (ev === 'detail') {
                             //详情
                             miniTab.openNewTabByIframe({
-                                title:tableData[i].name,
-                                href:'static/page/agent/agent_detail.html?id='+id
+                                title: tableData[i].name,
+                                href: 'static/page/agent/agent_detail.html?id=' + id
                             })
+                        } else if (ev === 'test') {
+                            //测试运行
+                            var sourceId = null;
+                            var options=null;
+                            request.syncGet("/agents/" + tableData[i].id, {}, function (res) {
+                                    if (res.code === 0) {
+                                        if (res.data.sourceAgents.length > 0) {
+                                            sourceId = res.data.sourceAgents[0].id
+                                        }
+                                    }
+                                }
+                            )
+                            if (sourceId) {
+                                //获取数据源最近数据
+                                request.syncGet("/agents/events/" + sourceId, {
+                                    page: 1, limit: 5
+                                }, function (res) {
+                                    if (res.code === 0) {
+                                        renderDataModal(tableData[i].type,tableData[i].options, res.data);
+                                    }
+                                })
+                            } else {
+                                renderDataModal(tableData[i].type,tableData[i].options, []);
+                            }
                         }
 
                     });
                 }
             }
         });
+
+        function renderDataModal(agentType,options, data) {
+            var getTpl = dataModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            var length = parseInt(clientWidth / 8)
+            laytpl(getTpl).render({list: data, length: length}, function (html) {
+                layer.open({
+                    title: '选择数据',
+                    type: 1,
+                    area: [clientWidth + 'px', clientHeight + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+
+                var sourceDataEditor = jsoneditor.render('#sourceDataEditor', {
+                    mode: 'code',
+                    modes: ['code', 'tree']
+                });
+                $(".dry-run-event-sample").click(function () {
+                    sourceDataEditor.set(data[$(this).find("a").attr("data-index")].payload)
+                });
+
+                $(".btn-run").click(function () {
+                    request.post("/agents/dryRun/" + agentType, {
+                        payload: JSON.stringify(sourceDataEditor.get()),
+                        options: options
+                    }, function (res) {
+                        if (res.code === 0) {
+                            renderResultModal(res.code, res.data);
+                        } else {
+                            renderResultModal(res.code, res.stackInfo);
+                        }
+                    })
+                    return false;
+                })
+            });
+        }
+
+        function renderResultModal(code, data) {
+            var getTpl = resultModal.innerHTML;
+            var clientWidth = $(".layuimini-container").width();
+            var clientHeight = $(".layuimini-container").height();
+            var offsetLeft = $(".layuimini-container").offset().left;
+            var offsetTop = $(".layuimini-container").offset().top;
+            laytpl(getTpl).render({data: data, code: code}, function (html) {
+                layer.closeAll();
+                layer.open({
+                    title: '采集结果',
+                    type: 1,
+                    area: [clientWidth + 'px', (clientHeight-100) + 'px'],
+                    offset: [offsetLeft + 'px', offsetTop + 'px'],
+                    content: html
+                });
+            });
+        }
+
         /**
          * 监听搜索操作
          */
@@ -263,14 +426,14 @@
             return false;
         });
         table.on('toolbar(agentTable)', function (data) {
-            var event=data.event;
-            console.log("event",event)
-            if (event==='add'){
+            var event = data.event;
+            console.log("event", event)
+            if (event === 'add') {
                 miniTab.openNewTabByIframe({
-                    title:'新建代理',
-                    href:'static/page/agent/add_agent.html'
+                    title: '新建代理',
+                    href: 'static/page/agent/add_agent.html'
                 })
-            }else if (event==='hide'){
+            } else if (event === 'hide') {
 
             }
         });
