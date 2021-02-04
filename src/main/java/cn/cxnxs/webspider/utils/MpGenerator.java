@@ -48,7 +48,7 @@ public class MpGenerator {
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setInclude(new String[] {
-                "sys_menu",
+                "delayed_jobs",
 //                "events",
 //                "links",
 //                "scenario_agent_rel",

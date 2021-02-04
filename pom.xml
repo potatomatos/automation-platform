@@ -107,6 +107,11 @@
             <artifactId>httpclientutil</artifactId>
             <version>1.0.4</version>
         </dependency>
+        <!--定时任务框架-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

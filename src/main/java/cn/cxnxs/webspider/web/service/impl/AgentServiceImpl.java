@@ -75,7 +75,7 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
         agent.insertOrUpdate();
         //保存代理和方案关系
         scenarioAgentRelService.remove(new QueryWrapper<ScenarioAgentRel>().eq("agent_id", agent.getId()));
-        if (agentVo.getScenarioIds() != null) {
+        if (StringUtil.isNotEmpty(agentVo.getScenarioIds())) {
             String[] scenarios = agentVo.getScenarioIds().split(",");
             for (String scenarioId : scenarios) {
                 ScenarioAgentRel senarioAgentRel = new ScenarioAgentRel();
@@ -87,7 +87,7 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
         }
         //保存代理-代理关系
         linksService.remove(new QueryWrapper<Links>().eq("source_id", agent.getId()));
-        if (agentVo.getReceivers() != null) {
+        if (StringUtil.isNotEmpty(agentVo.getReceivers())) {
             String[] receivers = agentVo.getReceivers().split(",");
             for (String receiverId : receivers) {
                 Links links = new Links();
@@ -98,7 +98,7 @@ public class AgentServiceImpl extends ServiceImpl<AgentMapper, Agent> implements
             }
         }
         linksService.remove(new QueryWrapper<Links>().eq("receiver_id", agent.getId()));
-        if (agentVo.getSources() != null) {
+        if (StringUtil.isNotEmpty(agentVo.getSources())) {
             String[] sources = agentVo.getSources().split(",");
             for (String sourceId : sources) {
                 Links links = new Links();

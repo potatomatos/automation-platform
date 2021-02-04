@@ -15,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.Map;
  * @date 2021-01-18 14:02
  **/
 @Component
+@Scope("prototype")
 public class WebsiteAgent extends AbstractAgent {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsiteAgent.class);
@@ -79,6 +81,7 @@ public class WebsiteAgent extends AbstractAgent {
             }
         }
         logger.info("-----------请求参数-----------");
+        logger.info("event：{}",event);
         logger.info("url:{}", url);
         logger.info("header:{}", this.getOptions().getJSONObject("headers"));
         logger.info("-----------------------------");
@@ -93,7 +96,7 @@ public class WebsiteAgent extends AbstractAgent {
         //处理返回结果
         WebSiteContentParser webSiteContentParser = WebSiteParserFactory.getParser(WebSiteParserFactory.CONTENT_TYPE_HTML);
         List<Map<String, String>> maps = webSiteContentParser.parse(this.getOptions().getJSONObject("extract"), respResult.getResult());
-        logger.info("数据大小：{}，解析结果：{}",maps.size(),JSON.toJSONString(maps, SerializerFeature.PrettyFormat));
+        logger.debug("数据大小：{}，解析结果：{}",maps.size(),JSON.toJSONString(maps, SerializerFeature.PrettyFormat));
         return maps;
     }
 

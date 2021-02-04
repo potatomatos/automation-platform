@@ -11,16 +11,16 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 代理事件
+ * 
  * </p>
  *
  * @author mengjinyuan
- * @since 2020-11-10
+ * @since 2021-02-02
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class Events extends Model<Events> {
+public class DelayedJobs extends Model<DelayedJobs> {
 
     private static final long serialVersionUID=1L;
 
@@ -28,19 +28,44 @@ public class Events extends Model<Events> {
     private Integer id;
 
     /**
-     * 所属用户
+     * 任务权重
      */
-    private Integer userId;
+    private Integer priority;
 
     /**
-     * 所属代理
+     * 失败尝试次数
      */
-    private Integer agentId;
+    private Integer attempts;
 
     /**
-     * 内容
+     * 处理器
      */
-    private String payload;
+    private String handler;
+
+    /**
+     * 错误信息
+     */
+    private String lastError;
+
+    /**
+     * 运行时间
+     */
+    private LocalDateTime runAt;
+
+    /**
+     * 线程id
+     */
+    private Integer threadId;
+
+    /**
+     * 发生错误时间
+     */
+    private LocalDateTime failedAt;
+
+    /**
+     * 所在队列
+     */
+    private String queue;
 
     /**
      * 创建时间
@@ -51,16 +76,6 @@ public class Events extends Model<Events> {
      * 更新时间
      */
     private LocalDateTime updatedAt;
-
-    /**
-     * 过期时间
-     */
-    private LocalDateTime expiresAt;
-
-    /**
-     * 占用线程id
-     */
-    private Integer lockedBy;
 
 
     @Override
