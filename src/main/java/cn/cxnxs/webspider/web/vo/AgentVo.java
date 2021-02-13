@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -124,11 +125,11 @@ public class AgentVo extends BaseVo{
 
     private String sources;
 
-    private List<AgentVo> sourceAgents;
+    private List<AgentVo> sourceAgents=new ArrayList<>();
 
-    private List<AgentVo> receiverAgents;
+    private List<AgentVo> receiverAgents=new ArrayList<>();
 
-    private List<ScenariosVo> scenarios;
+    private List<ScenariosVo> scenarios=new ArrayList<>();
 
     private AgentTypeVo agentType;
 
