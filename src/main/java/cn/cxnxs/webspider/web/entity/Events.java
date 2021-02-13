@@ -60,7 +60,7 @@ public class Events extends Model<Events> {
     /**
      * 占用线程id
      */
-    private Integer lockedBy;
+    private String lockedBy;
 
 
     @Override
