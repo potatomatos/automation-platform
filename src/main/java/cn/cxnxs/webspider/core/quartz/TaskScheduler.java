@@ -28,6 +28,7 @@ public class TaskScheduler {
      * @param taskDetail 任务信息
      */
     public void addJob(TaskDetail taskDetail) {
+        logger.info("添加一个定时任务：{}",taskDetail);
         try {
             logger.info("------添加定时任务：{}", taskDetail);
             scheduler = schedulerFactory.getScheduler();
@@ -56,6 +57,7 @@ public class TaskScheduler {
      * @param taskDetail 任务信息
      */
     public void modifyJobTime(TaskDetail taskDetail) {
+        logger.info("修改一个任务的触发时间：{}",taskDetail);
         try {
             logger.info("------修改定时任务，{}", taskDetail);
             scheduler = schedulerFactory.getScheduler();
@@ -86,6 +88,7 @@ public class TaskScheduler {
      * @param taskDetail 任务信息
      */
     public void removeJob(TaskDetail taskDetail) {
+        logger.info("移除一个任务：{}",taskDetail);
         try {
             scheduler = schedulerFactory.getScheduler();
             TriggerKey triggerKey = TriggerKey.triggerKey(taskDetail.getTriggerName(), taskDetail.getTriggerGroupName());
@@ -103,6 +106,7 @@ public class TaskScheduler {
      * @param taskDetail 任务信息
      */
     public void pauseJob(TaskDetail taskDetail) {
+        logger.info("暂停一个任务：{}",taskDetail);
         try {
             TriggerKey triggerKey = TriggerKey.triggerKey(taskDetail.getTriggerName(), taskDetail.getTriggerGroupName());
             scheduler = schedulerFactory.getScheduler();
@@ -119,16 +123,30 @@ public class TaskScheduler {
      * @throws SchedulerException
      */
     public void resumeJob(TaskDetail taskDetail) throws SchedulerException {
+        logger.info("恢复一个job：{}",taskDetail);
         TriggerKey triggerKey = TriggerKey.triggerKey(taskDetail.getTriggerName(), taskDetail.getTriggerGroupName());
         scheduler = schedulerFactory.getScheduler();
         scheduler.resumeTrigger(triggerKey);
         scheduler.resumeJob(JobKey.jobKey(taskDetail.getJobName(), taskDetail.getJobGroupName()));
+
+    }
+
+    /**
+     * 手动触发一个job
+     * @param taskDetail 任务信息
+     * @throws SchedulerException
+     */
+    public void triggerJob(TaskDetail taskDetail) throws SchedulerException {
+        logger.info("手动触发一个job：{}",taskDetail);
+        scheduler = schedulerFactory.getScheduler();
+        scheduler.triggerJob(JobKey.jobKey(taskDetail.getJobName(), taskDetail.getJobGroupName()));
     }
 
     /**
      * 启动所有定时任务
      */
     public void startJobs() {
+        logger.info("启动所有定时任务");
         try {
             scheduler = schedulerFactory.getScheduler();
             scheduler.start();
@@ -141,6 +159,7 @@ public class TaskScheduler {
      * 关闭所有定时任务
      */
     public void shutdownJobs() {
+        logger.info("关闭所有定时任务");
         try {
             scheduler = schedulerFactory.getScheduler();
             if (!scheduler.isShutdown()) {
