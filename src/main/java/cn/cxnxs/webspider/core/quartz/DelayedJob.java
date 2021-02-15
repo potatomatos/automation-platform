@@ -71,33 +71,28 @@ public class DelayedJob extends QuartzJobBean {
             //获取来源代理
             List<AgentVo> sourceAgents = agentVo.getSourceAgents();
             if (!agentType.getCanReceiveEvents()
-                    && sourceAgents.size() == 0) {
+                    || sourceAgents.size() == 0) {
                 this.runTask(agentVo, null);
             } else {
-                List<Events> events;
-                if (sourceAgents.size() > 0) {
-                    List<Integer> sourceAgentsIdList = sourceAgents.stream().map(AgentVo::getId).collect(Collectors.toList());
-                    IPage<Events> eventsPage = eventsService.page(new Page<>(pageNo, pageSize),
-                            new QueryWrapper<Events>().in("agent_id", sourceAgentsIdList).isNull("locked_by"));
-                    events = eventsPage.getRecords();
-                    while (events.size() > 0) {
-                        //将事件添加到代理
-                        for (Events event : events) {
-                            event = event.selectById();
-                            //判断该数据是否被其他线程处理
-                            if (StringUtil.isEmpty(event.getLockedBy())) {
-                                this.runTask(agentVo, event);
-                            } else {
-                                logger.info("该数据正在被线程");
-                            }
+                List<Integer> sourceAgentsIdList = sourceAgents.stream().map(AgentVo::getId).collect(Collectors.toList());
+                IPage<Events> eventsPage = eventsService.page(new Page<>(pageNo, pageSize),
+                        new QueryWrapper<Events>().in("agent_id", sourceAgentsIdList).isNull("locked_by"));
+                List<Events> events = eventsPage.getRecords();
+                while (events.size() > 0) {
+                    //将事件添加到代理
+                    for (Events event : events) {
+                        event = event.selectById();
+                        //判断该数据是否被其他线程处理
+                        if (StringUtil.isEmpty(event.getLockedBy())) {
+                            this.runTask(agentVo, event);
+                        } else {
+                            logger.info("该数据正在被线程");
                         }
-                        pageNo++;
-                        eventsPage = eventsService.page(new Page<>(pageNo, pageSize),
-                                new QueryWrapper<Events>().eq("agent_id", id));
-                        events = eventsPage.getRecords();
                     }
-                } else {
-                    logger.info("数据来源未配置，跳过执行");
+                    pageNo++;
+                    eventsPage = eventsService.page(new Page<>(pageNo, pageSize),
+                            new QueryWrapper<Events>().eq("agent_id", id));
+                    events = eventsPage.getRecords();
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -149,7 +144,7 @@ public class DelayedJob extends QuartzJobBean {
                     }
                     eventsList.add(eventAdd);
                 });
-                runNextDelayedJobs(agentVo,eventsList);
+                runNextDelayedJobs(agentVo, eventsList);
             }
 
             @Override
@@ -164,7 +159,7 @@ public class DelayedJob extends QuartzJobBean {
      *
      * @param agentVo
      */
-    public void runNextDelayedJobs(AgentVo agentVo,List<Events> events) throws SchedulerException, ClassNotFoundException {
+    public void runNextDelayedJobs(AgentVo agentVo, List<Events> events) throws SchedulerException, ClassNotFoundException {
         logger.info("------执行下个代理------");
         //查出所有下一级代理信息
         List<AgentVo> receivers = agentVo.getReceiverAgents();
@@ -177,7 +172,7 @@ public class DelayedJob extends QuartzJobBean {
                 //手动触发定时任务
                 TaskDetail taskDetail = new TaskDetail();
                 taskDetail.setJobName(receiverAgentVo.getName());
-                taskDetail.setTriggerName(agentType.getAgentTypeName());
+                taskDetail.setJobGroupName(agentType.getAgentTypeName());
                 taskScheduler.triggerJob(taskDetail);
             } else {
                 for (Events event : events) {

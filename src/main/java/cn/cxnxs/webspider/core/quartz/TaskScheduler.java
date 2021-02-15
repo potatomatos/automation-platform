@@ -28,9 +28,8 @@ public class TaskScheduler {
      * @param taskDetail 任务信息
      */
     public void addJob(TaskDetail taskDetail) {
-        logger.info("添加一个定时任务：{}",taskDetail);
+        logger.info("------添加定时任务：{}", taskDetail);
         try {
-            logger.info("------添加定时任务：{}", taskDetail);
             scheduler = schedulerFactory.getScheduler();
             JobDetail jobDetail = JobBuilder
                     .newJob(taskDetail.getJobClass())
