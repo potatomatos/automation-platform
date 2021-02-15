@@ -64,14 +64,12 @@ public class DelayedJob extends QuartzJobBean {
         try {
             logger.info("------定时任务开始执行------");
             AgentVo agentVo = agentService.getAgentById(id);
-            AgentTypeVo agentType = agentVo.getAgentType();
             int pageNo = 1;
             int pageSize = 1000;
 
             //获取来源代理
             List<AgentVo> sourceAgents = agentVo.getSourceAgents();
-            if (!agentType.getCanReceiveEvents()
-                    || sourceAgents.size() == 0) {
+            if (sourceAgents.size()==0) {
                 this.runTask(agentVo, null);
             } else {
                 List<Integer> sourceAgentsIdList = sourceAgents.stream().map(AgentVo::getId).collect(Collectors.toList());
@@ -96,7 +94,7 @@ public class DelayedJob extends QuartzJobBean {
                 }
             }
         } catch (ClassNotFoundException e) {
-            logger.error("定时任务执行失败,找不到指定的执行类", e);
+            logger.error("定时任务执行失败,找不到 指定的执行类", e);
         }
     }
 
@@ -144,7 +142,10 @@ public class DelayedJob extends QuartzJobBean {
                     }
                     eventsList.add(eventAdd);
                 });
-                runNextDelayedJobs(agentVo, eventsList);
+
+                if(maps.size()>0){
+                    runNextDelayedJobs(agentVo, eventsList);
+                }
             }
 
             @Override
