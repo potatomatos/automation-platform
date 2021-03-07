@@ -39,8 +39,8 @@ public class MpGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("mjy2018");
-        dsc.setUrl("jdbc:mysql://localhost:3306/webspider?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
+        dsc.setPassword("root");
+        dsc.setUrl("jdbc:mysql://192.168.161.136:3306/mvp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -48,7 +48,7 @@ public class MpGenerator {
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setInclude(new String[] {
-                "delayed_jobs",
+                "base_org",
 //                "events",
 //                "links",
 //                "scenario_agent_rel",
