@@ -37,10 +37,10 @@ public class MpGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
+        dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("root");
-        dsc.setUrl("jdbc:mysql://192.168.161.136:3306/mvp?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false");
+        dsc.setPassword("mjy2018");
+        dsc.setUrl("jdbc:mysql://localhost:3306/oauth?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Shanghai");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -48,12 +48,10 @@ public class MpGenerator {
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setInclude(new String[] {
-                "base_org",
-//                "events",
-//                "links",
-//                "scenario_agent_rel",
-//                "scenarios",
-//                "users",
+                "oauth_access_token",
+                "oauth_client_details",
+                "oauth_code",
+                "oauth_refresh_token"
         }); // 需要生成的表
         strategy.setEntityLombokModel(true);
 

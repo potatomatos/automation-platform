@@ -4,17 +4,29 @@ package cn.cxnxs.webspider.core;
  * @author potatomato
  */
 
-public enum AgentSate {
+public enum AgentState {
+    /**
+     *
+     */
     PAUSE(0,"暂停"),
+    /**
+     *
+     */
     ENABLE(1,"待运行"),
+    /**
+     *
+     */
     WORKING(2,"执行中"),
+    /**
+     *
+     */
     DISABLE(3,"已禁用"),
     ;
     private Integer code;
 
     private String str;
 
-    AgentSate(Integer code, String str) {
+    AgentState(Integer code, String str) {
         this.code = code;
         this.str = str;
     }
@@ -30,7 +42,7 @@ public enum AgentSate {
         return this.str;
     }
     public static String getStr(Integer code) {
-        for (AgentSate e : AgentSate.values()) {
+        for (AgentState e : AgentState.values()) {
             if (e.getCode().equals(code)) {
                 return e.str;
             }

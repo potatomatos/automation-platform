@@ -2,8 +2,9 @@ package cn.cxnxs.webspider.core.agents;
 
 import cn.cxnxs.webspider.core.AbstractAgent;
 import cn.cxnxs.webspider.core.Event;
-import cn.cxnxs.webspider.core.agents.handler.WebSiteContentParser;
-import cn.cxnxs.webspider.core.agents.handler.WebSiteParserFactory;
+import cn.cxnxs.webspider.core.agents.parser.WebSiteContentParser;
+import cn.cxnxs.webspider.core.agents.parser.WebSiteParserFactory;
+import cn.cxnxs.webspider.core.http.ContentType;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -94,7 +95,7 @@ public class WebsiteAgent extends AbstractAgent {
         logger.info("-----------------------------");
 
         //处理返回结果
-        WebSiteContentParser webSiteContentParser = WebSiteParserFactory.getParser(WebSiteParserFactory.CONTENT_TYPE_HTML);
+        WebSiteContentParser webSiteContentParser = WebSiteParserFactory.getParser(ContentType.HTML);
         List<Map<String, String>> maps = webSiteContentParser.parse(this.getOptions().getJSONObject("extract"), respResult.getResult());
         logger.debug("数据大小：{}，解析结果：{}",maps.size(),JSON.toJSONString(maps, SerializerFeature.PrettyFormat));
         return maps;
@@ -110,5 +111,4 @@ public class WebsiteAgent extends AbstractAgent {
         this.setOptions(options);
         return this;
     }
-
 }

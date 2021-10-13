@@ -1,10 +1,7 @@
 package cn.cxnxs.webspider.web.vo;
 
-import cn.cxnxs.webspider.core.AgentSate;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import cn.cxnxs.webspider.core.AgentState;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -166,7 +163,7 @@ public class AgentVo extends BaseVo{
 
     public String getStateStr() {
         if (this.stateStr==null){
-            this.stateStr= AgentSate.getStr(this.state);
+            this.stateStr= AgentState.getStr(this.state);
         }
         return stateStr;
     }

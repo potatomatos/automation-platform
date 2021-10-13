@@ -1,5 +1,6 @@
-package cn.cxnxs.webspider.core.agents.handler;
+package cn.cxnxs.webspider.core.agents.parser;
 
+import cn.cxnxs.webspider.core.http.ContentType;
 import cn.cxnxs.webspider.exception.IllegalOptionException;
 import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Jsoup;
@@ -8,8 +9,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -19,8 +18,7 @@ import java.util.*;
  * @author mengjinyuan
  * @date 2021-01-24 00:12
  **/
-@Component
-public class HTMLParser implements WebSiteContentParser, InitializingBean {
+public class HTMLParser extends WebSiteContentParser {
 
     /**
      * 提取方式：css
@@ -32,6 +30,10 @@ public class HTMLParser implements WebSiteContentParser, InitializingBean {
     private static final String TYPE_XPATH = "xpath";
 
     private static final Logger logger = LoggerFactory.getLogger(HTMLParser.class);
+
+    public HTMLParser(ContentType contentType, String name) {
+        super(contentType, name);
+    }
 
     @Override
     public List<Map<String, String>> parse(JSONObject extract, String payload) {
@@ -66,11 +68,6 @@ public class HTMLParser implements WebSiteContentParser, InitializingBean {
         return this.format(resultData,extract);
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        WebSiteParserFactory.register(WebSiteParserFactory.CONTENT_TYPE_HTML, this);
-    }
-
     /**
      * css 解析
      *
@@ -100,7 +97,7 @@ public class HTMLParser implements WebSiteContentParser, InitializingBean {
 
     private String getContent(Element element, String value) {
         if (value != null) {
-            if (value.equals("string()")) {
+            if ("string()".equals(value)) {
                 return element.text();
             } else if (value.contains("@")) {
                 return element.attr(value.substring(1));

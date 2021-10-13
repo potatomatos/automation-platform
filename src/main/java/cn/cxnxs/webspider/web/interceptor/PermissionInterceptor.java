@@ -22,28 +22,29 @@ public class PermissionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        String token=request.getParameter("token");
+        String token = request.getParameter("token");
         Result<String> result = null;
-        boolean flag=true;
-        response.setContentType("json");
+        boolean flag = true;
+        response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
-        if (token!=null){
-            String token1= (String) request.getSession().getAttribute("token");
-            if (!token.equals(token1)){
+        if (token != null) {
+            String token1 = (String) request.getSession().getAttribute("token");
+            if (!token.equals(token1)) {
                 log.error("======token非法======");
-                result=Result.failure(Result.ResultEnum.ILLEGAL_TOKEN,Result.ResultEnum.ILLEGAL_TOKEN.getInfo(),null);
-                flag=false;
+                result = Result.failure(Result.ResultEnum.ILLEGAL_TOKEN, Result.ResultEnum.ILLEGAL_TOKEN.getInfo(), null);
+                flag = false;
             }
-        }else {
+        } else {
             log.error("======token非法======");
-            result=Result.failure(Result.ResultEnum.ILLEGAL_TOKEN,Result.ResultEnum.ILLEGAL_TOKEN.getInfo(),null);
-            flag=false;
+            result = Result.failure(Result.ResultEnum.ILLEGAL_TOKEN, Result.ResultEnum.ILLEGAL_TOKEN.getInfo(), null);
+            flag = false;
         }
-        if (request.getHeader("x-requested-with") != null && request.getHeader("x-requested-with").equalsIgnoreCase("XMLHttpRequest")) {
+        if (request.getHeader("x-requested-with") != null
+                && "XMLHttpRequest".equalsIgnoreCase(request.getHeader("x-requested-with"))) {
             //返回json
             response.setStatus(403);
             response.getWriter().write(JSON.toJSONString(result));
-        }else {
+        } else {
             //返回页面
             response.setStatus(403);
         }
